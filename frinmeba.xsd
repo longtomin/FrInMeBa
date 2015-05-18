@@ -1,0 +1,710 @@
+<!--
+
+    Copyright � 2015, Thomas Schreiner, thomas1.schreiner@googlemail.com
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimer in the documentation
+       and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    The views and conclusions contained in the software and documentation are those
+    of the authors and should not be interpreted as representing official policies,
+    either expressed or implied, of the FreeBSD Project.
+
+-->
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="InAuthenticate">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutAuthenticate">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="Username" />
+					<xs:element type="xs:int" name="UserID" />
+					<xs:element type="xs:string" name="Authenticated" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InSignup">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="Email" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSignUp">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="Username" />
+					<xs:element type="xs:int" name="UserID" />
+					<xs:element type="xs:string" name="SignUp" />
+					<xs:element type="xs:string" name="Reason" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InCreateChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="Chatname" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutCreateChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="Chatname" />
+					<xs:element type="xs:int" name="ChatID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InDeleteChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="ChatID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutDeleteChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="Result" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InAddUserToChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="UserID" />
+				<xs:element type="xs:int" name="ChatID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutAddUserToChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="Result" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InRemoveUserFromChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="UserID" />
+				<xs:element type="xs:int" name="ChatID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutRemoveUserFromChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="Result" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InListUser">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="Search" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutListUser">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="User" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="Username" />
+								<xs:element type="xs:int" name="UserID" />
+								<xs:element type="xs:string" name="Email" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InListChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutListChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="Chat" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="Chatname" />
+								<xs:element type="xs:int" name="ChatID" />
+								<xs:element name="OwningUser">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element type="xs:string" name="OwningUserName" />
+											<xs:element type="xs:int" name="OwningUserID" />
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InInsertMessageIntoChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="ChatID" />
+				<xs:element type="xs:int" name="MessageID" />
+				<xs:element type="xs:string" name="MessageTyp" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutInsertMessageIntoChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MessageID" />
+					<xs:element type="xs:long" name="SendTimestamp" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InSetShowTimeStamp">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="MessageID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSetShowTimeStamp">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MessageID" />
+					<xs:element type="xs:long" name="ShowTimestamp" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InAcknowledgeMessageDownload">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="MessageID" />
+				<xs:element type="xs:string" name="Acknowledge" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutAcknowledgeMessageDownload">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MessageID" />
+					<xs:element type="xs:string" name="Acknowledge" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InGetMessageInformation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="MessageID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutGetMessageInformation">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MessageID" />
+					<xs:element type="xs:int" name="NumberTotal" />
+					<xs:element type="xs:int" name="NumberRead" />
+					<xs:element type="xs:int" name="NumberShow" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InDeleteMessageFromChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="MessageID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutDeleteMessageFromChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MessageID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="InSendLocationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element name="LocationMessage">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="Lat" />
+							<xs:element type="xs:string" name="Lon" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSendLocationMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="LocationID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InSendTextMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="TextMessage" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSendTextMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="TextID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InSendImageMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="ImageMessage" />
+				<xs:element type="xs:string" name="ImageMD5Hash" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSendImageMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="ImageID" />
+					<xs:element type="xs:string" name="ImageFileName" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InSendVideoMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="VideoMessage" />
+				<xs:element type="xs:string" name="VideoMD5Hash" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSendVideoMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="VideoID" />
+					<xs:element type="xs:string" name="VideoFileName" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InSendContactMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="ContactMessage" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSendContactMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="ContactID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InSendFileMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:string" name="FileMessage" />
+				<xs:element type="xs:string" name="FileMD5Hash" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutSendFileMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="FileID" />
+					<xs:element type="xs:string" name="FileFileName" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InFetchMessageFromChat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="ChatID" />
+				<xs:element type="xs:long" name="TimeStamp" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutFetchMessageFromChat">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="Message" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:int" name="MessageID" />
+								<xs:element type="xs:string" name="MessageTyp" />
+								<xs:element type="xs:long" name="SendTimestamp" />
+								<xs:element type="xs:long" name="ReadTimestamp" />
+								<xs:element type="xs:long" name="ShowTimestamp" />
+								<xs:element name="OwningUser">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element type="xs:string" name="OwningUserName" />
+											<xs:element type="xs:int" name="OwningUserID" />
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element type="xs:int" name="TextMsgID" />
+								<xs:element type="xs:int" name="ImageMsgID" />
+								<xs:element type="xs:int" name="ContactMsgID" />
+								<xs:element type="xs:int" name="LocationMsgID" />
+								<xs:element type="xs:int" name="FileMsgID" />
+								<xs:element type="xs:int" name="VideoMsgID" />
+								<xs:element type="xs:int" name="OriginMsgID" />
+								<xs:element type="xs:int" name="NumberTotal" />
+								<xs:element type="xs:int" name="NumberRead" />
+								<xs:element type="xs:int" name="NumberShow" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InFetchTextMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="TextID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutFetchTextMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="TextMessage" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InFetchLocationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="LocationID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutFetchLocationMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="LocationMessage">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="Lat" />
+								<xs:element type="xs:string" name="Lon" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InFetchImageMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="ImageID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutFetchImageMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="ImageMessage" />
+					<xs:element type="xs:string" name="ImageMD5Hash" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InFetchVideoMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="VideoID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutFetchVideoMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="VideoMessage" />
+					<xs:element type="xs:string" name="VideoMD5Hash" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InFetchContactMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="ContactID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutFetchContactMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="ContactMessage" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InFetchFileMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="FileID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutFetchFileMessage">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="FileMessage" />
+					<xs:element type="xs:string" name="FileMD5Hash" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InCheckNewMessages">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutCheckNewMessages">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="Chats" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="Chatname" />
+								<xs:element type="xs:int" name="ChatID" />
+								<xs:element type="xs:int" name="NumberOfMessages" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InGetFileMessageMetaData">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="FileID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutGetFileMessageMetaData">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="FileMessage" />
+					<xs:element type="xs:long" name="FileSize" />
+					<xs:element type="xs:string" name="FileMD5Hash" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InGetImageMessageMetaData">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="ImageID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutGetImageMessageMetaData">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="ImageMessage" />
+					<xs:element type="xs:long" name="ImageSize" />
+					<xs:element type="xs:string" name="ImageMD5Hash" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InGetVideoMessageMetaData">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+				<xs:element type="xs:int" name="VideoID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutGetVideoMessageMetaData">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="VideoMessage" />
+					<xs:element type="xs:long" name="VideoSize" />
+					<xs:element type="xs:string" name="VideoMD5Hash" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
+
+
+</xs:schema>
