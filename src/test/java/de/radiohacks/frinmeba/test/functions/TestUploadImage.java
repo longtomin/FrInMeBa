@@ -54,7 +54,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutSendImageMessage;
+import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -71,8 +71,7 @@ public class TestUploadImage extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OutSendImageMessage
-	 * uploadImage(
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSImM uploadImage(
 	 * 
 	 * @QueryParam(Constants.QPusername) String User,
 	 * 
@@ -148,12 +147,10 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -181,12 +178,10 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -213,12 +208,10 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -246,11 +239,10 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
-		Assert.assertNotNull(out.getImageID());
-		Assert.assertNotNull(out.getImageFileName());
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+		Assert.assertNotNull(out.getIID());
+		Assert.assertNotNull(out.getIF());
 	}
 
 	@Test
@@ -278,10 +270,9 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
-		Assert.assertEquals(Constants.NO_IMAGEMESSAGE_GIVEN, out.getErrortext());
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+		Assert.assertEquals(Constants.NO_IMAGEMESSAGE_GIVEN, out.getET());
 	}
 
 	@Test
@@ -317,11 +308,10 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -350,11 +340,10 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -384,10 +373,9 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

@@ -54,7 +54,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutSendVideoMessage;
+import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -71,8 +71,7 @@ public class TestUploadVideo extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OutSendVideoMessage
-	 * uploadVideo(
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSViM uploadVideo(
 	 * 
 	 * @QueryParam(Constants.QPusername) String User,
 	 * 
@@ -148,12 +147,10 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -181,12 +178,10 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -212,12 +207,10 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -245,11 +238,10 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
-		Assert.assertNotNull(out.getVideoID());
-		Assert.assertNotNull(out.getVideoFileName());
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
+		Assert.assertNotNull(out.getVID());
+		Assert.assertNotNull(out.getVF());
 	}
 
 	@Test
@@ -277,10 +269,9 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
-		Assert.assertEquals(Constants.NO_IMAGEMESSAGE_GIVEN, out.getErrortext());
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
+		Assert.assertEquals(Constants.NO_IMAGEMESSAGE_GIVEN, out.getET());
 	}
 
 	@Test
@@ -316,11 +307,10 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -349,11 +339,10 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -383,10 +372,9 @@ public class TestUploadVideo extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage out = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
+		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

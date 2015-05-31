@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutListChat;
+import de.radiohacks.frinmeba.modelshort.OLiCh;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -60,7 +60,7 @@ public class TestListChat extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/listchat") public OutListChat
+	 * @Path("/listchat") public OLiCh
 	 * ListChats(@QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password);
@@ -115,10 +115,9 @@ public class TestListChat extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutListChat out = target.request().get(OutListChat.class);
+		OLiCh out = target.request().get(OLiCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -133,7 +132,7 @@ public class TestListChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutListChat out = target.request().get(OutListChat.class);
+		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertNotNull(out.getChat());
 	}
@@ -157,9 +156,9 @@ public class TestListChat extends JerseyTest {
 							.forName(Constants.CharacterSet)))).queryParam(
 					Constants.QPusername, username);
 		}
-		OutListChat out = target.request().get(OutListChat.class);
+		OLiCh out = target.request().get(OLiCh.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -173,10 +172,9 @@ public class TestListChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username);
 		}
-		OutListChat out = target.request().get(OutListChat.class);
+		OLiCh out = target.request().get(OLiCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -190,10 +188,9 @@ public class TestListChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password);
 		}
-		OutListChat out = target.request().get(OutListChat.class);
+		OLiCh out = target.request().get(OLiCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -208,9 +205,9 @@ public class TestListChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, "$%&1233");
 		}
-		OutListChat out = target.request().get(OutListChat.class);
+		OLiCh out = target.request().get(OLiCh.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -225,8 +222,8 @@ public class TestListChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					"$%&1233").queryParam(Constants.QPusername, username);
 		}
-		OutListChat out = target.request().get(OutListChat.class);
+		OLiCh out = target.request().get(OLiCh.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

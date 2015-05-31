@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutInsertMessageIntoChat;
+import de.radiohacks.frinmeba.modelshort.OIMIC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -60,7 +60,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/insertmessageintochat") public OutInsertMessageIntoChat
+	 * @Path("/insertmessageintochat") public OIMIC
 	 * insertMessageIntoChat(@QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password,
@@ -191,11 +191,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -211,11 +209,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					username1);
 			;
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -231,11 +227,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					password1);
 			;
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -251,10 +245,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPusername, username1);
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getErrortext());
+		Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getET());
 	}
 
 	@Test
@@ -278,10 +271,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					Constants.QPusername, username1);
 			;
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getErrortext());
+		Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getET());
 	}
 
 	@Test
@@ -316,10 +308,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 											.forName(Constants.CharacterSet))));
 			;
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -336,10 +327,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					password1).queryParam(Constants.QPusername, "XXX");
 			;
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -357,10 +347,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 							Constants.QPusername, username1);
 			;
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -391,10 +380,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
 	}
 
 	// TODO restlichen Kombinationen der Paramter noch durchpr�fen
@@ -426,10 +414,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPmessageid, txtmsgid1);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
@@ -462,11 +449,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
@@ -499,11 +485,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
@@ -536,11 +521,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
@@ -573,11 +557,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
@@ -610,11 +593,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
@@ -647,11 +629,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
@@ -684,11 +665,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
@@ -721,10 +701,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid);
 
 		}
-		OutInsertMessageIntoChat out = target.request().get(
-				OutInsertMessageIntoChat.class);
+		OIMIC out = target.request().get(OIMIC.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getSendTimestamp());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getSdT());
 	}
 }

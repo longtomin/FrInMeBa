@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutListUser;
+import de.radiohacks.frinmeba.modelshort.OLiUs;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -60,7 +60,7 @@ public class TestListUser extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/listuser") public OutListUser
+	 * @Path("/listuser") public OLiUs
 	 * ListUsers(@QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password,
@@ -144,10 +144,10 @@ public class TestListUser extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public class TestListUser extends JerseyTest {
 							Base64.encodeBase64String("Test".getBytes(Charset
 									.forName(Constants.CharacterSet))));
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertNotNull(out.getUser());
 	}
@@ -205,9 +205,9 @@ public class TestListUser extends JerseyTest {
 							Base64.encodeBase64String("Test".getBytes(Charset
 									.forName(Constants.CharacterSet))));
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -221,10 +221,10 @@ public class TestListUser extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username1);
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -238,10 +238,10 @@ public class TestListUser extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1);
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -261,10 +261,10 @@ public class TestListUser extends JerseyTest {
 					Base64.encodeBase64String("Test".getBytes(Charset
 							.forName(Constants.CharacterSet))));
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -279,7 +279,7 @@ public class TestListUser extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPusername, username1);
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertNotNull(out.getUser());
 	}
@@ -303,10 +303,10 @@ public class TestListUser extends JerseyTest {
 					Base64.encodeBase64String("Test".getBytes(Charset
 							.forName(Constants.CharacterSet))));
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -328,10 +328,10 @@ public class TestListUser extends JerseyTest {
 					Base64.encodeBase64String("Test".getBytes(Charset
 							.forName(Constants.CharacterSet))));
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -356,9 +356,9 @@ public class TestListUser extends JerseyTest {
 							Base64.encodeBase64String("Test".getBytes(Charset
 									.forName(Constants.CharacterSet))));
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -383,9 +383,9 @@ public class TestListUser extends JerseyTest {
 							Base64.encodeBase64String("Test".getBytes(Charset
 									.forName(Constants.CharacterSet))));
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -403,8 +403,8 @@ public class TestListUser extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPsearch, "$%&1233");
 		}
-		OutListUser out = target.request().get(OutListUser.class);
+		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

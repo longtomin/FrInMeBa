@@ -43,8 +43,8 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import de.radiohacks.frinmeba.model.OutGetImageMessageMetaData;
-import de.radiohacks.frinmeba.model.OutSendImageMessage;
+import de.radiohacks.frinmeba.modelshort.OGImMMD;
+import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 
 public interface ImageUtil {
@@ -53,7 +53,7 @@ public interface ImageUtil {
 	@Path("/upload")
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public OutSendImageMessage uploadImage(
+	public OSImM uploadImage(
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
 			@FormDataParam("file") InputStream fileInputStream,
@@ -62,7 +62,7 @@ public interface ImageUtil {
 	@GET
 	@Path("/getimagemetadata")
 	@Produces(MediaType.APPLICATION_XML)
-	public OutGetImageMessageMetaData getimagemetadata(
+	public OGImMMD getimagemetadata(
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
 			@QueryParam("imageid") int imageid);

@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutFetchMessageFromChat;
+import de.radiohacks.frinmeba.modelshort.OFMFC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -60,7 +60,7 @@ public class TestGetMessageFromChat extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/getmessagefromchat") public OutFetchMessageFromChat
+	 * @Path("/getmessagefromchat") public OFMFC
 	 * getMessageFromChat(@QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password,
@@ -189,11 +189,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -209,11 +207,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 					username1);
 			;
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -229,11 +225,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 					password1);
 			;
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -249,10 +243,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPusername, username1);
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
@@ -276,10 +269,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 					Constants.QPusername, username1);
 			;
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -296,10 +288,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 					password1).queryParam(Constants.QPusername, "XXX");
 			;
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -317,10 +308,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 							Constants.QPusername, username1);
 			;
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -339,10 +329,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPchatid, cid1to2);
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertNotNull(out.getMessage());
+		Assert.assertNotNull(out.getM());
 	}
 
 	@Test
@@ -361,10 +350,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPtimestamp, 0);
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
@@ -385,10 +373,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid1to2)
 					.queryParam(Constants.QPtimestamp, 200);
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
-		Assert.assertEquals(3, out.getMessage().size());
+		Assert.assertEquals(3, out.getM().size());
 	}
 
 	@Test
@@ -409,11 +396,10 @@ public class TestGetMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPchatid, cid3to12)
 					.queryParam(Constants.QPtimestamp, 0);
 		}
-		OutFetchMessageFromChat out = target.request().get(
-				OutFetchMessageFromChat.class);
+		OFMFC out = target.request().get(OFMFC.class);
 
 		// Size 3
-		Assert.assertNotNull(out.getMessage().size());
-		Assert.assertEquals(3, out.getMessage().size());
+		Assert.assertNotNull(out.getM().size());
+		Assert.assertEquals(3, out.getM().size());
 	}
 }

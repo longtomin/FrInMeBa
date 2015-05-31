@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutGetMessageInformation;
+import de.radiohacks.frinmeba.modelshort.OGMI;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -60,8 +60,7 @@ public class TestGetMessageInformation extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/getmessageinformation") public OutGetMessageInformation
-	 * getMessageInformation(
+	 * @Path("/getmessageinformation") public OGMI getMessageInformation(
 	 * 
 	 * @QueryParam(Constants.QPusername) String User,
 	 * 
@@ -188,11 +187,9 @@ public class TestGetMessageInformation extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -208,11 +205,9 @@ public class TestGetMessageInformation extends JerseyTest {
 					username1);
 			;
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -228,11 +223,9 @@ public class TestGetMessageInformation extends JerseyTest {
 					password1);
 			;
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -249,11 +242,9 @@ public class TestGetMessageInformation extends JerseyTest {
 					.queryParam(Constants.QPmessageid, msg1).queryParam(
 							Constants.QPusername, username1);
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -269,11 +260,9 @@ public class TestGetMessageInformation extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPmessageid, msg1);
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -289,10 +278,9 @@ public class TestGetMessageInformation extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPusername, username1);
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
 	}
 
 	@Test
@@ -316,10 +304,9 @@ public class TestGetMessageInformation extends JerseyTest {
 							.forName(Constants.CharacterSet))));
 			;
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -336,10 +323,9 @@ public class TestGetMessageInformation extends JerseyTest {
 					password1).queryParam(Constants.QPusername, "�$%1234");
 			;
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -356,10 +342,9 @@ public class TestGetMessageInformation extends JerseyTest {
 					"�$%1234").queryParam(Constants.QPusername, username1);
 			;
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -379,13 +364,12 @@ public class TestGetMessageInformation extends JerseyTest {
 					.queryParam(Constants.QPmessageid, msg1);
 			;
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
-		Assert.assertNotNull(out.getMessageID());
-		Assert.assertNotNull(out.getNumberTotal());
-		Assert.assertNotNull(out.getNumberRead());
-		Assert.assertNotNull(out.getNumberShow());
+		Assert.assertNotNull(out.getMID());
+		Assert.assertNotNull(out.getNT());
+		Assert.assertNotNull(out.getNR());
+		Assert.assertNotNull(out.getNS());
 	}
 
 	@Test
@@ -405,10 +389,8 @@ public class TestGetMessageInformation extends JerseyTest {
 					.queryParam(Constants.QPmessageid, msg2);
 			;
 		}
-		OutGetMessageInformation out = target.request().get(
-				OutGetMessageInformation.class);
+		OGMI out = target.request().get(OGMI.class);
 
 		// Assert.assertEquals(textmnsg2_org, out.getTextMessage());
 	}
-
 }

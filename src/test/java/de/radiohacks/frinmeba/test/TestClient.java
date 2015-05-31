@@ -44,13 +44,13 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutAddUserToChat;
-import de.radiohacks.frinmeba.model.OutAuthenticate;
-import de.radiohacks.frinmeba.model.OutCreateChat;
-import de.radiohacks.frinmeba.model.OutListChat;
-import de.radiohacks.frinmeba.model.OutListUser;
-import de.radiohacks.frinmeba.model.OutSendTextMessage;
-import de.radiohacks.frinmeba.model.OutSignUp;
+import de.radiohacks.frinmeba.modelshort.OAdUC;
+import de.radiohacks.frinmeba.modelshort.OAuth;
+import de.radiohacks.frinmeba.modelshort.OCrCh;
+import de.radiohacks.frinmeba.modelshort.OLiCh;
+import de.radiohacks.frinmeba.modelshort.OLiUs;
+import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.database.createDatabaseTables;
@@ -150,10 +150,10 @@ public class TestClient extends JerseyTest {
 
 	private void StartAuthenticate() {
 		for (int i = 0; i < newusers.length; i++) {
-			OutAuthenticate out = Authenticate(newusers[i][0], newusers[i][1]);
+			OAuth out = Authenticate(newusers[i][0], newusers[i][1]);
 			if (out != null) {
-				if (out.getErrortext() == null || out.getErrortext().isEmpty()) {
-					UserIDs[i] = out.getUserID();
+				if (out.getET() == null || out.getET().isEmpty()) {
+					UserIDs[i] = out.getUID();
 				}
 			}
 		}
@@ -161,14 +161,13 @@ public class TestClient extends JerseyTest {
 
 	private void StartSignup() {
 		for (int i = 0; i < newusers.length; i++) {
-			OutSignUp out = Signup(newusers[i][0], newusers[i][1],
-					newusers[i][2]);
+			OSiUp out = Signup(newusers[i][0], newusers[i][1], newusers[i][2]);
 			if (out != null) {
-				if (out.getErrortext() == null || out.getErrortext().isEmpty()) {
-					UserIDs[i] = out.getUserID();
-				} else if (out.getErrortext().equalsIgnoreCase(
+				if (out.getET() == null || out.getET().isEmpty()) {
+					UserIDs[i] = out.getUID();
+				} else if (out.getET().equalsIgnoreCase(
 						Constants.USER_ALREADY_EXISTS)) {
-					UserIDs[i] = out.getUserID();
+					UserIDs[i] = out.getUID();
 				}
 			}
 		}
@@ -183,17 +182,16 @@ public class TestClient extends JerseyTest {
 	private void StartCreateChats() {
 
 		for (int i = 0; i < SingleChats.length; i++) {
-			OutCreateChat out = CreateChat(SingleChats[i][0],
-					SingleChats[i][0], SingleChats[i][1]);
+			OCrCh out = CreateChat(SingleChats[i][0], SingleChats[i][0],
+					SingleChats[i][1]);
 
 			if (out != null) {
-				if (out.getErrortext() == null || out.getErrortext().isEmpty()) {
+				if (out.getET() == null || out.getET().isEmpty()) {
 					DataAddUserToChat d = new DataAddUserToChat(
-							SingleChats[i][0], SingleChats[i][0],
-							out.getChatID());
-					OutAuthenticate auth = Authenticate(SingleChats[i][2],
+							SingleChats[i][0], SingleChats[i][0], out.getCID());
+					OAuth auth = Authenticate(SingleChats[i][2],
 							SingleChats[i][2]);
-					d.Users.add(auth.getUserID());
+					d.Users.add(auth.getUID());
 					AddUsers.add(d);
 				}
 			}
@@ -202,32 +200,32 @@ public class TestClient extends JerseyTest {
 
 	private void StartCreateMultiChat() {
 
-		OutCreateChat out1 = CreateChat("Test2", "Test2", "Test1 2to1_3_4");
+		OCrCh out1 = CreateChat("Test2", "Test2", "Test1 2to1_3_4");
 
 		if (out1 != null) {
-			if (out1.getErrortext() == null || out1.getErrortext().isEmpty()) {
+			if (out1.getET() == null || out1.getET().isEmpty()) {
 
 				DataAddUserToChat d = new DataAddUserToChat("Test2", "Test2",
-						out1.getChatID());
+						out1.getCID());
 				for (int i = 0; i < MultiChatUsers1.length; i++) {
-					OutAuthenticate auth = Authenticate(MultiChatUsers1[i],
+					OAuth auth = Authenticate(MultiChatUsers1[i],
 							MultiChatUsers1[i]);
-					d.Users.add(auth.getUserID());
+					d.Users.add(auth.getUID());
 				}
 				AddUsers.add(d);
 			}
 		}
-		OutCreateChat out2 = CreateChat("Test4", "Test4", "Test4 4to1_2_3_5");
+		OCrCh out2 = CreateChat("Test4", "Test4", "Test4 4to1_2_3_5");
 
 		if (out2 != null) {
-			if (out2.getErrortext() == null || out2.getErrortext().isEmpty()) {
+			if (out2.getET() == null || out2.getET().isEmpty()) {
 
 				DataAddUserToChat d = new DataAddUserToChat("Test4", "Test4",
-						out2.getChatID());
+						out2.getCID());
 				for (int i = 0; i < MultiChatUsers2.length; i++) {
-					OutAuthenticate auth = Authenticate(MultiChatUsers2[i],
+					OAuth auth = Authenticate(MultiChatUsers2[i],
 							MultiChatUsers2[i]);
-					d.Users.add(auth.getUserID());
+					d.Users.add(auth.getUID());
 				}
 				AddUsers.add(d);
 			}
@@ -237,19 +235,18 @@ public class TestClient extends JerseyTest {
 	private void StartAddUsersToChat() {
 		for (DataAddUserToChat d : AddUsers) {
 			for (int uid : d.Users) {
-				OutAddUserToChat out = AddUserToChat(d.OwnUser, d.OwnnPassword,
-						uid, d.ChatID);
+				OAdUC out = AddUserToChat(d.OwnUser, d.OwnnPassword, uid,
+						d.ChatID);
 				if (out != null) {
-					if (out.getErrortext() == null
-							|| out.getErrortext().isEmpty()) {
-						String x = out.getResult();
+					if (out.getET() == null || out.getET().isEmpty()) {
+						String x = out.getR();
 					}
 				}
 			}
 		}
 	}
 
-	private OutAuthenticate Authenticate(String username, String password) {
+	private OAuth Authenticate(String username, String password) {
 
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -262,14 +259,15 @@ public class TestClient extends JerseyTest {
 					Constants.QPusername, username).queryParam(
 					Constants.QPpassword, password);
 		}
-		return target.request().get(OutAuthenticate.class);
+		return target.request().get(OAuth.class);
 	}
 
-	private OutSignUp Signup(String username, String password, String email) {
+	private OSiUp Signup(String username, String password, String email) {
 
 		WebTarget target;
 		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(TestConfig.URL + "user/signup")
+			target = ClientBuilder.newClient()
+					.target(TestConfig.URL + "user/signup")
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPemail, email);
@@ -279,15 +277,15 @@ public class TestClient extends JerseyTest {
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPemail, email);
 		}
-		return target.request().get(OutSignUp.class);
+		return target.request().get(OSiUp.class);
 	}
 
-	private OutCreateChat CreateChat(String username, String password,
-			String chatname) {
+	private OCrCh CreateChat(String username, String password, String chatname) {
 
 		WebTarget target;
 		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(TestConfig.URL + "user/createchat")
+			target = ClientBuilder.newClient()
+					.target(TestConfig.URL + "user/createchat")
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPchatname, chatname);
@@ -297,14 +295,15 @@ public class TestClient extends JerseyTest {
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPchatname, chatname);
 		}
-		return target.request().get(OutCreateChat.class);
+		return target.request().get(OCrCh.class);
 	}
 
-	private OutListUser ListUser(String username, String password, String search) {
+	private OLiUs ListUser(String username, String password, String search) {
 
 		WebTarget target;
 		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(TestConfig.URL + "user/listuser")
+			target = ClientBuilder.newClient()
+					.target(TestConfig.URL + "user/listuser")
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPchatname, search);
@@ -315,26 +314,27 @@ public class TestClient extends JerseyTest {
 					.queryParam(Constants.QPchatname, search);
 
 		}
-		return target.request().get(OutListUser.class);
+		return target.request().get(OLiUs.class);
 	}
 
-	private OutListChat ListChat(String username, String password) {
+	private OLiCh ListChat(String username, String password) {
 		WebTarget target;
 		if (TestConfig.remote) {
 
-			target = ClientBuilder.newClient().target(TestConfig.URL + "user/listchat")
+			target = ClientBuilder.newClient()
+					.target(TestConfig.URL + "user/listchat")
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPpassword, password);
 		} else {
 			target = target("user/listchat").queryParam(Constants.QPusername,
 					username).queryParam(Constants.QPpassword, password);
 		}
-		return target.request().get(OutListChat.class);
+		return target.request().get(OLiCh.class);
 
 	}
 
-	private OutAddUserToChat AddUserToChat(String username, String password,
-			int userid, int chatid) {
+	private OAdUC AddUserToChat(String username, String password, int userid,
+			int chatid) {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -350,11 +350,11 @@ public class TestClient extends JerseyTest {
 					.queryParam(Constants.QPchatid, chatid)
 					.queryParam(Constants.QPuserid, userid);
 		}
-		return target.request().get(OutAddUserToChat.class);
+		return target.request().get(OAdUC.class);
 	}
 
-	private OutSendTextMessage SendTextMessage(String username,
-			String password, String TextMessage) {
+	private OSTeM SendTextMessage(String username, String password,
+			String TextMessage) {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -369,7 +369,7 @@ public class TestClient extends JerseyTest {
 					.queryParam(Constants.QPtextmessage, TextMessage);
 
 		}
-		return target.request().get(OutSendTextMessage.class);
+		return target.request().get(OSTeM.class);
 	}
 
 	private class DataAddUserToChat {

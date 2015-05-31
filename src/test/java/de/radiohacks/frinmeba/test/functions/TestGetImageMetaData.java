@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutGetImageMessageMetaData;
+import de.radiohacks.frinmeba.modelshort.OGImMMD;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -146,11 +146,9 @@ public class TestGetImageMetaData extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -164,11 +162,9 @@ public class TestGetImageMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -182,11 +178,9 @@ public class TestGetImageMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -201,11 +195,9 @@ public class TestGetImageMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPimageid,
 					imageid);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 		deleteImage(imageid);
 	}
 
@@ -221,11 +213,10 @@ public class TestGetImageMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -241,11 +232,9 @@ public class TestGetImageMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username).queryParam(Constants.QPimageid, imageid);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 		deleteImage(imageid);
 	}
 
@@ -262,11 +251,9 @@ public class TestGetImageMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPimageid, imageid);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 		deleteImage(imageid);
 	}
 
@@ -286,10 +273,9 @@ public class TestGetImageMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, "$%&1233")
 					.queryParam(Constants.QPimageid, imageid);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 		deleteImage(imageid);
 	}
 
@@ -309,10 +295,9 @@ public class TestGetImageMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPimageid, imageid);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 		deleteImage(imageid);
 	}
 
@@ -332,10 +317,9 @@ public class TestGetImageMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPimageid, imageid);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertNotNull(out.getImageSize());
+		Assert.assertNotNull(out.getIS());
 		// Assert.assertEquals(md5Sum, out.getImageMD5Hash());
 		deleteImage(imageid);
 	}
@@ -363,10 +347,9 @@ public class TestGetImageMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPimageid, imageid);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 		deleteImage(imageid);
 	}
 
@@ -385,11 +368,10 @@ public class TestGetImageMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPimageid, 107365);
 		}
-		OutGetImageMessageMetaData out = target.request().get(
-				OutGetImageMessageMetaData.class);
+		OGImMMD out = target.request().get(OGImMMD.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-				out.getErrortext());
+				out.getET());
 	}
 
 }

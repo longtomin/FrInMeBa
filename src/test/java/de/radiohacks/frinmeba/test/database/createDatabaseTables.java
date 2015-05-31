@@ -120,6 +120,8 @@ public class createDatabaseTables {
 			+ "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT, "
 			+ "`UserID` int(10) unsigned NOT NULL, "
 			+ "`ChatID` int(10) unsigned NOT NULL, "
+			+ "`ReadTimestamp` bigint(20) NOT NULL DEFAULT '0', "
+			+ "`TempReadTimestamp` bigint(20) NOT NULL DEFAULT '0', "
 			+ "PRIMARY KEY (`ID`), "
 			+ "KEY `UserIDIdx` (`UserID`), "
 			+ "KEY `ChatIDIdx` (`ChatID`), "

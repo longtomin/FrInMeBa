@@ -43,8 +43,8 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import de.radiohacks.frinmeba.model.OutGetVideoMessageMetaData;
-import de.radiohacks.frinmeba.model.OutSendVideoMessage;
+import de.radiohacks.frinmeba.modelshort.OGViMMD;
+import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
 
 public interface VideoUtil {
@@ -53,7 +53,7 @@ public interface VideoUtil {
 	@Path("/upload")
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public OutSendVideoMessage uploadVideo(
+	public OSViM uploadVideo(
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
 			@FormDataParam("file") InputStream fileInputStream,
@@ -62,7 +62,7 @@ public interface VideoUtil {
 	@GET
 	@Path("/getvideometadata")
 	@Produces(MediaType.APPLICATION_XML)
-	public OutGetVideoMessageMetaData getvideometadata(
+	public OGViMMD getvideometadata(
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
 			@QueryParam(Constants.QPvideoid) int videoid);

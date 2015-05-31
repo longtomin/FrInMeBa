@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutGetVideoMessageMetaData;
+import de.radiohacks.frinmeba.modelshort.OGViMMD;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -58,14 +58,15 @@ public class TestGetVideoMetaData extends JerseyTest {
 	/*
 	 * @GET
 	 * 
-	 * @Produces(MediaType.APPLICATION_XML)
+	 * @Path("/getvideometadata")
 	 * 
-	 * @Path("/createchat") public OutCreateChat
-	 * CreateChat(@QueryParam(Constants.QPusername) String User,
+	 * @Produces(MediaType.APPLICATION_XML) public OGViMMD getvideometadata(
+	 * 
+	 * @QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password,
 	 * 
-	 * @QueryParam(Constants.QPchatname) String Chatname);
+	 * @QueryParam(Constants.QPvideoid) int videoid);
 	 */
 
 	// Username welche anzulegen ist
@@ -145,11 +146,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -163,11 +162,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -181,11 +178,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -200,11 +195,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPvideoid,
 					videoid);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 		deleteVideo(videoid);
 	}
 
@@ -220,11 +213,10 @@ public class TestGetVideoMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -240,11 +232,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username).queryParam(Constants.QPvideoid, videoid);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 		deleteVideo(videoid);
 	}
 
@@ -261,11 +251,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPvideoid, videoid);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 		deleteVideo(videoid);
 	}
 
@@ -285,10 +273,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, "$%&1233")
 					.queryParam(Constants.QPvideoid, videoid);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 		deleteVideo(videoid);
 	}
 
@@ -308,10 +295,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPvideoid, videoid);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 		deleteVideo(videoid);
 	}
 
@@ -331,10 +317,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPvideoid, videoid);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertNotNull(out.getVideoSize());
+		Assert.assertNotNull(out.getVS());
 		// Assert.assertEquals(md5sum, out.getVideoMD5Hash());
 		deleteVideo(videoid);
 	}
@@ -362,10 +347,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPvideoid, videoid);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 		deleteVideo(videoid);
 	}
 
@@ -384,11 +368,10 @@ public class TestGetVideoMetaData extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPvideoid, 107365);
 		}
-		OutGetVideoMessageMetaData out = target.request().get(
-				OutGetVideoMessageMetaData.class);
+		OGViMMD out = target.request().get(OGViMMD.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-				out.getErrortext());
+				out.getET());
 	}
 
 }

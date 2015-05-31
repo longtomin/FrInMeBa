@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutAuthenticate;
+import de.radiohacks.frinmeba.modelshort.OAuth;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -114,10 +114,9 @@ public class TestAuthenticate extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OAuth out = target.request().get(OAuth.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -134,9 +133,9 @@ public class TestAuthenticate extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OAuth out = target.request().get(OAuth.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_TRUE, out.getAuthenticated());
+		Assert.assertEquals(Constants.AUTHENTICATE_TRUE, out.getA());
 	}
 
 	@Test
@@ -161,11 +160,10 @@ public class TestAuthenticate extends JerseyTest {
 					Constants.QPusername, username);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OAuth out = target.request().get(OAuth.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_FALSE,
-				out.getAuthenticated());
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -183,11 +181,10 @@ public class TestAuthenticate extends JerseyTest {
 					password).queryParam(Constants.QPusername, "XXX");
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OAuth out = target.request().get(OAuth.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_FALSE,
-				out.getAuthenticated());
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -206,11 +203,10 @@ public class TestAuthenticate extends JerseyTest {
 							Constants.QPusername, username);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OAuth out = target.request().get(OAuth.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_FALSE,
-				out.getAuthenticated());
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -227,10 +223,9 @@ public class TestAuthenticate extends JerseyTest {
 					username);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OAuth out = target.request().get(OAuth.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -247,9 +242,8 @@ public class TestAuthenticate extends JerseyTest {
 					password);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OAuth out = target.request().get(OAuth.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 }

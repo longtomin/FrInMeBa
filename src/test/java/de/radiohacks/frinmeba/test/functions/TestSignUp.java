@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutSignUp;
+import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -96,10 +96,9 @@ public class TestSignUp extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
+		OSiUp out = target.request().get(OSiUp.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -112,9 +111,8 @@ public class TestSignUp extends JerseyTest {
 		} else {
 			target = target(functionurl).queryParam(Constants.QPemail, email);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -128,9 +126,8 @@ public class TestSignUp extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -144,9 +141,8 @@ public class TestSignUp extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -161,9 +157,8 @@ public class TestSignUp extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPemail, email)
 					.queryParam(Constants.QPusername, username);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -178,9 +173,8 @@ public class TestSignUp extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPemail, email);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -195,8 +189,8 @@ public class TestSignUp extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.INVALID_EMAIL_ADRESS, out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.INVALID_EMAIL_ADRESS, out.getET());
 	}
 
 	@Test
@@ -214,8 +208,8 @@ public class TestSignUp extends JerseyTest {
 					.queryParam(Constants.QPemail, email)
 					.queryParam(Constants.QPusername, username);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals("SUCCESSFUL", out.getSignUp());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals("SUCCESSFUL", out.getSU());
 	}
 
 	@Test
@@ -233,8 +227,8 @@ public class TestSignUp extends JerseyTest {
 					.queryParam(Constants.QPemail, "$%&")
 					.queryParam(Constants.QPusername, username);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -252,8 +246,8 @@ public class TestSignUp extends JerseyTest {
 					.queryParam(Constants.QPemail, email)
 					.queryParam(Constants.QPusername, "$%&1234");
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -271,7 +265,7 @@ public class TestSignUp extends JerseyTest {
 					.queryParam(Constants.QPemail, email)
 					.queryParam(Constants.QPusername, username);
 		}
-		OutSignUp out = target.request().get(OutSignUp.class);
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		OSiUp out = target.request().get(OSiUp.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

@@ -60,10 +60,10 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
-import de.radiohacks.frinmeba.model.OutAcknowledgeMessageDownload;
-import de.radiohacks.frinmeba.model.OutSendImageMessage;
-import de.radiohacks.frinmeba.model.OutSendTextMessage;
-import de.radiohacks.frinmeba.model.OutSendVideoMessage;
+import de.radiohacks.frinmeba.modelshort.OAckMD;
+import de.radiohacks.frinmeba.modelshort.OSImM;
+import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -164,10 +164,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendImageMessage x = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendImageMessage.class);
-		return x.getImageID();
+		OSImM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+		return x.getIID();
 	}
 
 	public int uploadVideoContent(String url) {
@@ -191,10 +190,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OutSendVideoMessage x = target.request()
-				.post(Entity.entity(mp, mp.getMediaType()),
-						OutSendVideoMessage.class);
-		return x.getVideoID();
+		OSViM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
+		return x.getVID();
 	}
 
 	public int uploadTextContent(String url) {
@@ -208,8 +206,8 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 			target = target(url);
 		}
 
-		OutSendTextMessage x = target.request().get(OutSendTextMessage.class);
-		return x.getTextID();
+		OSTeM x = target.request().get(OSTeM.class);
+		return x.getTID();
 	}
 
 	@Test
@@ -222,11 +220,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 			target = target(functionurl);
 		}
 
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -242,11 +238,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 					username);
 			;
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -261,11 +255,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password);
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -281,10 +273,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getErrortext());
+		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
 	}
 
 	@Test
@@ -308,10 +299,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 					Constants.QPusername, username);
 			;
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getErrortext());
+		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
 	}
 
 	@Test
@@ -340,10 +330,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 			;
 			;
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -360,10 +349,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 					password).queryParam(Constants.QPusername, "XXX");
 			;
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -381,10 +369,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 							Constants.QPusername, username);
 			;
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -427,10 +414,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 					.queryParam(Constants.QPmessageid, msgid)
 					.queryParam(Constants.QPacknowledge, md5sumimg);
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getAcknowledge());
+		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getACK());
 	}
 
 	@Test
@@ -473,10 +459,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 					.queryParam(Constants.QPmessageid, msgid)
 					.queryParam(Constants.QPacknowledge, md5sumimg);
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getAcknowledge());
+		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getACK());
 	}
 
 	@Test
@@ -514,9 +499,8 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 					.queryParam(Constants.QPmessageid, msgid)
 					.queryParam(Constants.QPacknowledge, sha1b64);
 		}
-		OutAcknowledgeMessageDownload out = target.request().get(
-				OutAcknowledgeMessageDownload.class);
+		OAckMD out = target.request().get(OAckMD.class);
 
-		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getAcknowledge());
+		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getACK());
 	}
 }

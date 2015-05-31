@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutAuthenticate;
+import de.radiohacks.frinmeba.modelshort.OReUC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -67,8 +67,26 @@ public class TestRemoveUserFromChat extends JerseyTest {
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
 			.getBytes(Charset.forName(Constants.CharacterSet)));
+	static int chatid;
+	static int userid;
 
-	final static String functionurl = "user/authenticate";
+	final static String functionurl = "user/removeuserfromchat";
+
+	/*
+	 * @DELETE
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/removeuserfromchat") public OReUC RemoveUserFromChat(
+	 * 
+	 * @QueryParam(Constants.QPusername) String User,
+	 * 
+	 * @QueryParam(Constants.QPpassword) String Password,
+	 * 
+	 * @QueryParam(Constants.QPchatid) int ChatID,
+	 * 
+	 * @QueryParam(Constants.QPuserid) int UserID);
+	 */
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -90,10 +108,17 @@ public class TestRemoveUserFromChat extends JerseyTest {
 		create.createTable();
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username_org, username, password_org, email_org);
+		userid = help.getUserID(username_org);
+		chatid = help.CreateChat(username_org, "TestChat");
+		int u2c = help.AddUserToChat(userid, chatid);
+		int msg1 = help.CreateContentMessage("Text1", Constants.TYP_TEXT);
+		int msg2 = help.CreateContentMessage("Text2", Constants.TYP_TEXT);
+		help.insertMessage(userid, u2c, Constants.TYP_TEXT, msg1, msg1, true);
+		help.insertMessage(userid, u2c, Constants.TYP_TEXT, msg2, msg2, true);
 	}
 
 	@Test
-	public void testAuthenticateUpNoValues() {
+	public void testRemoveUserFromChatUpNoValues() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient().target(
@@ -101,14 +126,13 @@ public class TestRemoveUserFromChat extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OReUC out = target.request().delete(OReUC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testAuthenticateUserPassword() {
+	public void testRemoveUserFromChatUserPassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -120,13 +144,75 @@ public class TestRemoveUserFromChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OReUC out = target.request().delete(OReUC.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_TRUE, out.getAuthenticated());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
-	public void testAuthenticateUserWrongPassword() {
+	public void testRemoveUserFromChatUserPasswordChatID() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient()
+					.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPchatid, chatid);
+			;
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPchatid, chatid);
+		}
+		OReUC out = target.request().delete(OReUC.class);
+
+		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
+	}
+
+	@Test
+	public void testRemoveUserFromChatUserPasswordUserID() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient()
+					.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username);
+			;
+		} else {
+			target = target(functionurl).queryParam(Constants.QPpassword,
+					password).queryParam(Constants.QPusername, username);
+		}
+		OReUC out = target.request().delete(OReUC.class);
+
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
+	}
+
+	@Test
+	public void testRemoveUserFromChatUserPasswordChatIDUserID() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient()
+					.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPchatid, chatid)
+					.queryParam(Constants.QPuserid, userid);
+			;
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPchatid, chatid)
+					.queryParam(Constants.QPuserid, userid);
+		}
+		OReUC out = target.request().delete(OReUC.class);
+
+		Assert.assertEquals("REMOVED", out.getR());
+	}
+
+	@Test
+	public void testRemoveUserFromChatUserWrongPassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder
@@ -146,15 +232,13 @@ public class TestRemoveUserFromChat extends JerseyTest {
 					Constants.QPusername, username);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OReUC out = target.request().delete(OReUC.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_FALSE,
-				out.getAuthenticated());
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testAuthenticateUserEncodeFailureUser() {
+	public void testRemoveUserFromChatUserEncodeFailureUser() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -167,15 +251,13 @@ public class TestRemoveUserFromChat extends JerseyTest {
 					password).queryParam(Constants.QPusername, "XXX");
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OReUC out = target.request().delete(OReUC.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_FALSE,
-				out.getAuthenticated());
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
-	public void testAuthenticateUserEncodeFailurePassword() {
+	public void testRemoveUserFromChatUserEncodeFailurePassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -189,15 +271,13 @@ public class TestRemoveUserFromChat extends JerseyTest {
 							Constants.QPusername, username);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OReUC out = target.request().delete(OReUC.class);
 
-		Assert.assertEquals(Constants.AUTHENTICATE_FALSE,
-				out.getAuthenticated());
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
-	public void testAuthenticateUser() {
+	public void testRemoveUserFromChatUser() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -209,14 +289,13 @@ public class TestRemoveUserFromChat extends JerseyTest {
 					username);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OReUC out = target.request().delete(OReUC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testAuthenticatePassword() {
+	public void testRemoveUserFromChatPassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -228,10 +307,9 @@ public class TestRemoveUserFromChat extends JerseyTest {
 					password);
 			;
 		}
-		OutAuthenticate out = target.request().get(OutAuthenticate.class);
+		OReUC out = target.request().delete(OReUC.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 }

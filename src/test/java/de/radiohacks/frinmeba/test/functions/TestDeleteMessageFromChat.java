@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutDeleteMessageFromChat;
+import de.radiohacks.frinmeba.modelshort.ODMFC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -189,11 +189,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -207,11 +207,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username1);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -225,11 +225,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -244,10 +244,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPusername, username1);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
 	}
 
 	@Test
@@ -269,10 +269,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 							.forName(Constants.CharacterSet)))).queryParam(
 					Constants.QPusername, username1);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -287,10 +287,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPusername, "XXX");
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -306,10 +306,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPpassword, "XXX").queryParam(
 							Constants.QPusername, username1);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -327,10 +327,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username2)
 					.queryParam(Constants.QPmessageid, message_txt2a);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
-		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getErrortext());
+		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
 	}
 
 	@Test
@@ -348,11 +348,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPmessageid, message_txt1);
 		}
-		OutDeleteMessageFromChat out1 = target1.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out1 = target1.request().delete(
+				ODMFC.class);
 
-		Assert.assertNotNull(out1.getMessageID());
-		Assert.assertNull(out1.getErrortext());
+		Assert.assertNotNull(out1.getMID());
+		Assert.assertNull(out1.getET());
 
 		WebTarget target2;
 		if (TestConfig.remote) {
@@ -367,11 +367,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username2)
 					.queryParam(Constants.QPmessageid, message_txt2);
 		}
-		OutDeleteMessageFromChat out2 = target2.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out2 = target2.request().delete(
+				ODMFC.class);
 
-		Assert.assertNotNull(out2.getMessageID());
-		Assert.assertNull(out2.getErrortext());
+		Assert.assertNotNull(out2.getMID());
+		Assert.assertNull(out2.getET());
 	}
 
 	@Test
@@ -389,10 +389,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username2)
 					.queryParam(Constants.QPmessageid, message_img2a);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
-		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getErrortext());
+		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
 	}
 
 	@Test
@@ -410,11 +410,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPmessageid, message_img1);
 		}
-		OutDeleteMessageFromChat out1 = target1.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out1 = target1.request().delete(
+				ODMFC.class);
 
-		Assert.assertNotNull(out1.getMessageID());
-		Assert.assertNull(out1.getErrortext());
+		Assert.assertNotNull(out1.getMID());
+		Assert.assertNull(out1.getET());
 
 		WebTarget target2;
 		if (TestConfig.remote) {
@@ -429,11 +429,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username2)
 					.queryParam(Constants.QPmessageid, message_img2);
 		}
-		OutDeleteMessageFromChat out2 = target2.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out2 = target2.request().delete(
+				ODMFC.class);
 
-		Assert.assertNotNull(out2.getMessageID());
-		Assert.assertNull(out2.getErrortext());
+		Assert.assertNotNull(out2.getMID());
+		Assert.assertNull(out2.getET());
 	}
 
 	@Test
@@ -451,10 +451,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username2)
 					.queryParam(Constants.QPmessageid, message_vid2a);
 		}
-		OutDeleteMessageFromChat out = target.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out = target.request().delete(
+				ODMFC.class);
 
-		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getErrortext());
+		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
 	}
 
 	@Test
@@ -472,11 +472,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPmessageid, message_vid1);
 		}
-		OutDeleteMessageFromChat out1 = target1.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out1 = target1.request().delete(
+				ODMFC.class);
 
-		Assert.assertNotNull(out1.getMessageID());
-		Assert.assertNull(out1.getErrortext());
+		Assert.assertNotNull(out1.getMID());
+		Assert.assertNull(out1.getET());
 
 		WebTarget target2;
 		if (TestConfig.remote) {
@@ -491,10 +491,10 @@ public class TestDeleteMessageFromChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username2)
 					.queryParam(Constants.QPmessageid, message_vid2);
 		}
-		OutDeleteMessageFromChat out2 = target2.request().delete(
-				OutDeleteMessageFromChat.class);
+		ODMFC out2 = target2.request().delete(
+				ODMFC.class);
 
-		Assert.assertNotNull(out2.getMessageID());
-		Assert.assertNull(out2.getErrortext());
+		Assert.assertNotNull(out2.getMID());
+		Assert.assertNull(out2.getET());
 	}
 }

@@ -49,14 +49,14 @@ import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MySqlConnection;
-import de.radiohacks.frinmeba.model.InAuthenticate;
-import de.radiohacks.frinmeba.model.InFetchVideoMessage;
-import de.radiohacks.frinmeba.model.InGetVideoMessageMetaData;
-import de.radiohacks.frinmeba.model.InSendVideoMessage;
-import de.radiohacks.frinmeba.model.OutAuthenticate;
-import de.radiohacks.frinmeba.model.OutFetchVideoMessage;
-import de.radiohacks.frinmeba.model.OutGetVideoMessageMetaData;
-import de.radiohacks.frinmeba.model.OutSendVideoMessage;
+import de.radiohacks.frinmeba.modelshort.IAuth;
+import de.radiohacks.frinmeba.modelshort.IGViM;
+import de.radiohacks.frinmeba.modelshort.IGViMMD;
+import de.radiohacks.frinmeba.modelshort.ISViM;
+import de.radiohacks.frinmeba.modelshort.OAuth;
+import de.radiohacks.frinmeba.modelshort.OGViM;
+import de.radiohacks.frinmeba.modelshort.OGViMMD;
+import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.util.VideoUtil;
 
 @Path("/video")
@@ -66,11 +66,11 @@ public class VideoImpl implements VideoUtil {
 	 */
 
 	@Override
-	public OutSendVideoMessage uploadVideo(String User, String Password,
+	public OSViM uploadVideo(String User, String Password,
 			InputStream fileInputStream,
 			FormDataContentDisposition contentDispositionHeader) {
 
-		OutSendVideoMessage out = new OutSendVideoMessage();
+		OSViM out = new OSViM();
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
 		User actuser = new User(con);
@@ -79,21 +79,21 @@ public class VideoImpl implements VideoUtil {
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
 
-				InAuthenticate inauth = new InAuthenticate();
-				OutAuthenticate outauth = new OutAuthenticate();
-				inauth.setPassword(actuser.base64Decode(Password));
-				inauth.setUsername(User);
+				IAuth inauth = new IAuth();
+				OAuth outauth = new OAuth();
+				inauth.setPW(actuser.base64Decode(Password));
+				inauth.setUN(User);
 
-				InSendVideoMessage in = new InSendVideoMessage();
-				in.setPassword(actuser.base64Decode(Password));
-				in.setUsername(actuser.base64Decode(User));
+				ISViM in = new ISViM();
+				in.setPW(actuser.base64Decode(Password));
+				in.setUN(actuser.base64Decode(User));
 
 				/* First check if the User is valid */
 				actuser.authenticate(inauth, outauth);
 
-				if (outauth.getAuthenticated().equalsIgnoreCase(
+				if (outauth.getA().equalsIgnoreCase(
 						Constants.AUTHENTICATE_FALSE)) {
-					out.setErrortext(outauth.getErrortext());
+					out.setET(outauth.getET());
 				} else {
 					if (contentDispositionHeader != null) {
 						if (fileInputStream != null) {
@@ -129,42 +129,42 @@ public class VideoImpl implements VideoUtil {
 								}
 								String md5Hex = md5.toString();
 
-								out.setVideoFileName(filetime
+								out.setVF(filetime
 										+ contentDispositionHeader
 												.getFileName());
-								in.setVideoMessage(filetime
+								in.setVM(filetime
 										+ contentDispositionHeader
 												.getFileName());
-								in.setVideoMD5Hash(md5Hex);
+								in.setVMD5(md5Hex);
 
 								actuser.sendVideoMessage(in, out);
 
 							} else {
-								out.setErrortext(Constants.NO_IMAGEMESSAGE_GIVEN);
+								out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
 							}
 						} else {
-							out.setErrortext(Constants.NO_IMAGEMESSAGE_GIVEN);
+							out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
 						}
 					} else {
-						out.setErrortext(Constants.NO_IMAGEMESSAGE_GIVEN);
+						out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
 					}
 				}
 			} else {
 				if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.NO_CONTENT_GIVEN)) {
-					out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 				} else if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.ENCODING_ERROR)) {
-					out.setErrortext(Constants.ENCODING_ERROR);
+					out.setET(Constants.ENCODING_ERROR);
 				}
 			}
 		} else {
 			if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.NO_CONTENT_GIVEN)) {
-				out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 			} else if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.ENCODING_ERROR)) {
-				out.setErrortext(Constants.ENCODING_ERROR);
+				out.setET(Constants.ENCODING_ERROR);
 			}
 		}
 
@@ -190,37 +190,37 @@ public class VideoImpl implements VideoUtil {
 		Connection con = mc.getMySqlConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
-		OutFetchVideoMessage out = new OutFetchVideoMessage();
+		OGViM out = new OGViM();
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
 
-				InAuthenticate inauth = new InAuthenticate();
-				OutAuthenticate outauth = new OutAuthenticate();
-				inauth.setPassword(actuser.base64Decode(Password));
-				inauth.setUsername(User);
+				IAuth inauth = new IAuth();
+				OAuth outauth = new OAuth();
+				inauth.setPW(actuser.base64Decode(Password));
+				inauth.setUN(User);
 
-				InFetchVideoMessage in = new InFetchVideoMessage();
-				in.setUsername(actuser.base64Decode(User));
-				in.setPassword(actuser.base64Decode(Password));
-				in.setVideoID(videoid);
+				IGViM in = new IGViM();
+				in.setUN(actuser.base64Decode(User));
+				in.setPW(actuser.base64Decode(Password));
+				in.setVID(videoid);
 
 				actuser.authenticate(inauth, outauth);
 
-				if (outauth.getAuthenticated().equalsIgnoreCase(
+				if (outauth.getA().equalsIgnoreCase(
 						Constants.AUTHENTICATE_FALSE)) {
-					out.setErrortext(outauth.getErrortext());
+					out.setET(outauth.getET());
 				} else {
 					if (!actcheck.CheckContenMessageID(videoid,
 							Constants.TYP_VIDEO)) {
-						out.setErrortext(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
 						actuser.getVideoMessages(in, out);
 
 						final File file = new File(
 								Constants.SERVER_UPLOAD_LOCATION_FOLDER
 										+ Constants.SERVER_VIDEO_FOLDER
-										+ out.getVideoMessage());
+										+ out.getVM());
 						if (!file.exists()) {
 							// LOGGER.error(ErrorCode.IMAGE_NOT_FOUND, imageId);
 							// throw new NotFoundException();
@@ -240,8 +240,7 @@ public class VideoImpl implements VideoUtil {
 							return Response
 									.ok(FileUtils.readFileToByteArray(file))
 									.header("Content-Disposition", "attachment")
-									.header("filename", out.getVideoMessage())
-									.build();
+									.header("filename", out.getVM()).build();
 						} catch (java.io.IOException ex) {
 							// LOGGER.error(ErrorCode.IMAGE_READ_ERROR,
 							// file.getAbsolutePath(),
@@ -268,77 +267,76 @@ public class VideoImpl implements VideoUtil {
 	}
 
 	@Override
-	public OutGetVideoMessageMetaData getvideometadata(String User,
-			String Password, int videoid) {
+	public OGViMMD getvideometadata(String User, String Password, int videoid) {
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
-		OutGetVideoMessageMetaData out = new OutGetVideoMessageMetaData();
+		OGViMMD out = new OGViMMD();
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
 
-				InAuthenticate inauth = new InAuthenticate();
-				OutAuthenticate outauth = new OutAuthenticate();
-				inauth.setPassword(actuser.base64Decode(Password));
-				inauth.setUsername(User);
+				IAuth inauth = new IAuth();
+				OAuth outauth = new OAuth();
+				inauth.setPW(actuser.base64Decode(Password));
+				inauth.setUN(User);
 
-				InGetVideoMessageMetaData in = new InGetVideoMessageMetaData();
-				in.setUsername(actuser.base64Decode(User));
-				in.setPassword(actuser.base64Decode(Password));
-				in.setVideoID(videoid);
-
-				actuser.authenticate(inauth, outauth);
+				IGViMMD in = new IGViMMD();
+				in.setUN(actuser.base64Decode(User));
+				in.setPW(actuser.base64Decode(Password));
+				in.setVID(videoid);
 
 				actuser.authenticate(inauth, outauth);
 
-				if (outauth.getAuthenticated().equalsIgnoreCase(
+				actuser.authenticate(inauth, outauth);
+
+				if (outauth.getA().equalsIgnoreCase(
 						Constants.AUTHENTICATE_FALSE)) {
-					out.setErrortext(outauth.getErrortext());
+					out.setET(outauth.getET());
 				} else {
-					InFetchVideoMessage tmpin = new InFetchVideoMessage();
-					tmpin.setUsername(User);
-					tmpin.setPassword(Password);
-					tmpin.setVideoID(videoid);
-					OutFetchVideoMessage tmpout = new OutFetchVideoMessage();
+					IGViM tmpin = new IGViM();
+					tmpin.setUN(User);
+					tmpin.setPW(Password);
+					tmpin.setVID(videoid);
+					OGViM tmpout = new OGViM();
 
 					if (!actcheck.CheckContenMessageID(videoid,
 							Constants.TYP_VIDEO)) {
-						out.setErrortext(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
 						actuser.getVideoMessages(tmpin, tmpout);
 
 						final File file = new File(
 								Constants.SERVER_UPLOAD_LOCATION_FOLDER
 										+ Constants.SERVER_VIDEO_FOLDER
-										+ tmpout.getVideoMessage());
+										+ tmpout.getVM());
 						if (file.exists()) {
-							out.setVideoMessage(tmpout.getVideoMessage());
-							out.setVideoMD5Hash(tmpout.getVideoMD5Hash());
-							out.setVideoSize(file.length());
+							out.setVM(tmpout.getVM());
+							out.setVMD5(tmpout.getVMD5());
+							out.setVS(file.length());
 						} else {
-							out.setErrortext(Constants.FILE_NOT_FOUND);
+							out.setET(Constants.FILE_NOT_FOUND);
 						}
 					}
 				}
 			} else {
 				if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.NO_CONTENT_GIVEN)) {
-					out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 				} else if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.ENCODING_ERROR)) {
-					out.setErrortext(Constants.ENCODING_ERROR);
+					out.setET(Constants.ENCODING_ERROR);
 				}
 			}
 		} else {
 			if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.NO_CONTENT_GIVEN)) {
-				out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 			} else if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.ENCODING_ERROR)) {
-				out.setErrortext(Constants.ENCODING_ERROR);
+				out.setET(Constants.ENCODING_ERROR);
 			}
 		}
 

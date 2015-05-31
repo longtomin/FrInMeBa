@@ -641,6 +641,52 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="InCheckNew">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="Username" />
+				<xs:element type="xs:string" name="Password" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OutCheckNew">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="New" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CheckNewChats" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:string" name="Chatname" />
+									<xs:element type="xs:int" name="ChatID" />
+									<xs:element name="OwningUser">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element type="xs:string" name="OwningUserName" />
+												<xs:element type="xs:int" name="OwningUserID" />
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="CheckNewMessages" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:string" name="Chatname" />
+									<xs:element type="xs:int" name="ChatID" />
+									<xs:element type="xs:int" name="NumberOfMessages" />
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element type="xs:string" name="Errortext" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="InGetFileMessageMetaData">
 		<xs:complexType>
 			<xs:sequence>

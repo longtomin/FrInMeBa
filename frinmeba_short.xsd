@@ -1,0 +1,818 @@
+<!-- Copyright � 2015, Thomas Schreiner, thomas1.schreiner@googlemail.com 
+	All rights reserved. Redistribution and use in source and binary forms, with 
+	or without modification, are permitted provided that the following conditions 
+	are met: 1. Redistributions of source code must retain the above copyright 
+	notice, this list of conditions and the following disclaimer. 2. Redistributions 
+	in binary form must reproduce the above copyright notice, this list of conditions 
+	and the following disclaimer in the documentation and/or other materials 
+	provided with the distribution. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT 
+	HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, 
+	BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+	OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+	EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
+	OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+	STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+	OF SUCH DAMAGE. The views and conclusions contained in the software and documentation 
+	are those of the authors and should not be interpreted as representing official 
+	policies, either expressed or implied, of the FreeBSD Project. -->
+
+<!-- Abbreviations: UN = Username PW = Password E = Email A = Authenticated 
+	ET = Errortext UID = UserID OU = OwningUser OUID = OwningUserID OUN = OwnningUserName 
+	CN = Chatname CID = ChatID MID = MessageID MT = MessageTyp S = Search SdT 
+	= SendTimestamp RdT = ReadTimestamp ShT = ShowTimestamp ACK = Acknowledge 
+	NT = NumberTotal NR = NumberRead NS = NumberShow TM = TextMessage TID = TextID 
+	IID = ImageID IM = ImageMessage IMD5 = ImageMD5Hash IF = ImageFilename IS 
+	= ImageSize VID = VideoID VM = VideoMessage VMD5 = VideoMD5Hash VF = VideoFilename 
+	VS = VideoSize FID = FileID FM = FileMessage FMD5 = FileMD5Hash FF = FileFilename 
+	FS = FileSize R = Result TMID = TextMsgID IMID = ImageMsgID CMID = ContactMsgID 
+	LMID = LocationMsgID FMID = FileMsgID VMID = VideoMsgID OMID = OriginMsgID 
+	LID = LocationID TID = TextID LM = LocationMessage -->
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="OU">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="OUN" />
+				<xs:element type="xs:int" name="OUID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="M">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:int" name="MID" />
+				<xs:element type="xs:string" name="MT" />
+				<xs:element type="xs:long" name="SdT" />
+				<xs:element type="xs:long" name="RdT" />
+				<xs:element type="xs:long" name="ShT" />
+				<xs:element ref="OU" />
+				<xs:element type="xs:int" name="TMID" />
+				<xs:element type="xs:int" name="IMID" />
+				<xs:element type="xs:int" name="CMID" />
+				<xs:element type="xs:int" name="LMID" />
+				<xs:element type="xs:int" name="FMID" />
+				<xs:element type="xs:int" name="VMID" />
+				<xs:element type="xs:int" name="OMID" />
+				<xs:element type="xs:int" name="NT" />
+				<xs:element type="xs:int" name="NR" />
+				<xs:element type="xs:int" name="NS" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CNC">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="CN" />
+				<xs:element type="xs:int" name="CID" />
+				<xs:element ref="OU" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CNM">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="CN" />
+				<xs:element type="xs:int" name="CID" />
+				<xs:element type="xs:int" name="NOM" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="IAuth">
+		<!-- In Authenticate -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OAuth">
+		<!-- Out Authenticate -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="UN" />
+					<xs:element type="xs:int" name="UID" />
+					<xs:element type="xs:string" name="A" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- Signup Information Input -->
+	<xs:element name="ISiUp">
+		<!-- In Signup User -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="E" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Returned Signup Information -->
+	<xs:element name="OSiUp">
+		<!-- Out Signup User -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="UN" />
+					<xs:element type="xs:int" name="UID" />
+					<xs:element type="xs:string" name="SU" />
+					<xs:element type="xs:string" name="R" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- Create Chat -->
+	<xs:element name="ICrCh">
+		<!-- In Create Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="CN" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OCrCh">
+		<!-- Out Create Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="CN" />
+					<xs:element type="xs:int" name="CID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- Delete Chat -->
+	<xs:element name="IDeCh">
+		<!-- In Delete Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="CID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ODeCh">
+		<!-- Out Delete Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="R" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- Add User to Chat -->
+	<xs:element name="IAdUC">
+		<!-- In Add User to Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="UID" />
+				<xs:element type="xs:int" name="CID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OAdUC">
+		<!-- Out Add User to Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="R" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IReUC">
+		<!-- In Remove User From Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="UID" />
+				<xs:element type="xs:int" name="CID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OReUC">
+		<!-- Our Remove User from Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="R" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- List User -->
+	<xs:element name="ILiUs">
+		<!-- In List User -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="S" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OLiUs">
+		<!-- Out List User -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="User" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="UN" />
+								<xs:element type="xs:int" name="UID" />
+								<xs:element type="xs:string" name="E" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- List Chat -->
+	<xs:element name="ILiCh">
+		<!-- In List Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OLiCh">
+		<!-- Out List Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="Chat" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="CN" />
+								<xs:element type="xs:int" name="CID" />
+								<xs:element ref="OU" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IIMIC">
+		<!-- In Insert Message into Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="CID" />
+				<xs:element type="xs:int" name="MID" />
+				<xs:element type="xs:string" name="MT" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OIMIC">
+		<!-- Out Insert Message into Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MID" />
+					<xs:element type="xs:long" name="SdT" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISShT">
+		<!-- In Set Show Timestamp -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="MID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSShT">
+		<!-- Out Set Show Timestamp -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MID" />
+					<xs:element type="xs:long" name="ShT" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IAckMD">
+		<!-- In Acknowledge Message Download -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="MID" />
+				<xs:element type="xs:string" name="ACK" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OAckMD">
+		<!-- Out Acknowledge Message Download -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MID" />
+					<xs:element type="xs:string" name="ACK" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IAckCD">
+		<!-- In Acknowledge Message Download -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="CID" />
+				<xs:element type="xs:int" name="UID" />
+				<xs:element type="xs:string" name="ACK" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OAckCD">
+		<!-- Out Acknowledge Message Download -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="ACK" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGMI">
+		<!-- In Get Message Information -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="MID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGMI">
+		<!-- Out Get Message Information -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MID" />
+					<xs:element type="xs:int" name="NT" />
+					<xs:element type="xs:int" name="NR" />
+					<xs:element type="xs:int" name="NS" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IDMFC">
+		<!-- In Delte Message from Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="MID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ODMFC">
+		<!-- Out Delte Message from Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="MID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISLoM">
+		<!-- In Send Location Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element name="LM">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="Lat" />
+							<xs:element type="xs:string" name="Lon" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSLoM">
+		<!-- Out Send Location Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="LID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISTeM">
+		<!-- In Send Text Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="TM" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSTeM">
+		<!-- Out Send Text Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="TID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISImM">
+		<!-- In Send Image Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="IM" />
+				<xs:element type="xs:string" name="IMD5" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSImM">
+		<!-- Out Send Image Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="IID" />
+					<xs:element type="xs:string" name="IF" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISViM">
+		<!-- In Send Video Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="VM" />
+				<xs:element type="xs:string" name="VMD5" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSViM">
+		<!-- Out Send Video Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="VID" />
+					<xs:element type="xs:string" name="VF" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISCoM">
+		<!-- In Send Contact Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="ContactMessage" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSCoM">
+		<!-- Out Send Contact Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="ContactID" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISFiM">
+		<!-- In Send File Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="FM" />
+				<xs:element type="xs:string" name="FMD5" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSFiM">
+		<!-- Out Send File Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="FID" />
+					<xs:element type="xs:string" name="FF" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IFMFC">
+		<!-- In Fetch Message From Chat -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="CID" />
+				<xs:element type="xs:long" name="RdT" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OFMFC">
+		<!-- Out Fetch Message From Chat -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="M" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGTeM">
+		<!-- In Get Text Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="TextID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGTeM">
+		<!-- Out Get Text Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="TM" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGLoM">
+		<!-- In Get Location Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="LocationID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGLoM">
+		<!-- Out Get Location Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="LM">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element type="xs:string" name="Lat" />
+								<xs:element type="xs:string" name="Lon" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGImM">
+		<!-- In Get Image Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="IID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGImM">
+		<!-- Out Get Image Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="IM" />
+					<xs:element type="xs:string" name="IMD5" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGViM">
+		<!-- In Get Video Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="VID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGViM">
+		<!-- Out Get Video Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="VM" />
+					<xs:element type="xs:string" name="VMD5" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGCoM">
+		<!-- In Get Contact Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="CtID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGCoM">
+		<!-- Out Get Contact Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="CM" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGFiM">
+		<!-- In Get File Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="FID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGFiM">
+		<!-- Out Get File Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="FM" />
+					<xs:element type="xs:string" name="FMD5" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ICN">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OCN">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="New" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="CNC" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element ref="CNM" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<!-- <xs:element name="InCheckNewMessages"> <xs:complexType> <xs:sequence> 
+		<xs:element type="xs:string" name="UN" /> <xs:element type="xs:string" name="PW" 
+		/> </xs:sequence> </xs:complexType> </xs:element> <xs:element name="OutCheckNewMessages"> 
+		<xs:complexType> <xs:choice> <xs:sequence> <xs:element name="Chats" minOccurs="0" 
+		maxOccurs="unbounded"> <xs:complexType> <xs:sequence> <xs:element type="xs:string" 
+		name="CN" /> <xs:element type="xs:int" name="CID" /> <xs:element type="xs:int" 
+		name="NumberOfMessages" /> </xs:sequence> </xs:complexType> </xs:element> 
+		</xs:sequence> <xs:element type="xs:string" name="ET" /> </xs:choice> </xs:complexType> 
+		</xs:element> -->
+	<xs:element name="IGFiMMD">
+		<!-- In Get File Message Meta Data -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="FID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGFiMMD">
+		<!-- Out Get File Message Meta Data -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="FM" />
+					<xs:element type="xs:long" name="FS" />
+					<xs:element type="xs:string" name="FMD5" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGImMMD">
+		<!-- In Get Image Message Meta Data -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="IID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGImMMD">
+		<!-- Out Get Image Message Meta Data -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="IM" />
+					<xs:element type="xs:long" name="IS" />
+					<xs:element type="xs:string" name="IMD5" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IGViMMD">
+		<!-- In Get Video Message Meta Data -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="VID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OGViMMD">
+		<!-- Out Get Video Message Meta Data -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="VM" />
+					<xs:element type="xs:long" name="VS" />
+					<xs:element type="xs:string" name="VMD5" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

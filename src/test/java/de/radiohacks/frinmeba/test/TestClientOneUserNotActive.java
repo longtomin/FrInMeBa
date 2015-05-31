@@ -45,20 +45,19 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutAddUserToChat;
-import de.radiohacks.frinmeba.model.OutAuthenticate;
-import de.radiohacks.frinmeba.model.OutCheckNewMessages;
-import de.radiohacks.frinmeba.model.OutCreateChat;
-import de.radiohacks.frinmeba.model.OutDeleteChat;
-import de.radiohacks.frinmeba.model.OutDeleteMessageFromChat;
-import de.radiohacks.frinmeba.model.OutFetchMessageFromChat;
-import de.radiohacks.frinmeba.model.OutFetchTextMessage;
-import de.radiohacks.frinmeba.model.OutInsertMessageIntoChat;
-import de.radiohacks.frinmeba.model.OutListChat;
-import de.radiohacks.frinmeba.model.OutListUser;
-import de.radiohacks.frinmeba.model.OutRemoveUserFromChat;
-import de.radiohacks.frinmeba.model.OutSendTextMessage;
-import de.radiohacks.frinmeba.model.OutSignUp;
+import de.radiohacks.frinmeba.modelshort.OAdUC;
+import de.radiohacks.frinmeba.modelshort.OAuth;
+import de.radiohacks.frinmeba.modelshort.OCrCh;
+import de.radiohacks.frinmeba.modelshort.ODMFC;
+import de.radiohacks.frinmeba.modelshort.ODeCh;
+import de.radiohacks.frinmeba.modelshort.OFMFC;
+import de.radiohacks.frinmeba.modelshort.OGTeM;
+import de.radiohacks.frinmeba.modelshort.OIMIC;
+import de.radiohacks.frinmeba.modelshort.OLiCh;
+import de.radiohacks.frinmeba.modelshort.OLiUs;
+import de.radiohacks.frinmeba.modelshort.OReUC;
+import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.database.createDatabaseTables;
@@ -110,52 +109,48 @@ public class TestClientOneUserNotActive extends JerseyTest {
 	// Reihenfolge egal da immer USER_NOT_ACTIVE zurück kommt
 	@Test
 	public void TestOneUserNegativeTests() {
-		OutSignUp out1 = TestSignUpNoValues();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out1.getErrortext());
-		OutSignUp out2 = TestSignUpWithEmail();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out2.getErrortext());
-		OutSignUp out3 = TestSignUpWithEmailPassword();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out3.getErrortext());
-		OutSignUp out4 = TestSignUpWithEmailUser();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out4.getErrortext());
-		OutSignUp out5 = TestSignUpWithEmailUserPassword();
-		Assert.assertEquals("SUCCESSFUL", out5.getSignUp());
-		OutSignUp out5a = TestSignUpWithEmailUserPassword();
-		Assert.assertEquals(Constants.USER_ALREADY_EXISTS, out5a.getErrortext());
-		OutAuthenticate out6 = TestAuthenticateNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out6.getErrortext());
-		OutCreateChat out7 = TestCreateChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out7.getErrortext());
-		OutDeleteChat out8 = TestDeleteChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out8.getErrortext());
-		OutAddUserToChat out9 = TestAddUserToChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out9.getErrortext());
-		OutRemoveUserFromChat out10 = TestRemoveUserFromChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out10.getErrortext());
-		OutListUser out11 = TestListUserNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out11.getErrortext());
-		OutListChat out12 = TestListChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out12.getErrortext());
-		OutSendTextMessage out13 = TestSendTextMessageNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out13.getErrortext());
-		OutFetchTextMessage out14 = TestGetTextMessageNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out14.getErrortext());
-		OutInsertMessageIntoChat out15 = TestInsertMessageIntoChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out15.getErrortext());
-		OutFetchMessageFromChat out16 = TestGetMessageFromChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out16.getErrortext());
-		OutCheckNewMessages out17 = TestCheckNewMessagesNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out17.getErrortext());
-		OutDeleteMessageFromChat out18 = TestDeleMessageFromChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out18.getErrortext());
+		OSiUp out1 = TestSignUpNoValues();
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out1.getET());
+		OSiUp out2 = TestSignUpWithEmail();
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out2.getET());
+		OSiUp out3 = TestSignUpWithEmailPassword();
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out3.getET());
+		OSiUp out4 = TestSignUpWithEmailUser();
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out4.getET());
+		OSiUp out5 = TestSignUpWithEmailUserPassword();
+		Assert.assertEquals("SUCCESSFUL", out5.getSU());
+		OSiUp out5a = TestSignUpWithEmailUserPassword();
+		Assert.assertEquals(Constants.USER_ALREADY_EXISTS, out5a.getET());
+		OAuth out6 = TestAuthenticateNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out6.getET());
+		OCrCh out7 = TestCreateChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out7.getET());
+		ODeCh out8 = TestDeleteChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out8.getET());
+		OAdUC out9 = TestAddUserToChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out9.getET());
+		OReUC out10 = TestRemoveUserFromChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out10.getET());
+		OLiUs out11 = TestListUserNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out11.getET());
+		OLiCh out12 = TestListChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out12.getET());
+		OSTeM out13 = TestSendTextMessageNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out13.getET());
+		OGTeM out14 = TestGetTextMessageNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out14.getET());
+		OIMIC out15 = TestInsertMessageIntoChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out15.getET());
+		OFMFC out16 = TestGetMessageFromChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out16.getET());
+		// OutCheckNewMessages out17 = TestCheckNewMessagesNotActive();
+		// Assert.assertEquals(Constants.USER_NOT_ACTIVE, out17.getET());
+		ODMFC out18 = TestDeleMessageFromChatNotActive();
+		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out18.getET());
 	}
 
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	private OutSignUp TestSignUpNoValues() {
+	private OSiUp TestSignUpNoValues() {
 
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -164,10 +159,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		} else {
 			target = target("user/signup");
 		}
-		return target.request().get(OutSignUp.class);
+		return target.request().get(OSiUp.class);
 	}
 
-	public OutSignUp TestSignUpWithEmail() {
+	public OSiUp TestSignUpWithEmail() {
 
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -177,11 +172,11 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		} else {
 			target = target("user/signup").queryParam(Constants.QPemail, email);
 		}
-		return target.request().get(OutSignUp.class);
+		return target.request().get(OSiUp.class);
 	}
 
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	public OutSignUp TestSignUpWithEmailUser() {
+	public OSiUp TestSignUpWithEmailUser() {
 
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -195,11 +190,11 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPusername, username);
 			;
 		}
-		return target.request().get(OutSignUp.class);
+		return target.request().get(OSiUp.class);
 	}
 
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	public OutSignUp TestSignUpWithEmailPassword() {
+	public OSiUp TestSignUpWithEmailPassword() {
 
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -212,11 +207,11 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPpassword, password);
 
 		}
-		return target.request().get(OutSignUp.class);
+		return target.request().get(OSiUp.class);
 	}
 
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	public OutSignUp TestSignUpWithEmailUserPassword() {
+	public OSiUp TestSignUpWithEmailUserPassword() {
 
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -231,10 +226,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPemail, email)
 					.queryParam(Constants.QPusername, username);
 		}
-		return target.request().get(OutSignUp.class);
+		return target.request().get(OSiUp.class);
 	}
 
-	public OutAuthenticate TestAuthenticateNotActive() {
+	public OAuth TestAuthenticateNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -246,10 +241,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					Constants.QPpassword, password).queryParam(
 					Constants.QPusername, username);
 		}
-		return target.request().get(OutAuthenticate.class);
+		return target.request().get(OAuth.class);
 	}
 
-	public OutCreateChat TestCreateChatNotActive() {
+	public OCrCh TestCreateChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder
@@ -272,10 +267,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 											.forName(Constants.CharacterSet))))
 					.queryParam(Constants.QPusername, username);
 		}
-		return target.request().get(OutCreateChat.class);
+		return target.request().get(OCrCh.class);
 	}
 
-	public OutDeleteChat TestDeleteChatNotActive() {
+	public ODeCh TestDeleteChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -289,10 +284,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPchatid, 1)
 					.queryParam(Constants.QPusername, username);
 		}
-		return target.request().delete(OutDeleteChat.class);
+		return target.request().delete(ODeCh.class);
 	}
 
-	public OutAddUserToChat TestAddUserToChatNotActive() {
+	public OAdUC TestAddUserToChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -308,10 +303,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPchatid, 1)
 					.queryParam(Constants.QPusername, username);
 		}
-		return target.request().get(OutAddUserToChat.class);
+		return target.request().get(OAdUC.class);
 	}
 
-	public OutRemoveUserFromChat TestRemoveUserFromChatNotActive() {
+	public OReUC TestRemoveUserFromChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -327,10 +322,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPchatid, 1)
 					.queryParam(Constants.QPusername, username);
 		}
-		return target.request().delete(OutRemoveUserFromChat.class);
+		return target.request().delete(OReUC.class);
 	}
 
-	public OutListUser TestListUserNotActive() {
+	public OLiUs TestListUserNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder
@@ -351,10 +346,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 									.forName(Constants.CharacterSet))))
 					.queryParam(Constants.QPusername, username);
 		}
-		return target.request().get(OutListUser.class);
+		return target.request().get(OLiUs.class);
 	}
 
-	public OutListChat TestListChatNotActive() {
+	public OLiCh TestListChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -365,10 +360,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 			target = target("user/listchat").queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		return target.request().get(OutListChat.class);
+		return target.request().get(OLiCh.class);
 	}
 
-	public OutSendTextMessage TestSendTextMessageNotActive() {
+	public OSTeM TestSendTextMessageNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder
@@ -391,10 +386,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 									.getBytes(Charset
 											.forName(Constants.CharacterSet))));
 		}
-		return target.request().get(OutSendTextMessage.class);
+		return target.request().get(OSTeM.class);
 	}
 
-	public OutFetchTextMessage TestGetTextMessageNotActive() {
+	public OGTeM TestGetTextMessageNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -408,10 +403,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPtextmessageid, 1);
 		}
-		return target.request().get(OutFetchTextMessage.class);
+		return target.request().get(OGTeM.class);
 	}
 
-	public OutInsertMessageIntoChat TestInsertMessageIntoChatNotActive() {
+	public OIMIC TestInsertMessageIntoChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder
@@ -438,10 +433,10 @@ public class TestClientOneUserNotActive extends JerseyTest {
 									.getBytes(Charset
 											.forName(Constants.CharacterSet))));
 		}
-		return target.request().get(OutInsertMessageIntoChat.class);
+		return target.request().get(OIMIC.class);
 	}
 
-	public OutFetchMessageFromChat TestGetMessageFromChatNotActive() {
+	public OFMFC TestGetMessageFromChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -457,25 +452,21 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPchatid, 1)
 					.queryParam(Constants.QPtimestamp, 0);
 		}
-		return target.request().get(OutFetchMessageFromChat.class);
+		return target.request().get(OFMFC.class);
 	}
 
-	public OutCheckNewMessages TestCheckNewMessagesNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/checknewmessages")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target("user/checknewmessages").queryParam(
-					Constants.QPpassword, password).queryParam(
-					Constants.QPusername, username);
-		}
-		return target.request().get(OutCheckNewMessages.class);
-	}
+	/*
+	 * public OutCheckNewMessages TestCheckNewMessagesNotActive() { WebTarget
+	 * target; if (TestConfig.remote) { target = ClientBuilder.newClient()
+	 * .target(TestConfig.URL + "user/checknewmessages")
+	 * .queryParam(Constants.QPpassword, password)
+	 * .queryParam(Constants.QPusername, username); } else { target =
+	 * target("user/checknewmessages").queryParam( Constants.QPpassword,
+	 * password).queryParam( Constants.QPusername, username); } return
+	 * target.request().get(OutCheckNewMessages.class); }
+	 */
 
-	public OutDeleteMessageFromChat TestDeleMessageFromChatNotActive() {
+	public ODMFC TestDeleMessageFromChatNotActive() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
@@ -489,6 +480,6 @@ public class TestClientOneUserNotActive extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPmessageid, 1);
 		}
-		return target.request().delete(OutDeleteMessageFromChat.class);
+		return target.request().delete(ODMFC.class);
 	}
 }

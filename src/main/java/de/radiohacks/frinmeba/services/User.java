@@ -41,57 +41,58 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import de.radiohacks.frinmeba.model.InAcknowledgeMessageDownload;
-import de.radiohacks.frinmeba.model.InAddUserToChat;
-import de.radiohacks.frinmeba.model.InAuthenticate;
-import de.radiohacks.frinmeba.model.InCheckNewMessages;
-import de.radiohacks.frinmeba.model.InCreateChat;
-import de.radiohacks.frinmeba.model.InDeleteChat;
-import de.radiohacks.frinmeba.model.InDeleteMessageFromChat;
-import de.radiohacks.frinmeba.model.InFetchImageMessage;
-import de.radiohacks.frinmeba.model.InFetchMessageFromChat;
-import de.radiohacks.frinmeba.model.InFetchTextMessage;
-import de.radiohacks.frinmeba.model.InFetchVideoMessage;
-import de.radiohacks.frinmeba.model.InGetMessageInformation;
-import de.radiohacks.frinmeba.model.InInsertMessageIntoChat;
-import de.radiohacks.frinmeba.model.InListChat;
-import de.radiohacks.frinmeba.model.InListUser;
-import de.radiohacks.frinmeba.model.InRemoveUserFromChat;
-import de.radiohacks.frinmeba.model.InSendImageMessage;
-import de.radiohacks.frinmeba.model.InSendTextMessage;
-import de.radiohacks.frinmeba.model.InSendVideoMessage;
-import de.radiohacks.frinmeba.model.InSetShowTimeStamp;
-import de.radiohacks.frinmeba.model.InSignup;
-import de.radiohacks.frinmeba.model.OutAcknowledgeMessageDownload;
-import de.radiohacks.frinmeba.model.OutAddUserToChat;
-import de.radiohacks.frinmeba.model.OutAuthenticate;
-import de.radiohacks.frinmeba.model.OutCheckNewMessages;
-import de.radiohacks.frinmeba.model.OutCreateChat;
-import de.radiohacks.frinmeba.model.OutDeleteChat;
-import de.radiohacks.frinmeba.model.OutDeleteMessageFromChat;
-import de.radiohacks.frinmeba.model.OutFetchImageMessage;
-import de.radiohacks.frinmeba.model.OutFetchMessageFromChat;
-import de.radiohacks.frinmeba.model.OutFetchMessageFromChat.Message;
-import de.radiohacks.frinmeba.model.OutFetchMessageFromChat.Message.OwningUser;
-import de.radiohacks.frinmeba.model.OutFetchTextMessage;
-import de.radiohacks.frinmeba.model.OutFetchVideoMessage;
-import de.radiohacks.frinmeba.model.OutGetMessageInformation;
-import de.radiohacks.frinmeba.model.OutInsertMessageIntoChat;
-import de.radiohacks.frinmeba.model.OutListChat;
-import de.radiohacks.frinmeba.model.OutListChat.Chat;
-import de.radiohacks.frinmeba.model.OutListUser;
-import de.radiohacks.frinmeba.model.OutRemoveUserFromChat;
-import de.radiohacks.frinmeba.model.OutSendImageMessage;
-import de.radiohacks.frinmeba.model.OutSendTextMessage;
-import de.radiohacks.frinmeba.model.OutSendVideoMessage;
-import de.radiohacks.frinmeba.model.OutSetShowTimeStamp;
-import de.radiohacks.frinmeba.model.OutSignUp;
+import de.radiohacks.frinmeba.modelshort.CNC;
+import de.radiohacks.frinmeba.modelshort.CNM;
+import de.radiohacks.frinmeba.modelshort.IAckCD;
+import de.radiohacks.frinmeba.modelshort.IAckMD;
+import de.radiohacks.frinmeba.modelshort.IAdUC;
+import de.radiohacks.frinmeba.modelshort.IAuth;
+import de.radiohacks.frinmeba.modelshort.ICN;
+import de.radiohacks.frinmeba.modelshort.ICrCh;
+import de.radiohacks.frinmeba.modelshort.IDMFC;
+import de.radiohacks.frinmeba.modelshort.IDeCh;
+import de.radiohacks.frinmeba.modelshort.IFMFC;
+import de.radiohacks.frinmeba.modelshort.IGImM;
+import de.radiohacks.frinmeba.modelshort.IGMI;
+import de.radiohacks.frinmeba.modelshort.IGTeM;
+import de.radiohacks.frinmeba.modelshort.IGViM;
+import de.radiohacks.frinmeba.modelshort.IIMIC;
+import de.radiohacks.frinmeba.modelshort.ILiCh;
+import de.radiohacks.frinmeba.modelshort.ILiUs;
+import de.radiohacks.frinmeba.modelshort.IReUC;
+import de.radiohacks.frinmeba.modelshort.ISImM;
+import de.radiohacks.frinmeba.modelshort.ISShT;
+import de.radiohacks.frinmeba.modelshort.ISTeM;
+import de.radiohacks.frinmeba.modelshort.ISViM;
+import de.radiohacks.frinmeba.modelshort.ISiUp;
+import de.radiohacks.frinmeba.modelshort.M;
+import de.radiohacks.frinmeba.modelshort.OAckCD;
+import de.radiohacks.frinmeba.modelshort.OAckMD;
+import de.radiohacks.frinmeba.modelshort.OAdUC;
+import de.radiohacks.frinmeba.modelshort.OAuth;
+import de.radiohacks.frinmeba.modelshort.OCN;
+import de.radiohacks.frinmeba.modelshort.OCrCh;
+import de.radiohacks.frinmeba.modelshort.ODMFC;
+import de.radiohacks.frinmeba.modelshort.ODeCh;
+import de.radiohacks.frinmeba.modelshort.OFMFC;
+import de.radiohacks.frinmeba.modelshort.OGImM;
+import de.radiohacks.frinmeba.modelshort.OGMI;
+import de.radiohacks.frinmeba.modelshort.OGTeM;
+import de.radiohacks.frinmeba.modelshort.OGViM;
+import de.radiohacks.frinmeba.modelshort.OIMIC;
+import de.radiohacks.frinmeba.modelshort.OLiCh;
+import de.radiohacks.frinmeba.modelshort.OLiUs;
+import de.radiohacks.frinmeba.modelshort.OReUC;
+import de.radiohacks.frinmeba.modelshort.OSImM;
+import de.radiohacks.frinmeba.modelshort.OSShT;
+import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.modelshort.OSViM;
+import de.radiohacks.frinmeba.modelshort.OSiUp;
+import de.radiohacks.frinmeba.modelshort.OU;
 
 public class User {
 
 	private int Id = 0;
-	// private String Username;
-	// private String Password;
 	private Connection con;
 
 	static final Logger logger = Logger.getLogger(User.class);
@@ -116,10 +117,10 @@ public class User {
 		return new String(decodedBytes, Charset.forName(Constants.CharacterSet));
 	}
 
-	public void authenticate(InAuthenticate in, OutAuthenticate out) {
+	public void authenticate(IAuth in, OAuth out) {
 		logger.debug("Start authenticate with In = " + in.toString());
 
-		out.setAuthenticated(Constants.AUTHENTICATE_FALSE);
+		out.setA(Constants.AUTHENTICATE_FALSE);
 
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -128,16 +129,16 @@ public class User {
 			statement = con.createStatement();
 			resultSet = statement
 					.executeQuery("select ID, Username, Password, Active from Users where B64Username = '"
-							+ in.getUsername() + "'");
+							+ in.getUN() + "'");
 			if (resultSet.next()) {
 				if (resultSet.getBoolean("Active")) {
 					String dbpw = resultSet.getString("Password");
-					if (dbpw.equals(in.getPassword())) {
+					if (dbpw.equals(in.getPW())) {
 						int ownUSerID = resultSet.getInt("ID");
 
-						out.setAuthenticated(Constants.AUTHENTICATE_TRUE);
-						out.setUsername(resultSet.getString("Username"));
-						out.setUserID(ownUSerID);
+						out.setA(Constants.AUTHENTICATE_TRUE);
+						out.setUN(resultSet.getString("Username"));
+						out.setUID(ownUSerID);
 
 						long currentTime = System.currentTimeMillis() / 1000L;
 						String updateMessage = "UPDATE Users SET AuthenticationTime = ? where ID = ?";
@@ -147,19 +148,19 @@ public class User {
 						prepSt.setInt(2, ownUSerID);
 						prepSt.executeUpdate();
 					} else {
-						out.setUsername(resultSet.getString("Username"));
-						out.setErrortext(Constants.WRONG_PASSWORD);
+						out.setUN(resultSet.getString("Username"));
+						out.setET(Constants.WRONG_PASSWORD);
 					}
 				} else {
-					out.setAuthenticated(Constants.AUTHENTICATE_FALSE);
-					out.setErrortext(Constants.USER_NOT_ACTIVE);
+					out.setA(Constants.AUTHENTICATE_FALSE);
+					out.setET(Constants.USER_NOT_ACTIVE);
 				}
 			} else {
-				out.setAuthenticated(Constants.AUTHENTICATE_FALSE);
-				out.setErrortext(Constants.NONE_EXISTING_USER);
+				out.setA(Constants.AUTHENTICATE_FALSE);
+				out.setET(Constants.NONE_EXISTING_USER);
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -208,7 +209,7 @@ public class User {
 		logger.debug("End fillUserinfo with no return value");
 	}
 
-	public void signUp(InSignup in, OutSignUp out) {
+	public void signUp(ISiUp in, OSiUp out) {
 		logger.debug("Start signUp with In = " + in.toString());
 
 		int key = -1;
@@ -220,41 +221,41 @@ public class User {
 			statement = con.createStatement();
 			rsfind = statement
 					.executeQuery("select ID from Users where B64Username = '"
-							+ in.getUsername() + "' limit 1");
+							+ in.getUN() + "' limit 1");
 
 			if (rsfind.next()) {
-				out.setErrortext(Constants.USER_ALREADY_EXISTS);
-				out.setUserID(rsfind.getInt("ID"));
+				out.setET(Constants.USER_ALREADY_EXISTS);
+				out.setUID(rsfind.getInt("ID"));
 			} else {
 				long currentTime = System.currentTimeMillis() / 1000L;
 
 				statement
 						.executeUpdate(
 								"insert into Users(Username, B64Username, Password, Email, SignupDate, Status, AuthenticationTime) values ('"
-										+ base64Decode(in.getUsername())
+										+ base64Decode(in.getUN())
 										+ "', '"
-										+ in.getUsername()
+										+ in.getUN()
 										+ "', '"
-										+ in.getPassword()
+										+ in.getPW()
 										+ "', '"
-										+ in.getEmail()
+										+ in.getE()
 										+ "', '"
 										+ currentTime
 										+ "', '"
 										+ "0"
 										+ "', '"
-										+ currentTime
-										+ "')", Statement.RETURN_GENERATED_KEYS);
+										+ currentTime + "')",
+								Statement.RETURN_GENERATED_KEYS);
 				rscreate = statement.getGeneratedKeys();
 				if (rscreate != null && rscreate.next()) {
 					key = rscreate.getInt(1);
-					out.setUserID(key);
+					out.setUID(key);
 				}
-				out.setUsername(base64Decode(in.getUsername()));
-				out.setSignUp("SUCCESSFUL");
+				out.setUN(base64Decode(in.getUN()));
+				out.setSU("SUCCESSFUL");
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -274,18 +275,18 @@ public class User {
 		logger.debug("End signUp with Out = " + out.toString());
 	}
 
-	public void listUser(InListUser in, OutListUser out) {
+	public void listUser(ILiUs in, OLiUs out) {
 		logger.debug("Start listUser with In = " + in.toString());
-		fillUserinfo(in.getUsername());
+		fillUserinfo(in.getUN());
 		ResultSet resultSet = null;
 		Statement statement = null;
 
 		try {
 			statement = con.createStatement();
-			if (in.getSearch() != null && !in.getSearch().isEmpty()) {
+			if (in.getS() != null && !in.getS().isEmpty()) {
 				resultSet = statement
 						.executeQuery("select Username, Id, Email from Users where Active = 1 and Username like '%"
-								+ in.getSearch() + "%'");
+								+ in.getS() + "%'");
 			} else {
 				resultSet = statement
 						.executeQuery("select Username, Id, Email from Users where Active = 1");
@@ -293,15 +294,15 @@ public class User {
 
 			while (resultSet.next()) {
 				if (this.Id != resultSet.getInt("Id")) {
-					de.radiohacks.frinmeba.model.OutListUser.User u = new de.radiohacks.frinmeba.model.OutListUser.User();
-					u.setUsername(resultSet.getString("Username"));
-					u.setEmail(resultSet.getString("Email"));
-					u.setUserID(resultSet.getInt("Id"));
+					de.radiohacks.frinmeba.modelshort.OLiUs.User u = new de.radiohacks.frinmeba.modelshort.OLiUs.User();
+					u.setUN(resultSet.getString("Username"));
+					u.setE(resultSet.getString("Email"));
+					u.setUID(resultSet.getInt("Id"));
 					out.getUser().add(u);
 				}
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -318,9 +319,9 @@ public class User {
 		logger.debug("End listUser with Out = " + out.toString());
 	}
 
-	public void listChat(InListChat in, OutListChat out) {
+	public void listChat(ILiCh in, OLiCh out) {
 		logger.debug("Start listChat with In = " + in.toString());
-		fillUserinfo(in.getUsername());
+		fillUserinfo(in.getUN());
 		ResultSet rsusertochats = null;
 		Statement stusertochats = null;
 		ResultSet rschats = null;
@@ -337,7 +338,7 @@ public class User {
 			if (rsusertochats != null) {
 				while (rsusertochats.next()) {
 
-					Chat outchat = new Chat();
+					de.radiohacks.frinmeba.modelshort.OLiCh.Chat outchat = new de.radiohacks.frinmeba.modelshort.OLiCh.Chat();
 					stchats = con.createStatement();
 					rschats = stchats
 							.executeQuery("Select Chatname, OwningUserID from Chats where ID = "
@@ -346,11 +347,11 @@ public class User {
 					int rscount = 0;
 					if (rschats != null) {
 						while (rschats.next()) {
-							outchat.setChatID(rsusertochats.getInt("ChatID"));
-							outchat.setChatname(rschats.getString("Chatname"));
-							OutListChat.Chat.OwningUser outOwingUser = new OutListChat.Chat.OwningUser();
-							outOwingUser.setOwningUserID(rschats
-									.getInt("OwningUserID"));
+							outchat.setCID(rsusertochats.getInt("ChatID"));
+							outchat.setCN(rschats.getString("Chatname"));
+							OU outOwingUser = new OU();
+							outOwingUser
+									.setOUID(rschats.getInt("OwningUserID"));
 
 							stusers = con.createStatement();
 							rsusers = stusers
@@ -358,23 +359,23 @@ public class User {
 											+ rschats.getInt("OwningUserID"));
 							if (rsusers != null) {
 								while (rsusers.next()) {
-									outOwingUser.setOwningUserName(rsusers
+									outOwingUser.setOUN(rsusers
 											.getString("Username"));
 								}
 							}
-							outchat.setOwningUser(outOwingUser);
+							outchat.setOU(outOwingUser);
 							rscount++;
 						}
 					}
 					if (rscount > 0) {
 						out.getChat().add(outchat);
 					} else {
-						out.setErrortext(Constants.NO_ACTIVE_CHATS);
+						out.setET(Constants.NO_ACTIVE_CHATS);
 					}
 				}
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -403,14 +404,14 @@ public class User {
 		logger.debug("End listChat with Out = " + out.toString());
 	}
 
-	public void createChat(InCreateChat in, OutCreateChat out) {
+	public void createChat(ICrCh in, OCrCh out) {
 		logger.debug("Start createChat with In = " + in.toString());
 		int key = -1;
 		ResultSet resultSet = null;
 		Statement stchat = null;
 		Statement stuser = null;
 
-		fillUserinfo(in.getUsername());
+		fillUserinfo(in.getUN());
 
 		try {
 
@@ -420,21 +421,21 @@ public class User {
 			/* First we create a chat room */
 			stchat.executeUpdate(
 					"insert into Chats(Chatname, OwningUserId) values ('"
-							+ in.getChatname() + "', '" + this.Id + "')",
+							+ in.getCN() + "', '" + this.Id + "')",
 					Statement.RETURN_GENERATED_KEYS);
 			resultSet = stchat.getGeneratedKeys();
 			if (resultSet != null && resultSet.next()) {
 				key = resultSet.getInt(1);
 			}
-			out.setChatname(in.getChatname());
-			out.setChatID(key);
+			out.setCN(in.getCN());
+			out.setCID(key);
 
 			/* Now we have to add the Owning user to his own chat room */
 			stuser = con.createStatement();
 			stuser.executeUpdate("insert into UserToChats(UserID, ChatID) values ('"
 					+ this.Id + "', '" + key + "')");
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -455,15 +456,15 @@ public class User {
 	}
 
 	// Done In & Out
-	public void addUserToChat(InAddUserToChat in, OutAddUserToChat out) {
+	public void addUserToChat(IAdUC in, OAdUC out) {
 		logger.debug("Start addUserToChat with In = " + in.toString());
-		fillUserinfo(in.getUsername());
+		fillUserinfo(in.getUN());
 		ResultSet resultSet = null;
 		ResultSet resultSet2 = null;
 		Statement statement = null;
 
-		if (this.Id == in.getUserID()) {
-			out.setErrortext(Constants.CHAT_OWNER_NOT_ADDED);
+		if (this.Id == in.getUID()) {
+			out.setET(Constants.CHAT_OWNER_NOT_ADDED);
 		} else {
 			try {
 				statement = con.createStatement();
@@ -471,7 +472,7 @@ public class User {
 				/* Check first if the Owning User is sending the Request */
 				resultSet = statement
 						.executeQuery("select OwningUserID from Chats where ID = '"
-								+ in.getChatID() + "'");
+								+ in.getCID() + "'");
 
 				if (resultSet.next()) {
 					if (this.Id == resultSet.getInt("OwningUserID")) {
@@ -479,18 +480,17 @@ public class User {
 						/* Check first if user is already in the Chat */
 						resultSet2 = statement
 								.executeQuery("select UserID from UserToChats where ChatID = '"
-										+ in.getChatID() + "'");
+										+ in.getCID() + "'");
 
 						if (resultSet2.next()) {
 							boolean dup = false;
 							while (resultSet2.next()) {
-								if (in.getUserID() == resultSet2
-										.getInt("UserID")) {
+								if (in.getUID() == resultSet2.getInt("UserID")) {
 									dup = true;
 								}
 							}
 							if (dup == true) {
-								out.setErrortext(Constants.USER_ALREADY_IN_CHAT);
+								out.setET(Constants.USER_ALREADY_IN_CHAT);
 							} else {
 								/*
 								 * User not in the Chat so add the User to the
@@ -498,11 +498,11 @@ public class User {
 								 */
 								statement
 										.executeUpdate("insert into UserToChats(UserID, ChatID) values ('"
-												+ in.getUserID()
+												+ in.getUID()
 												+ "', '"
-												+ in.getChatID() + "')");
+												+ in.getCID() + "')");
 
-								out.setResult(Constants.USER_ADDED);
+								out.setR(Constants.USER_ADDED);
 							}
 						} else {
 							/*
@@ -511,18 +511,18 @@ public class User {
 							 */
 							statement
 									.executeUpdate("insert into UserToChats(UserID, ChatID) values ('"
-											+ in.getUserID()
+											+ in.getUID()
 											+ "', '"
-											+ in.getChatID() + "')");
+											+ in.getCID() + "')");
 
-							out.setResult(Constants.USER_ADDED);
+							out.setR(Constants.USER_ADDED);
 						}
 					} else {
-						out.setErrortext(Constants.NOT_CHAT_OWNER);
+						out.setET(Constants.NOT_CHAT_OWNER);
 					}
 				}
 			} catch (SQLException e) {
-				out.setErrortext(Constants.DB_ERROR);
+				out.setET(Constants.DB_ERROR);
 				e.printStackTrace();
 			} finally {
 				try {
@@ -543,7 +543,7 @@ public class User {
 		logger.debug("End addUserToChat with Out = " + out.toString());
 	}
 
-	public void sendTextMessage(InSendTextMessage in, OutSendTextMessage out) {
+	public void sendTextMessage(ISTeM in, OSTeM out) {
 		logger.debug("Start sendTextMessage with In = " + in.toString());
 		int key = -1;
 
@@ -555,15 +555,15 @@ public class User {
 			// TODO first check if Message already exists, idempotent?
 			/* First we create a chat room */
 			statement.executeUpdate(
-					"insert into Text (Text) values ('" + in.getTextMessage()
-							+ "')", Statement.RETURN_GENERATED_KEYS);
+					"insert into Text (Text) values ('" + in.getTM() + "')",
+					Statement.RETURN_GENERATED_KEYS);
 			resultSet = statement.getGeneratedKeys();
 			if (resultSet != null && resultSet.next()) {
 				key = resultSet.getInt(1);
 			}
-			out.setTextID(key);
+			out.setTID(key);
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -580,7 +580,7 @@ public class User {
 		logger.debug("End sendTextMessage with Out = " + out.toString());
 	}
 
-	public void sendImageMessage(InSendImageMessage in, OutSendImageMessage out) {
+	public void sendImageMessage(ISImM in, OSImM out) {
 		logger.debug("Start sendImageMessage with In = " + in.toString());
 		int key = -1;
 		ResultSet resultSet = null;
@@ -591,17 +591,16 @@ public class User {
 			// TODO first check if Message already exists, idempotent?
 			/* First we create a chat room */
 			statement.executeUpdate(
-					"insert into Image (Image, MD5Sum) values ('"
-							+ in.getImageMessage() + "', '"
-							+ in.getImageMD5Hash() + "')",
+					"insert into Image (Image, MD5Sum) values ('" + in.getIM()
+							+ "', '" + in.getIMD5() + "')",
 					Statement.RETURN_GENERATED_KEYS);
 			resultSet = statement.getGeneratedKeys();
 			if (resultSet != null && resultSet.next()) {
 				key = resultSet.getInt(1);
 			}
-			out.setImageID(key);
+			out.setIID(key);
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -618,7 +617,7 @@ public class User {
 		logger.debug("End sendImageMessage with Out = " + out.toString());
 	}
 
-	public void sendVideoMessage(InSendVideoMessage in, OutSendVideoMessage out) {
+	public void sendVideoMessage(ISViM in, OSViM out) {
 		logger.debug("Start sendVideoMessage with In = " + in.toString());
 		int key = -1;
 		ResultSet resultSet = null;
@@ -629,17 +628,16 @@ public class User {
 			// TODO first check if Message already exists, idempotent?
 			/* First we create a chat room */
 			statement.executeUpdate(
-					"insert into Video (Video, MD5Sum) values ('"
-							+ in.getVideoMessage() + "', '"
-							+ in.getVideoMD5Hash() + "')",
+					"insert into Video (Video, MD5Sum) values ('" + in.getVM()
+							+ "', '" + in.getVMD5() + "')",
 					Statement.RETURN_GENERATED_KEYS);
 			resultSet = statement.getGeneratedKeys();
 			if (resultSet != null && resultSet.next()) {
 				key = resultSet.getInt(1);
 			}
-			out.setVideoID(key);
+			out.setVID(key);
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -656,13 +654,13 @@ public class User {
 		logger.debug("End sendVideoMessage with Out = " + out.toString());
 	}
 
-	public void removeUserFromChat(InRemoveUserFromChat in,
-			OutRemoveUserFromChat out) {
+	public void removeUserFromChat(IReUC in, OReUC out) {
 		logger.debug("Start removeUserFromChat with In = " + in.toString());
 
 		ResultSet resultSetU2Cid = null;
 		Statement statementU2Cid = null;
 		Statement statementDelete = null;
+		ResultSet resultDelete = null;
 
 		// TODO erst pr�fen ob der User welcher den Request stellt der
 		// Chat-Owner ist
@@ -671,23 +669,40 @@ public class User {
 			statementU2Cid = con.createStatement();
 			resultSetU2Cid = statementU2Cid
 					.executeQuery("select id from UserToChats where ChatID = '"
-							+ in.getChatID() + "' and UserID = '"
-							+ in.getUserID() + "'");
+							+ in.getCID() + "' and UserID = '" + in.getUID()
+							+ "'");
+
+			IDMFC idelete = new IDMFC();
+			idelete.setUN(in.getUN());
+			idelete.setPW(in.getPW());
+			ODMFC odelete = new ODMFC();
+			boolean deleteError = false;
 
 			if (resultSetU2Cid != null) {
 				while (resultSetU2Cid.next()) {
 					statementDelete = con.createStatement();
-					String DeleteFromMessages = "DELETE FROM Messages WHERE UsertoChatID = '"
-							+ resultSetU2Cid.getInt("ID") + "'";
-					boolean result = statementDelete
-							.execute(DeleteFromMessages);
-					if (result) {
-						out.setResult("REMOVED");
+					resultDelete = statementDelete
+							.executeQuery("select ID from Messages where UsertoChatID = '"
+									+ resultSetU2Cid.getInt("ID") + "'");
+					if (resultDelete != null) {
+						while (resultDelete.next()) {
+
+							idelete.setMID(resultDelete.getInt("ID"));
+							deleteMessageFromChat(idelete, odelete);
+
+							if (odelete.getET() != null
+									&& !odelete.getET().isEmpty()) {
+								deleteError = true;
+							}
+						}
 					}
 				}
 			}
+			if (deleteError == false) {
+				out.setR("REMOVED");
+			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -709,10 +724,9 @@ public class User {
 	}
 
 	@SuppressWarnings("resource")
-	public void insertMessageIntoChat(InInsertMessageIntoChat in,
-			OutInsertMessageIntoChat out) {
+	public void insertMessageIntoChat(IIMIC in, OIMIC out) {
 		logger.debug("Start insertMessageIntoChat with In = " + in.toString());
-		fillUserinfo(in.getUsername());
+		fillUserinfo(in.getUN());
 		int key = -1;
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -731,11 +745,11 @@ public class User {
 			/* First we search all Users in the given Chat */
 			resultSet = statement
 					.executeQuery("select id, UserID from UserToChats where ChatID = '"
-							+ in.getChatID() + "'");
+							+ in.getCID() + "'");
 
 			if (resultSet != null) {
 				while (resultSet.next()) {
-					if (in.getMessageTyp().equalsIgnoreCase(Constants.TYP_TEXT)) {
+					if (in.getMT().equalsIgnoreCase(Constants.TYP_TEXT)) {
 						statement2 = con.createStatement();
 						statement2
 								.executeUpdate(
@@ -747,9 +761,7 @@ public class User {
 												+ currentTime
 												+ ", "
 												+ resultSet.getInt("ID")
-												+ ", '"
-												+ in.getMessageID()
-												+ "')",
+												+ ", '" + in.getMID() + "')",
 										Statement.RETURN_GENERATED_KEYS);
 						typefound = true;
 						resultSet2 = statement2.getGeneratedKeys();
@@ -763,8 +775,7 @@ public class User {
 							}
 						}
 					}
-					if (in.getMessageTyp()
-							.equalsIgnoreCase(Constants.TYP_IMAGE)) {
+					if (in.getMT().equalsIgnoreCase(Constants.TYP_IMAGE)) {
 						statement2 = con.createStatement();
 						statement2
 								.executeUpdate(
@@ -776,9 +787,7 @@ public class User {
 												+ currentTime
 												+ ", "
 												+ resultSet.getInt("ID")
-												+ ", '"
-												+ in.getMessageID()
-												+ "')",
+												+ ", '" + in.getMID() + "')",
 										Statement.RETURN_GENERATED_KEYS);
 						typefound = true;
 						resultSet2 = statement2.getGeneratedKeys();
@@ -792,8 +801,7 @@ public class User {
 							}
 						}
 					}
-					if (in.getMessageTyp().equalsIgnoreCase(
-							Constants.TYP_CONTACT)) {
+					if (in.getMT().equalsIgnoreCase(Constants.TYP_CONTACT)) {
 						statement2 = con.createStatement();
 						statement2
 								.executeUpdate(
@@ -805,9 +813,7 @@ public class User {
 												+ currentTime
 												+ ", "
 												+ resultSet.getInt("ID")
-												+ ", '"
-												+ in.getMessageID()
-												+ "')",
+												+ ", '" + in.getMID() + "')",
 										Statement.RETURN_GENERATED_KEYS);
 						typefound = true;
 						resultSet2 = statement2.getGeneratedKeys();
@@ -821,8 +827,7 @@ public class User {
 							}
 						}
 					}
-					if (in.getMessageTyp().equalsIgnoreCase(
-							Constants.TYP_LOCATION)) {
+					if (in.getMT().equalsIgnoreCase(Constants.TYP_LOCATION)) {
 						statement2 = con.createStatement();
 						statement2
 								.executeUpdate(
@@ -834,9 +839,7 @@ public class User {
 												+ currentTime
 												+ ", "
 												+ resultSet.getInt("ID")
-												+ ", '"
-												+ in.getMessageID()
-												+ "')",
+												+ ", '" + in.getMID() + "')",
 										Statement.RETURN_GENERATED_KEYS);
 						typefound = true;
 						resultSet2 = statement2.getGeneratedKeys();
@@ -850,7 +853,7 @@ public class User {
 							}
 						}
 					}
-					if (in.getMessageTyp().equalsIgnoreCase(Constants.TYP_FILE)) {
+					if (in.getMT().equalsIgnoreCase(Constants.TYP_FILE)) {
 						statement2 = con.createStatement();
 						statement2
 								.executeUpdate(
@@ -862,9 +865,7 @@ public class User {
 												+ currentTime
 												+ ", "
 												+ resultSet.getInt("ID")
-												+ ", '"
-												+ in.getMessageID()
-												+ "')",
+												+ ", '" + in.getMID() + "')",
 										Statement.RETURN_GENERATED_KEYS);
 						typefound = true;
 						resultSet2 = statement2.getGeneratedKeys();
@@ -878,8 +879,7 @@ public class User {
 							}
 						}
 					}
-					if (in.getMessageTyp()
-							.equalsIgnoreCase(Constants.TYP_VIDEO)) {
+					if (in.getMT().equalsIgnoreCase(Constants.TYP_VIDEO)) {
 						statement2 = con.createStatement();
 						statement2
 								.executeUpdate(
@@ -891,9 +891,7 @@ public class User {
 												+ currentTime
 												+ ", "
 												+ resultSet.getInt("ID")
-												+ ", '"
-												+ in.getMessageID()
-												+ "')",
+												+ ", '" + in.getMID() + "')",
 										Statement.RETURN_GENERATED_KEYS);
 						typefound = true;
 						resultSet2 = statement2.getGeneratedKeys();
@@ -929,8 +927,8 @@ public class User {
 					}
 				}
 				if (typefound == true) {
-					out.setSendTimestamp(currentTime);
-					out.setMessageID(key);
+					out.setSdT(currentTime);
+					out.setMID(key);
 					// Now set the originMsgID to group all Messages for the
 					// showTimestamp
 					String updateOriginMsgID = "UPDATE Messages SET OriginMsgID = ? where ID = ?";
@@ -943,11 +941,11 @@ public class User {
 					}
 
 				} else {
-					out.setErrortext(Constants.TYPE_NOT_FOUND);
+					out.setET(Constants.TYPE_NOT_FOUND);
 				}
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -970,10 +968,9 @@ public class User {
 		logger.debug("End insertMessageIntoChat with Out = " + out.toString());
 	}
 
-	public void getMessagesFromChat(InFetchMessageFromChat in,
-			OutFetchMessageFromChat out) {
+	public void getMessagesFromChat(IFMFC in, OFMFC out) {
 		logger.debug("Start getMessagesFromChat with In = " + in.toString());
-		fillUserinfo(in.getUsername());
+		fillUserinfo(in.getUN());
 		ResultSet resultSet = null;
 		Statement statement = null;
 		Statement st2 = null;
@@ -993,14 +990,13 @@ public class User {
 			/* First we search all UsersToChat IDs with this.id and given Chatid */
 			resultSet = statement
 					.executeQuery("select id from UserToChats where ChatID = '"
-							+ in.getChatID() + "' and UserID = '" + this.Id
-							+ "'");
+							+ in.getCID() + "' and UserID = '" + this.Id + "'");
 
 			if (resultSet != null) {
 				while (resultSet.next()) {
 					String query = new String();
-					long tmptimestamp = in.getTimeStamp();
-					if (in.getTimeStamp() == 0) {
+					long tmptimestamp = in.getRdT();
+					if (in.getRdT() == 0) {
 						query += "select * from Messages where UsertoChatID = "
 								+ resultSet.getInt("ID")
 								+ " and ReadTimeStamp = 0";
@@ -1016,14 +1012,14 @@ public class User {
 					rs2 = st2.executeQuery(query);
 					if (rs2 != null) {
 						while (rs2.next()) {
-							Message msg = new Message();
-							msg.setMessageID(rs2.getInt("ID"));
-							msg.setMessageTyp(rs2.getString("MessageTyp"));
-							msg.setSendTimestamp(rs2.getLong("SendTimestamp"));
-							msg.setShowTimestamp(rs2.getLong("ShowTimestamp"));
-							msg.setOriginMsgID(rs2.getInt("OriginMsgID"));
-							OwningUser owingu = new OwningUser();
-							owingu.setOwningUserID(rs2.getInt("OwningUserID"));
+							M msg = new M();
+							msg.setMID(rs2.getInt("ID"));
+							msg.setMT(rs2.getString("MessageTyp"));
+							msg.setSdT(rs2.getLong("SendTimestamp"));
+							msg.setShT(rs2.getLong("ShowTimestamp"));
+							msg.setOMID(rs2.getInt("OriginMsgID"));
+							OU owingu = new OU();
+							owingu.setOUID(rs2.getInt("OwningUserID"));
 
 							st3 = con.createStatement();
 							rs3 = st3
@@ -1032,32 +1028,30 @@ public class User {
 
 							if (rs3 != null) {
 								while (rs3.next()) {
-									owingu.setOwningUserName(rs3
-											.getString("Username"));
+									owingu.setOUN(rs3.getString("Username"));
 								}
 							}
 
-							msg.setOwningUser(owingu);
+							msg.setOU(owingu);
 
-							if (msg.getMessageTyp().equalsIgnoreCase(
-									Constants.TYP_TEXT)) {
-								msg.setTextMsgID(rs2.getInt("TextMsgID"));
-							} else if (msg.getMessageTyp().equalsIgnoreCase(
+							if (msg.getMT()
+									.equalsIgnoreCase(Constants.TYP_TEXT)) {
+								msg.setTMID(rs2.getInt("TextMsgID"));
+							} else if (msg.getMT().equalsIgnoreCase(
 									Constants.TYP_IMAGE)) {
-								msg.setImageMsgID(rs2.getInt("ImageMsgID"));
-							} else if (msg.getMessageTyp().equalsIgnoreCase(
+								msg.setIMID(rs2.getInt("ImageMsgID"));
+							} else if (msg.getMT().equalsIgnoreCase(
 									Constants.TYP_CONTACT)) {
-								msg.setContactMsgID(rs2.getInt("ContactMsgID"));
-							} else if (msg.getMessageTyp().equalsIgnoreCase(
+								msg.setCMID(rs2.getInt("ContactMsgID"));
+							} else if (msg.getMT().equalsIgnoreCase(
 									Constants.TYP_LOCATION)) {
-								msg.setLocationMsgID(rs2
-										.getInt("LocationMsgID"));
-							} else if (msg.getMessageTyp().equalsIgnoreCase(
+								msg.setLMID(rs2.getInt("LocationMsgID"));
+							} else if (msg.getMT().equalsIgnoreCase(
 									Constants.TYP_FILE)) {
-								msg.setFileMsgID(rs2.getInt("FileMsgID"));
-							} else if (msg.getMessageTyp().equalsIgnoreCase(
+								msg.setFMID(rs2.getInt("FileMsgID"));
+							} else if (msg.getMT().equalsIgnoreCase(
 									Constants.TYP_VIDEO)) {
-								msg.setVideoMsgID(rs2.getInt("VideoMsgID"));
+								msg.setVMID(rs2.getInt("VideoMsgID"));
 							}
 
 							/*
@@ -1072,10 +1066,9 @@ public class User {
 								prepSt.setLong(1, readTime);
 								prepSt.setInt(2, rs2.getInt("ID"));
 								prepSt.executeUpdate();
-								msg.setReadTimestamp(readTime);
+								msg.setRdT(readTime);
 							} else {
-								msg.setReadTimestamp(rs2
-										.getLong("ReadTimestamp"));
+								msg.setRdT(rs2.getLong("ReadTimestamp"));
 							}
 
 							/*
@@ -1088,7 +1081,7 @@ public class User {
 											+ rs2.getInt("OriginMsgID"));
 							if (rstotal != null) {
 								while (rstotal.next()) {
-									msg.setNumberTotal(rstotal.getInt(1));
+									msg.setNT(rstotal.getInt(1));
 								}
 							}
 							stread = con.createStatement();
@@ -1098,7 +1091,7 @@ public class User {
 											+ " AND ReadTimestamp > 0");
 							if (rsread != null) {
 								while (rsread.next()) {
-									msg.setNumberRead(rsread.getInt(1));
+									msg.setNR(rsread.getInt(1));
 								}
 							}
 							stshow = con.createStatement();
@@ -1108,16 +1101,16 @@ public class User {
 											+ " AND ShowTimestamp > 0");
 							if (rsshow != null) {
 								while (rsshow.next()) {
-									msg.setNumberShow(rsshow.getInt(1));
+									msg.setNS(rsshow.getInt(1));
 								}
 							}
-							out.getMessage().add(msg);
+							out.getM().add(msg);
 						}
 					}
 				}
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1164,7 +1157,7 @@ public class User {
 		logger.debug("End getMessagesFromChat with out = " + out.toString());
 	}
 
-	public void getTextMessages(InFetchTextMessage in, OutFetchTextMessage out) {
+	public void getTextMessages(IGTeM in, OGTeM out) {
 		logger.debug("Start getTextMessages with In = " + in.toString());
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -1178,13 +1171,13 @@ public class User {
 							+ in.getTextID());
 			if (resultSet != null) {
 				if (resultSet.next()) {
-					out.setTextMessage(resultSet.getString("Text"));
+					out.setTM(resultSet.getString("Text"));
 				}
 			} else {
-				out.setErrortext(Constants.NONE_EXISTING_MESSAGE);
+				out.setET(Constants.NONE_EXISTING_MESSAGE);
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1201,8 +1194,7 @@ public class User {
 		logger.debug("End getTextMessages with Out = " + out.toString());
 	}
 
-	public void getImageMessages(InFetchImageMessage in,
-			OutFetchImageMessage out) {
+	public void getImageMessages(IGImM in, OGImM out) {
 		logger.debug("Start getImageMessages with In = " + in.toString());
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -1213,17 +1205,17 @@ public class User {
 			/* First we create a chat room */
 			resultSet = statement
 					.executeQuery("select Image, MD5Sum from Image where ID = "
-							+ in.getImageID());
+							+ in.getIID());
 			if (resultSet != null) {
 				if (resultSet.next()) {
-					out.setImageMessage(resultSet.getString("Image"));
-					out.setImageMD5Hash(resultSet.getString("MD5Sum"));
+					out.setIM(resultSet.getString("Image"));
+					out.setIMD5(resultSet.getString("MD5Sum"));
 				}
 			} else {
-				out.setErrortext(Constants.NONE_EXISTING_MESSAGE);
+				out.setET(Constants.NONE_EXISTING_MESSAGE);
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1240,8 +1232,7 @@ public class User {
 		logger.debug("End getImageMessages with Out = " + out.toString());
 	}
 
-	public void getVideoMessages(InFetchVideoMessage in,
-			OutFetchVideoMessage out) {
+	public void getVideoMessages(IGViM in, OGViM out) {
 		logger.debug("Start getImageMessages with In = " + in.toString());
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -1252,17 +1243,17 @@ public class User {
 			/* First we create a chat room */
 			resultSet = statement
 					.executeQuery("select Video, MD5Sum from Video where ID = "
-							+ in.getVideoID());
+							+ in.getVID());
 			if (resultSet != null) {
 				if (resultSet.next()) {
-					out.setVideoMessage(resultSet.getString("Video"));
-					out.setVideoMD5Hash(resultSet.getString("MD5Sum"));
+					out.setVM(resultSet.getString("Video"));
+					out.setVMD5(resultSet.getString("MD5Sum"));
 				}
 			} else {
-				out.setErrortext(Constants.NONE_EXISTING_MESSAGE);
+				out.setET(Constants.NONE_EXISTING_MESSAGE);
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1279,88 +1270,135 @@ public class User {
 		logger.debug("End getVideoMessages with Out = " + out.toString());
 	}
 
-	public void checkNewMessages(InCheckNewMessages in, OutCheckNewMessages out) {
-		logger.debug("Start checkNewMessages with In = " + in.toString());
-		ResultSet rsusertochat = null;
-		ResultSet rschatName = null;
-		ResultSet rsmessages = null;
-		Statement stusertochat = null;
-		Statement stchatName = null;
-		Statement stmessages = null;
+	public void checkNew(ICN in, OCN out) {
+		logger.debug("Start checkNew with In = " + in.toString());
 
-		fillUserinfo(in.getUsername());
+		ResultSet rsCheckNewChat = null;
+		Statement stCheckNewChat = null;
+		ResultSet rsCheckNewMessages = null;
+		Statement stCheckNewMessages = null;
+		ResultSet rsCheckNewMessagesChat = null;
+		Statement stCheckNewMessagesChat = null;
+		Statement stCheckNewChatUpdate = null;
+		ResultSet rsCheckNewChatUpdate = null;
+
+		fillUserinfo(in.getUN());
 
 		try {
-			stusertochat = con.createStatement();
+			stCheckNewChat = con.createStatement();
 
-			/* First we create a chat room */
-			rsusertochat = stusertochat
-					.executeQuery("select ID, ChatID from UserToChats where UserID = "
-							+ this.Id);
-			if (rsusertochat != null) {
-				while (rsusertochat.next()) {
-					/* We have a userToChatID now identifiy the Chat */
+			// First we check for unreaded chats
+			rsCheckNewChat = stCheckNewChat
+					.executeQuery("SELECT c.Chatname, c.ID, u.Username, u.ID FROM "
+							+ "Chats c, Users u WHERE c.OwningUserID = u.ID and c.id IN "
+							+ "(SELECT ChatID FROM UserToChats WHERE UserID = "
+							+ this.Id + " and ReadTimestamp = 0)");
+			if (rsCheckNewChat != null) {
+				while (rsCheckNewChat.next()) {
+					if (out.getNew() == null) {
+						OCN.New n = new OCN.New();
+						out.setNew(n);
+					}
+					// We have a userToChatID now identifiy the Chat
 
-					OutCheckNewMessages.Chats outchat = new OutCheckNewMessages.Chats();
-					outchat.setChatID(rsusertochat.getInt("ChatID"));
-					stchatName = con.createStatement();
-					rschatName = stchatName
-							.executeQuery("select Chatname from Chats where ID ="
-									+ rsusertochat.getInt("ChatID"));
-					if (rschatName != null) {
-						while (rschatName.next()) {
-							outchat.setChatname(rschatName
+					CNC oNC = new CNC();
+					OU oNCOU = new OU();
+					oNCOU.setOUID(rsCheckNewChat.getInt("u.ID"));
+					oNCOU.setOUN(rsCheckNewChat.getString("u.Username"));
+					oNC.setOU(oNCOU);
+					oNC.setCID(rsCheckNewChat.getInt("c.ID"));
+					oNC.setCN(rsCheckNewChat.getString("c.Chatname"));
+
+					out.getNew().getCNC().add(oNC);
+				}
+			}
+
+			// Setze TempReadTimeStamp bei UserToChats
+			String updateMessage = "UPDATE UserToChats SET TempReadTimestamp = ? where ID = ?";
+			long readTime = System.currentTimeMillis() / 1000L;
+			stCheckNewChatUpdate = con.createStatement();
+			rsCheckNewChatUpdate = stCheckNewChatUpdate
+					.executeQuery("SELECT * FROM UserToChats WHERE UserID = "
+							+ this.Id + " and ReadTimestamp = 0");
+			if (rsCheckNewChatUpdate != null) {
+				while (rsCheckNewChatUpdate.next()) {
+
+					PreparedStatement prepSt = con
+							.prepareStatement(updateMessage);
+					prepSt.setLong(1, readTime);
+					prepSt.setInt(2, rsCheckNewChatUpdate.getInt("ID"));
+					prepSt.executeUpdate();
+				}
+			}
+
+			stCheckNewMessages = con.createStatement();
+
+			// First we check for unreaded chats
+			rsCheckNewMessages = stCheckNewMessages
+					.executeQuery("SELECT count(*), UserToChatID FROM Messages WHERE ReadTimestamp = 0 AND UsertoChatID IN (SELECT ID FROM UserToChats WHERE UserID = "
+							+ this.Id + ") group by UserToChatID");
+			if (rsCheckNewMessages != null) {
+				while (rsCheckNewMessages.next()) {
+					if (out.getNew() == null) {
+						OCN.New n = new OCN.New();
+						out.setNew(n);
+					}
+					// We have a userToChatID now identifiy the Chat
+
+					CNM oNM = new CNM();
+					oNM.setNOM(rsCheckNewMessages.getInt(1));
+
+					stCheckNewMessagesChat = con.createStatement();
+
+					// First we check for unreaded chats
+					rsCheckNewMessagesChat = stCheckNewMessagesChat
+							.executeQuery("SELECT Chatname, ID "
+									+ "FROM Chats WHERE ID " + "IN ( "
+									+ "SELECT ChatID " + "FROM UserToChats "
+									+ "WHERE ID = "
+									+ rsCheckNewMessages.getInt("UserToChatID")
+									+ ")");
+					if (rsCheckNewMessagesChat != null) {
+						while (rsCheckNewMessagesChat.next()) {
+							oNM.setCID(rsCheckNewMessagesChat.getInt("ID"));
+							oNM.setCN(rsCheckNewMessagesChat
 									.getString("Chatname"));
 						}
 					}
-					/* Now we find out how many messages are in the Chat */
-					stmessages = con.createStatement();
-					rsmessages = stmessages
-							.executeQuery("select count(*) from Messages where UsertoChatID = "
-									+ rsusertochat.getInt("ID")
-									+ " AND ReadTimestamp = '0'");
-					if (rsmessages != null) {
-						while (rsmessages.next()) {
-							outchat.setNumberOfMessages(rsmessages
-									.getInt("COUNT(*)"));
-						}
-					}
-					out.getChats().add(outchat);
+					out.getNew().getCNM().add(oNM);
 				}
-			} else {
-				out.setErrortext(Constants.NONE_EXISTING_MESSAGE);
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rsusertochat != null) {
-					rsusertochat.close();
+				if (rsCheckNewChat != null) {
+					rsCheckNewChat.close();
 				}
-				if (rschatName != null) {
-					rschatName.close();
+				if (rsCheckNewMessages != null) {
+					rsCheckNewMessages.close();
 				}
-				if (rsmessages != null) {
-					rsmessages.close();
+				if (rsCheckNewMessagesChat != null) {
+					rsCheckNewMessagesChat.close();
 				}
-				if (stusertochat != null) {
-					stusertochat.close();
+				if (stCheckNewChat != null) {
+					stCheckNewChat.close();
 				}
-				if (stchatName != null) {
-					stchatName.close();
+				if (stCheckNewMessages != null) {
+					stCheckNewMessages.close();
 				}
-				if (stmessages != null) {
-					stmessages.close();
+				if (stCheckNewMessagesChat != null) {
+					stCheckNewMessagesChat.close();
 				}
 			} catch (SQLException e) {
 				// Do nothing we are closing
 			}
 		}
-		logger.debug("End checkNewMessages with Out = " + out.toString());
+		logger.debug("End checkNew with Out = " + out.toString());
 	}
 
-	public void setShowTimeStamp(InSetShowTimeStamp in, OutSetShowTimeStamp out) {
+	public void setShowTimeStamp(ISShT in, OSShT out) {
 		logger.debug("Start setShowTimeStamp with In = " + in.toString());
 
 		long currentTime = System.currentTimeMillis() / 1000L;
@@ -1369,20 +1407,19 @@ public class User {
 			String updateMessage = "UPDATE Messages SET ShowTimestamp = ? where ID = ?";
 			PreparedStatement prepSt = con.prepareStatement(updateMessage);
 			prepSt.setLong(1, currentTime);
-			prepSt.setInt(2, in.getMessageID());
+			prepSt.setInt(2, in.getMID());
 			prepSt.executeUpdate();
-			out.setShowTimestamp(currentTime);
-			out.setMessageID(in.getMessageID());
+			out.setShT(currentTime);
+			out.setMID(in.getMID());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 		}
 		logger.debug("End setShowTimeStamp with Out = " + out.toString());
 	}
 
-	public void deleteMessageFromChat(InDeleteMessageFromChat in,
-			OutDeleteMessageFromChat out) {
+	public void deleteMessageFromChat(IDMFC in, ODMFC out) {
 		logger.debug("Start deleteMessageFromChat with In = " + in.toString());
 		ResultSet rsmessageinchat = null;
 		Statement stmessageinchat = null;
@@ -1394,14 +1431,14 @@ public class User {
 
 			rsmessageinchat = stmessageinchat
 					.executeQuery("SELECT * FROM Messages WHERE ID = "
-							+ in.getMessageID());
+							+ in.getMID());
 			if (rsmessageinchat != null) {
 				while (rsmessageinchat.next()) {
 					/* We have found the Message */
 
 					String MsgType = rsmessageinchat.getString("MessageTyp");
-					deletemsg(con, in.getMessageID());
-					out.setMessageID(in.getMessageID());
+					deletemsg(con, in.getMID());
+					out.setMID(in.getMID());
 
 					if (MsgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
 						streused = con.createStatement();
@@ -1502,7 +1539,7 @@ public class User {
 			}
 
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1601,8 +1638,7 @@ public class User {
 		return ret;
 	}
 
-	public void acknowledgeMessageDownload(InAcknowledgeMessageDownload in,
-			OutAcknowledgeMessageDownload out) {
+	public void acknowledgeMessageDownload(IAckMD in, OAckMD out) {
 
 		logger.debug("Start acknowledgeMessageDownload with In = "
 				+ in.toString());
@@ -1611,15 +1647,15 @@ public class User {
 		Statement stcontent = null;
 		ResultSet rscontent = null;
 
-		fillUserinfo(in.getUsername());
-		out.setAcknowledge(Constants.ACKNOWLEDGE_FALSE);
+		fillUserinfo(in.getUN());
+		out.setACK(Constants.ACKNOWLEDGE_FALSE);
 
 		try {
 			stmessageinchat = con.createStatement();
 
 			rsmessageinchat = stmessageinchat
 					.executeQuery("SELECT * FROM Messages WHERE ID = "
-							+ in.getMessageID());
+							+ in.getMID());
 			if (rsmessageinchat != null) {
 				while (rsmessageinchat.next()) {
 					/* We have found the Message, now check the Owner */
@@ -1638,10 +1674,9 @@ public class User {
 
 								int hashCode = Msg.hashCode();
 
-								if (hashCode == Integer.valueOf(in
-										.getAcknowledge())) {
-									out.setAcknowledge(Constants.ACKNOWLEDGE_TRUE);
-									out.setMessageID(in.getMessageID());
+								if (hashCode == Integer.valueOf(in.getACK())) {
+									out.setACK(Constants.ACKNOWLEDGE_TRUE);
+									out.setMID(in.getMID());
 								}
 							}
 						}
@@ -1654,9 +1689,9 @@ public class User {
 						if (rscontent != null) {
 							while (rscontent.next()) {
 								String dback = rscontent.getString("MD5Sum");
-								if (in.getAcknowledge().equals(dback)) {
-									out.setAcknowledge(Constants.ACKNOWLEDGE_TRUE);
-									out.setMessageID(in.getMessageID());
+								if (in.getACK().equals(dback)) {
+									out.setACK(Constants.ACKNOWLEDGE_TRUE);
+									out.setMID(in.getMID());
 								}
 							}
 						}
@@ -1668,9 +1703,9 @@ public class User {
 						if (rscontent != null) {
 							while (rscontent.next()) {
 								String dback = rscontent.getString("MD5Sum");
-								if (in.getAcknowledge().equals(dback)) {
-									out.setAcknowledge(Constants.ACKNOWLEDGE_TRUE);
-									out.setMessageID(in.getMessageID());
+								if (in.getACK().equals(dback)) {
+									out.setACK(Constants.ACKNOWLEDGE_TRUE);
+									out.setMID(in.getMID());
 								}
 							}
 						}
@@ -1679,7 +1714,7 @@ public class User {
 
 					// Now if the Acknowledge is valid update Readtimestamp in
 					// the Database.
-					if (out.getAcknowledge().equalsIgnoreCase(
+					if (out.getACK().equalsIgnoreCase(
 							Constants.ACKNOWLEDGE_TRUE)) {
 						String SQLUpdateRead = "UPDATE Messages SET ReadTimestamp = ? WHERE ID = ?";
 						PreparedStatement pstmt = null;
@@ -1687,13 +1722,13 @@ public class User {
 						pstmt = con.prepareStatement(SQLUpdateRead);
 						pstmt.setLong(1,
 								rsmessageinchat.getLong("TempReadTimestamp"));
-						pstmt.setInt(2, in.getMessageID());
+						pstmt.setInt(2, in.getMID());
 						pstmt.executeUpdate();
 					}
 				}
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1715,8 +1750,84 @@ public class User {
 		}
 	}
 
-	public void getMessageInformation(InGetMessageInformation in,
-			OutGetMessageInformation out) {
+	public void acknowledgeChatDownload(IAckCD in, OAckCD out) {
+
+		logger.debug("Start acknowledgeMessageDownload with In = "
+				+ in.toString());
+		ResultSet rsuserinchat = null;
+		Statement stuserinchat = null;
+		Statement stcontent = null;
+		ResultSet rscontent = null;
+
+		fillUserinfo(in.getUN());
+		out.setACK(Constants.ACKNOWLEDGE_FALSE);
+
+		try {
+			stuserinchat = con.createStatement();
+
+			rsuserinchat = stuserinchat
+					.executeQuery("SELECT * FROM UserToChats WHERE ChatID = "
+							+ in.getCID() + "AND UserID = " + in.getUID());
+			if (rsuserinchat != null) {
+				while (rsuserinchat.next()) {
+					/* We have found the Message, now check the Owner */
+
+					stcontent = con.createStatement();
+					rscontent = stcontent
+							.executeQuery("select * from Chats where ID = "
+									+ in.getCID());
+					if (rscontent != null) {
+						while (rscontent.next()) {
+							String ChatName = rscontent.getString("Chatname");
+
+							int hashCode = ChatName.hashCode();
+
+							if (hashCode == Integer.valueOf(in.getACK())) {
+								out.setACK(Constants.ACKNOWLEDGE_TRUE);
+							}
+						}
+					}
+
+					// Now if the Acknowledge is valid update Readtimestamp in
+					// the Database.
+					if (out.getACK().equalsIgnoreCase(
+							Constants.ACKNOWLEDGE_TRUE)) {
+						String SQLUpdateRead = "UPDATE UserToChats SET ReadTimestamp = ? WHERE ChatID = ? AND UserID = ?";
+						PreparedStatement pstmt = null;
+
+						pstmt = con.prepareStatement(SQLUpdateRead);
+						pstmt.setLong(1,
+								rsuserinchat.getLong("TempReadTimestamp"));
+						pstmt.setInt(2, in.getCID());
+						pstmt.setInt(3, in.getUID());
+						pstmt.executeUpdate();
+					}
+				}
+			}
+		} catch (SQLException e) {
+			out.setET(Constants.DB_ERROR);
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rsuserinchat != null) {
+					rsuserinchat.close();
+				}
+				if (stuserinchat != null) {
+					stuserinchat.close();
+				}
+				if (rscontent != null) {
+					rscontent.close();
+				}
+				if (stcontent != null) {
+					stcontent.close();
+				}
+			} catch (SQLException e) {
+				// Do nothing we are closing
+			}
+		}
+	}
+
+	public void getMessageInformation(IGMI in, OGMI out) {
 		logger.debug("Start getMessageInformation with In = " + in.toString());
 		ResultSet rsoriginmsgid = null;
 		Statement storiginmsgid = null;
@@ -1732,7 +1843,7 @@ public class User {
 
 			rsoriginmsgid = storiginmsgid
 					.executeQuery("SELECT * FROM Messages WHERE ID = "
-							+ in.getMessageID());
+							+ in.getMID());
 			if (rsoriginmsgid != null) {
 				while (rsoriginmsgid.next()) {
 					/* We have found the Message, now check the Owner */
@@ -1742,7 +1853,7 @@ public class User {
 									+ rsoriginmsgid.getInt("OriginMsgID"));
 					if (rstotal != null) {
 						while (rstotal.next()) {
-							out.setNumberTotal(rstotal.getInt(1));
+							out.setNT(rstotal.getInt(1));
 						}
 					}
 					stread = con.createStatement();
@@ -1752,7 +1863,7 @@ public class User {
 									+ " AND ReadTimestamp > 0");
 					if (rsread != null) {
 						while (rsread.next()) {
-							out.setNumberRead(rsread.getInt(1));
+							out.setNR(rsread.getInt(1));
 						}
 					}
 					stshow = con.createStatement();
@@ -1762,14 +1873,14 @@ public class User {
 									+ " AND ShowTimestamp > 0");
 					if (rsshow != null) {
 						while (rsshow.next()) {
-							out.setNumberShow(rsshow.getInt(1));
+							out.setNS(rsshow.getInt(1));
 						}
 					}
-					out.setMessageID(in.getMessageID());
+					out.setMID(in.getMID());
 				}
 			}
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1803,7 +1914,7 @@ public class User {
 		}
 	}
 
-	public void deleteChat(InDeleteChat in, OutDeleteChat out) {
+	public void deleteChat(IDeCh in, ODeCh out) {
 		logger.debug("Start deleteChat with In = " + in.toString());
 		ResultSet rsmessageinchat = null;
 		Statement stmessageinchat = null;
@@ -1813,12 +1924,12 @@ public class User {
 			stmessageinchat = con.createStatement();
 			rsmessageinchat = stmessageinchat
 					.executeQuery("SELECT ID FROM Messages WHERE UserToChatID IN (SELECT ID FROM UserToChats WHERE UserToChats.ChatID = "
-							+ in.getChatID() + ")");
+							+ in.getCID() + ")");
 			if (rsmessageinchat != null) {
-				InDeleteMessageFromChat inmsg = new InDeleteMessageFromChat();
-				OutDeleteMessageFromChat outmsg = new OutDeleteMessageFromChat();
+				IDMFC inmsg = new IDMFC();
+				ODMFC outmsg = new ODMFC();
 				while (rsmessageinchat.next()) {
-					inmsg.setMessageID(rsmessageinchat.getInt(1));
+					inmsg.setMID(rsmessageinchat.getInt(1));
 					deleteMessageFromChat(inmsg, outmsg);
 				}
 			}
@@ -1827,7 +1938,7 @@ public class User {
 			PreparedStatement pstmtU2C = null;
 
 			pstmtU2C = con.prepareStatement(SQLUserToChat);
-			pstmtU2C.setInt(1, in.getChatID());
+			pstmtU2C.setInt(1, in.getCID());
 			pstmtU2C.executeUpdate();
 
 			// At least we delete the chat.
@@ -1835,12 +1946,12 @@ public class User {
 			PreparedStatement pstmtChat = null;
 
 			pstmtChat = con.prepareStatement(SQLChat);
-			pstmtChat.setInt(1, in.getChatID());
+			pstmtChat.setInt(1, in.getCID());
 			pstmtChat.executeUpdate();
-			out.setResult(Constants.CHAT_DELETED);
+			out.setR(Constants.CHAT_DELETED);
 
 		} catch (SQLException e) {
-			out.setErrortext(Constants.DB_ERROR);
+			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
 		} finally {
 			try {

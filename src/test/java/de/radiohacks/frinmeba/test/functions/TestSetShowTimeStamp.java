@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutSetShowTimeStamp;
+import de.radiohacks.frinmeba.modelshort.OSShT;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -58,7 +58,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 	/*
 	 * @GET
 	 * 
-	 * @Path("/setshowtimestamp") public OutSetShowTimeStamp setShowTimeStamp(
+	 * @Path("/setshowtimestamp") public OSShT setShowTimeStamp(
 	 * 
 	 * @QueryParam(Constants.QPusername) String User,
 	 * 
@@ -163,11 +163,11 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -183,11 +183,11 @@ public class TestSetShowTimeStamp extends JerseyTest {
 					username1);
 			;
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -202,11 +202,11 @@ public class TestSetShowTimeStamp extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1);
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -222,10 +222,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password1).queryParam(Constants.QPusername, username1);
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
 	}
 
 	@Test
@@ -249,10 +249,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 					Constants.QPusername, username1);
 			;
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -269,10 +269,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 					password1).queryParam(Constants.QPusername, "XXX");
 			;
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -291,10 +291,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 			;
 		}
 
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -313,10 +313,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPmessageid, msg2);
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getErrortext());
+		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getET());
 	}
 
 	@Test
@@ -335,10 +335,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPmessageid, msg1);
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getErrortext());
+		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getET());
 		// Assert.assertNotNull(out.getShowTimestamp());
 	}
 
@@ -360,10 +360,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPmessageid, msg2);
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getErrortext());
+		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
 		help.setTimestamp(msg2, 0, "READ");
 	}
 
@@ -385,10 +385,10 @@ public class TestSetShowTimeStamp extends JerseyTest {
 					.queryParam(Constants.QPusername, username1)
 					.queryParam(Constants.QPmessageid, msg1);
 		}
-		OutSetShowTimeStamp out = target.request().get(
-				OutSetShowTimeStamp.class);
+		OSShT out = target.request().get(
+				OSShT.class);
 
-		Assert.assertNotNull(out.getShowTimestamp());
+		Assert.assertNotNull(out.getShT());
 		help.setTimestamp(msg1, 0, "READ");
 	}
 }

@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutCreateChat;
+import de.radiohacks.frinmeba.modelshort.OCrCh;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -114,10 +114,9 @@ public class TestCreateChat extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -144,9 +143,9 @@ public class TestCreateChat extends JerseyTest {
 									.getBytes(Charset
 											.forName(Constants.CharacterSet))));
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals("Testchat", out.getChatname());
+		Assert.assertEquals("Testchat", out.getCN());
 	}
 
 	@Test
@@ -179,9 +178,9 @@ public class TestCreateChat extends JerseyTest {
 									.getBytes(Charset
 											.forName(Constants.CharacterSet))));
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -195,10 +194,9 @@ public class TestCreateChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username);
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -212,10 +210,9 @@ public class TestCreateChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password);
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -229,10 +226,9 @@ public class TestCreateChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPchatname,
 					"Testchat");
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -247,9 +243,9 @@ public class TestCreateChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.MISSING_CHATNAME, out.getErrortext());
+		Assert.assertEquals(Constants.MISSING_CHATNAME, out.getET());
 	}
 
 	@Test
@@ -272,10 +268,9 @@ public class TestCreateChat extends JerseyTest {
 					Base64.encodeBase64String("Testchat".getBytes(Charset
 							.forName(Constants.CharacterSet))));
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -298,10 +293,9 @@ public class TestCreateChat extends JerseyTest {
 					Base64.encodeBase64String("Testchat".getBytes(Charset
 							.forName(Constants.CharacterSet))));
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -328,9 +322,9 @@ public class TestCreateChat extends JerseyTest {
 									.getBytes(Charset
 											.forName(Constants.CharacterSet))));
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -357,9 +351,9 @@ public class TestCreateChat extends JerseyTest {
 									.getBytes(Charset
 											.forName(Constants.CharacterSet))));
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -377,8 +371,8 @@ public class TestCreateChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPchatname, "$%&1233");
 		}
-		OutCreateChat out = target.request().get(OutCreateChat.class);
+		OCrCh out = target.request().get(OCrCh.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

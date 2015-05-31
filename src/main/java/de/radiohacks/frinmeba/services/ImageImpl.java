@@ -49,14 +49,14 @@ import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MySqlConnection;
-import de.radiohacks.frinmeba.model.InAuthenticate;
-import de.radiohacks.frinmeba.model.InFetchImageMessage;
-import de.radiohacks.frinmeba.model.InGetImageMessageMetaData;
-import de.radiohacks.frinmeba.model.InSendImageMessage;
-import de.radiohacks.frinmeba.model.OutAuthenticate;
-import de.radiohacks.frinmeba.model.OutFetchImageMessage;
-import de.radiohacks.frinmeba.model.OutGetImageMessageMetaData;
-import de.radiohacks.frinmeba.model.OutSendImageMessage;
+import de.radiohacks.frinmeba.modelshort.IAuth;
+import de.radiohacks.frinmeba.modelshort.IGImM;
+import de.radiohacks.frinmeba.modelshort.IGImMMD;
+import de.radiohacks.frinmeba.modelshort.ISImM;
+import de.radiohacks.frinmeba.modelshort.OAuth;
+import de.radiohacks.frinmeba.modelshort.OGImM;
+import de.radiohacks.frinmeba.modelshort.OGImMMD;
+import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.util.ImageUtil;
 
 @Path("/image")
@@ -66,11 +66,11 @@ public class ImageImpl implements ImageUtil {
 	 */
 
 	@Override
-	public OutSendImageMessage uploadImage(String User, String Password,
+	public OSImM uploadImage(String User, String Password,
 			InputStream fileInputStream,
 			FormDataContentDisposition contentDispositionHeader) {
 
-		OutSendImageMessage out = new OutSendImageMessage();
+		OSImM out = new OSImM();
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
 		User actuser = new User(con);
@@ -79,21 +79,21 @@ public class ImageImpl implements ImageUtil {
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
 
-				InAuthenticate inauth = new InAuthenticate();
-				OutAuthenticate outauth = new OutAuthenticate();
-				inauth.setPassword(actuser.base64Decode(Password));
-				inauth.setUsername(User);
+				IAuth inauth = new IAuth();
+				OAuth outauth = new OAuth();
+				inauth.setPW(actuser.base64Decode(Password));
+				inauth.setUN(User);
 
-				InSendImageMessage in = new InSendImageMessage();
-				in.setPassword(actuser.base64Decode(Password));
-				in.setUsername(actuser.base64Decode(User));
+				ISImM in = new ISImM();
+				in.setPW(actuser.base64Decode(Password));
+				in.setUN(actuser.base64Decode(User));
 
 				/* First check if the User is valid */
 				actuser.authenticate(inauth, outauth);
 
-				if (outauth.getAuthenticated().equalsIgnoreCase(
+				if (outauth.getA().equalsIgnoreCase(
 						Constants.AUTHENTICATE_FALSE)) {
-					out.setErrortext(outauth.getErrortext());
+					out.setET(outauth.getET());
 				} else {
 					if (contentDispositionHeader != null) {
 						if (fileInputStream != null) {
@@ -129,42 +129,42 @@ public class ImageImpl implements ImageUtil {
 								}
 								String md5Hex = md5.toString();
 
-								out.setImageFileName(filetime
+								out.setIF(filetime
 										+ contentDispositionHeader
 												.getFileName());
-								in.setImageMessage(filetime
+								in.setIM(filetime
 										+ contentDispositionHeader
 												.getFileName());
-								in.setImageMD5Hash(md5Hex);
+								in.setIMD5(md5Hex);
 
 								actuser.sendImageMessage(in, out);
 
 							} else {
-								out.setErrortext(Constants.NO_IMAGEMESSAGE_GIVEN);
+								out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
 							}
 						} else {
-							out.setErrortext(Constants.NO_IMAGEMESSAGE_GIVEN);
+							out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
 						}
 					} else {
-						out.setErrortext(Constants.NO_IMAGEMESSAGE_GIVEN);
+						out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
 					}
 				}
 			} else {
 				if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.NO_CONTENT_GIVEN)) {
-					out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 				} else if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.ENCODING_ERROR)) {
-					out.setErrortext(Constants.ENCODING_ERROR);
+					out.setET(Constants.ENCODING_ERROR);
 				}
 			}
 		} else {
 			if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.NO_CONTENT_GIVEN)) {
-				out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 			} else if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.ENCODING_ERROR)) {
-				out.setErrortext(Constants.ENCODING_ERROR);
+				out.setET(Constants.ENCODING_ERROR);
 			}
 		}
 
@@ -190,36 +190,37 @@ public class ImageImpl implements ImageUtil {
 		Connection con = mc.getMySqlConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
-		OutFetchImageMessage out = new OutFetchImageMessage();
+		OGImM out = new OGImM();
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
 
-				InAuthenticate inauth = new InAuthenticate();
-				OutAuthenticate outauth = new OutAuthenticate();
-				inauth.setPassword(actuser.base64Decode(Password));
-				inauth.setUsername(User);
+				IAuth inauth = new IAuth();
+				OAuth outauth = new OAuth();
+				inauth.setPW(actuser.base64Decode(Password));
+				inauth.setUN(User);
 
-				InFetchImageMessage in = new InFetchImageMessage();
-				in.setUsername(actuser.base64Decode(User));
-				in.setPassword(actuser.base64Decode(Password));
-				in.setImageID(imageid);
+				IGImM in = new IGImM();
+				in.setUN(actuser.base64Decode(User));
+				in.setPW(actuser.base64Decode(Password));
+				in.setIID(imageid);
 
 				actuser.authenticate(inauth, outauth);
 
-				if (outauth.getAuthenticated().equalsIgnoreCase(
+				if (outauth.getA().equalsIgnoreCase(
 						Constants.AUTHENTICATE_FALSE)) {
-					out.setErrortext(outauth.getErrortext());
+					out.setET(outauth.getET());
 				} else {
 					if (!actcheck.CheckContenMessageID(imageid,
 							Constants.TYP_IMAGE)) {
-						out.setErrortext(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
 						actuser.getImageMessages(in, out);
 
 						final File file = new File(
 								Constants.SERVER_UPLOAD_LOCATION_FOLDER
-										+ Constants.SERVER_IMAGE_FOLDER + out.getImageMessage());
+										+ Constants.SERVER_IMAGE_FOLDER
+										+ out.getIM());
 						if (!file.exists()) {
 							// LOGGER.error(ErrorCode.IMAGE_NOT_FOUND, imageId);
 							// throw new NotFoundException();
@@ -239,8 +240,7 @@ public class ImageImpl implements ImageUtil {
 							return Response
 									.ok(FileUtils.readFileToByteArray(file))
 									.header("Content-Disposition", "attachment")
-									.header("filename", out.getImageMessage())
-									.build();
+									.header("filename", out.getIM()).build();
 						} catch (java.io.IOException ex) {
 							// LOGGER.error(ErrorCode.IMAGE_READ_ERROR,
 							// file.getAbsolutePath(),
@@ -268,76 +268,76 @@ public class ImageImpl implements ImageUtil {
 	}
 
 	@Override
-	public OutGetImageMessageMetaData getimagemetadata(String User,
-			String Password, int imageid) {
+	public OGImMMD getimagemetadata(String User, String Password, int imageid) {
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
-		OutGetImageMessageMetaData out = new OutGetImageMessageMetaData();
+		OGImMMD out = new OGImMMD();
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
 
-				InAuthenticate inauth = new InAuthenticate();
-				OutAuthenticate outauth = new OutAuthenticate();
-				inauth.setPassword(actuser.base64Decode(Password));
-				inauth.setUsername(User);
+				IAuth inauth = new IAuth();
+				OAuth outauth = new OAuth();
+				inauth.setPW(actuser.base64Decode(Password));
+				inauth.setUN(User);
 
-				InGetImageMessageMetaData in = new InGetImageMessageMetaData();
-				in.setUsername(actuser.base64Decode(User));
-				in.setPassword(actuser.base64Decode(Password));
-				in.setImageID(imageid);
-
-				actuser.authenticate(inauth, outauth);
+				IGImMMD in = new IGImMMD();
+				in.setUN(actuser.base64Decode(User));
+				in.setPW(actuser.base64Decode(Password));
+				in.setIID(imageid);
 
 				actuser.authenticate(inauth, outauth);
 
-				if (outauth.getAuthenticated().equalsIgnoreCase(
+				actuser.authenticate(inauth, outauth);
+
+				if (outauth.getA().equalsIgnoreCase(
 						Constants.AUTHENTICATE_FALSE)) {
-					out.setErrortext(outauth.getErrortext());
+					out.setET(outauth.getET());
 				} else {
-					InFetchImageMessage tmpin = new InFetchImageMessage();
-					tmpin.setUsername(User);
-					tmpin.setPassword(Password);
-					tmpin.setImageID(imageid);
-					OutFetchImageMessage tmpout = new OutFetchImageMessage();
+					IGImM tmpin = new IGImM();
+					tmpin.setUN(User);
+					tmpin.setPW(Password);
+					tmpin.setIID(imageid);
+					OGImM tmpout = new OGImM();
 
 					if (!actcheck.CheckContenMessageID(imageid,
 							Constants.TYP_IMAGE)) {
-						out.setErrortext(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
 						actuser.getImageMessages(tmpin, tmpout);
 
 						final File file = new File(
 								Constants.SERVER_UPLOAD_LOCATION_FOLDER
-										+ Constants.SERVER_IMAGE_FOLDER + tmpout.getImageMessage());
+										+ Constants.SERVER_IMAGE_FOLDER
+										+ tmpout.getIM());
 						if (file.exists()) {
-							out.setImageMessage(tmpout.getImageMessage());
-							out.setImageMD5Hash(tmpout.getImageMD5Hash());
-							out.setImageSize(file.length());
+							out.setIM(tmpout.getIM());
+							out.setIMD5(tmpout.getIMD5());
+							out.setIS(file.length());
 						} else {
-							out.setErrortext(Constants.FILE_NOT_FOUND);
+							out.setET(Constants.FILE_NOT_FOUND);
 						}
 					}
 				}
 			} else {
 				if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.NO_CONTENT_GIVEN)) {
-					out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 				} else if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.ENCODING_ERROR)) {
-					out.setErrortext(Constants.ENCODING_ERROR);
+					out.setET(Constants.ENCODING_ERROR);
 				}
 			}
 		} else {
 			if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.NO_CONTENT_GIVEN)) {
-				out.setErrortext(Constants.NO_USERNAME_OR_PASSWORD);
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
 			} else if (actcheck.getLastError().equalsIgnoreCase(
 					Constants.ENCODING_ERROR)) {
-				out.setErrortext(Constants.ENCODING_ERROR);
+				out.setET(Constants.ENCODING_ERROR);
 			}
 		}
 

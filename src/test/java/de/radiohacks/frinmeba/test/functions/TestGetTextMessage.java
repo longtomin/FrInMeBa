@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutFetchTextMessage;
+import de.radiohacks.frinmeba.modelshort.OGTeM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -60,7 +60,7 @@ public class TestGetTextMessage extends JerseyTest {
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/gettextmessage") public OutFetchTextMessage
+	 * @Path("/gettextmessage") public OGTeM
 	 * getTextMessage(@QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password,
@@ -125,11 +125,9 @@ public class TestGetTextMessage extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -145,11 +143,9 @@ public class TestGetTextMessage extends JerseyTest {
 					username);
 			;
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -165,11 +161,9 @@ public class TestGetTextMessage extends JerseyTest {
 					password);
 			;
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -185,11 +179,9 @@ public class TestGetTextMessage extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPtextmessageid,
 					msg1).queryParam(Constants.QPusername, username);
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -205,11 +197,9 @@ public class TestGetTextMessage extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPtextmessageid, msg1);
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -225,11 +215,10 @@ public class TestGetTextMessage extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-				out.getErrortext());
+				out.getET());
 	}
 
 	@Test
@@ -253,10 +242,9 @@ public class TestGetTextMessage extends JerseyTest {
 							.forName(Constants.CharacterSet))));
 			;
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -273,10 +261,9 @@ public class TestGetTextMessage extends JerseyTest {
 					password).queryParam(Constants.QPusername, "�$%1234");
 			;
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -293,10 +280,9 @@ public class TestGetTextMessage extends JerseyTest {
 					"�$%1234").queryParam(Constants.QPusername, username);
 			;
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -316,10 +302,9 @@ public class TestGetTextMessage extends JerseyTest {
 					.queryParam(Constants.QPtextmessageid, msg1);
 			;
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(textmnsg1_org, out.getTextMessage());
+		Assert.assertEquals(textmnsg1_org, out.getTM());
 	}
 
 	@Test
@@ -339,10 +324,9 @@ public class TestGetTextMessage extends JerseyTest {
 					.queryParam(Constants.QPtextmessageid, msg2);
 			;
 		}
-		OutFetchTextMessage out = target.request().get(
-				OutFetchTextMessage.class);
+		OGTeM out = target.request().get(OGTeM.class);
 
-		Assert.assertEquals(textmnsg2_org, out.getTextMessage());
+		Assert.assertEquals(textmnsg2_org, out.getTM());
 	}
 
 }

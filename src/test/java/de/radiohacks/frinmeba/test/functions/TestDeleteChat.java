@@ -45,8 +45,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.OutCreateChat;
-import de.radiohacks.frinmeba.model.OutDeleteChat;
+import de.radiohacks.frinmeba.modelshort.OCrCh;
+import de.radiohacks.frinmeba.modelshort.ODeCh;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -115,10 +115,9 @@ public class TestDeleteChat extends JerseyTest {
 		} else {
 			target = target(functionurl);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -136,9 +135,9 @@ public class TestDeleteChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPchatid, 1);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 
 		// Now we create a chat to delete it afterwards
 		if (TestConfig.remote) {
@@ -162,25 +161,25 @@ public class TestDeleteChat extends JerseyTest {
 									.getBytes(Charset
 											.forName(Constants.CharacterSet))));
 		}
-		OutCreateChat out2 = target.request().get(OutCreateChat.class);
+		OCrCh out2 = target.request().get(OCrCh.class);
 
-		Assert.assertEquals("Testchat", out2.getChatname());
+		Assert.assertEquals("Testchat", out2.getCN());
 
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, out2.getChatID());
+					.queryParam(Constants.QPchatid, out2.getCID());
 		} else {
 			target = target(functionurl)
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, out2.getChatID());
+					.queryParam(Constants.QPchatid, out2.getCID());
 		}
-		OutDeleteChat out3 = target.request().delete(OutDeleteChat.class);
+		ODeCh out3 = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.CHAT_DELETED, out3.getResult());
+		Assert.assertEquals(Constants.CHAT_DELETED, out3.getR());
 
 	}
 
@@ -206,9 +205,9 @@ public class TestDeleteChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPchatid, 1);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getErrortext());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -222,10 +221,9 @@ public class TestDeleteChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -239,10 +237,9 @@ public class TestDeleteChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -256,10 +253,9 @@ public class TestDeleteChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPchatname,
 					"Testchat");
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -274,9 +270,9 @@ public class TestDeleteChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getErrortext());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
@@ -291,10 +287,9 @@ public class TestDeleteChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username).queryParam(Constants.QPchatname, "Testchat");
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -309,10 +304,9 @@ public class TestDeleteChat extends JerseyTest {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPchatid, 1);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getErrortext());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -330,9 +324,9 @@ public class TestDeleteChat extends JerseyTest {
 					.queryParam(Constants.QPusername, "$%&1234")
 					.queryParam(Constants.QPchatid, 1);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
@@ -350,8 +344,8 @@ public class TestDeleteChat extends JerseyTest {
 					.queryParam(Constants.QPusername, username)
 					.queryParam(Constants.QPchatid, 1);
 		}
-		OutDeleteChat out = target.request().delete(OutDeleteChat.class);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getErrortext());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }
