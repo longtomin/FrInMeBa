@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 
 import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.modelshort.IAckCD;
 import de.radiohacks.frinmeba.modelshort.IAckMD;
 import de.radiohacks.frinmeba.modelshort.IAdUC;
 import de.radiohacks.frinmeba.modelshort.IAuth;
@@ -54,6 +55,7 @@ import de.radiohacks.frinmeba.modelshort.IReUC;
 import de.radiohacks.frinmeba.modelshort.ISShT;
 import de.radiohacks.frinmeba.modelshort.ISTeM;
 import de.radiohacks.frinmeba.modelshort.ISiUp;
+import de.radiohacks.frinmeba.modelshort.OAckCD;
 import de.radiohacks.frinmeba.modelshort.OAckMD;
 import de.radiohacks.frinmeba.modelshort.OAdUC;
 import de.radiohacks.frinmeba.modelshort.OAuth;
@@ -1404,6 +1406,92 @@ public class ServiceImpl implements ServiceUtil {
 		}
 
 		logger.debug("End acknowledgeMessageDownload with User = " + User
+				+ " Password = " + Password);
+		return out;
+	}
+
+	@Override
+	public OAckCD acknowledgeChatDownload(String User, String Password,
+			int ChatID, String Acknowledge) {
+		logger.debug("Start acknowledgeChatDownload with User = " + User
+				+ " Password = " + Password);
+
+		OAckCD out = new OAckCD();
+		MySqlConnection mc = new MySqlConnection();
+		Connection con = mc.getMySqlConnection();
+		User actuser = new User(con);
+		Check actcheck = new Check(con);
+
+		if (actcheck.checkValueMust(User)) {
+			if (actcheck.checkValueMust(Password)) {
+				if (actcheck.checkValueMust(Acknowledge)) {
+					IAckCD in = new IAckCD();
+					in.setPW(actuser.base64Decode(Password));
+					in.setUN(actuser.base64Decode(User));
+					in.setCID(ChatID);
+					in.setACK(actuser.base64Decode(Acknowledge));
+
+					IAuth inauth = new IAuth();
+					OAuth outauth = new OAuth();
+					inauth.setPW(actuser.base64Decode(Password));
+					inauth.setUN(User);
+
+					actuser.authenticate(inauth, outauth);
+
+					if (outauth.getA().equalsIgnoreCase(
+							Constants.AUTHENTICATE_FALSE)) {
+						out.setET(outauth.getET());
+					} else {
+						if (ChatID > 0) {
+							if (actcheck.CheckChatID(ChatID)) {
+								actuser.acknowledgeChatDownload(in, out);
+							} else {
+								out.setET(Constants.NONE_EXISTING_CHAT);
+							}
+						} else {
+							out.setET(Constants.NONE_EXISTING_CHAT);
+						}
+					}
+				} else {
+					if (actcheck.getLastError().equalsIgnoreCase(
+							Constants.NO_CONTENT_GIVEN)) {
+						out.setET(Constants.NO_CONTENT_GIVEN);
+					} else if (actcheck.getLastError().equalsIgnoreCase(
+							Constants.ENCODING_ERROR)) {
+						out.setET(Constants.ENCODING_ERROR);
+					}
+				}
+				// Password check failed
+			} else {
+				if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.NO_CONTENT_GIVEN)) {
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+				} else if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.ENCODING_ERROR)) {
+					out.setET(Constants.ENCODING_ERROR);
+				}
+			}
+			// User check failed
+		} else {
+			if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.NO_CONTENT_GIVEN)) {
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+			} else if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.ENCODING_ERROR)) {
+				out.setET(Constants.ENCODING_ERROR);
+			}
+		}
+
+		if (con != null) {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		logger.debug("End acknowledgeChatDownload with User = " + User
 				+ " Password = " + Password);
 		return out;
 	}

@@ -35,6 +35,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import de.radiohacks.frinmeba.modelshort.OAckCD;
 import de.radiohacks.frinmeba.modelshort.OAckMD;
 import de.radiohacks.frinmeba.modelshort.OAdUC;
 import de.radiohacks.frinmeba.modelshort.OAuth;
@@ -184,5 +185,14 @@ public interface ServiceUtil {
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
 			@QueryParam(Constants.QPmessageid) int MessageID,
+			@QueryParam(Constants.QPacknowledge) String Acknowledge);
+	
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/acknowledgechatdownload")
+	public OAckCD acknowledgeChatDownload(
+			@QueryParam(Constants.QPusername) String User,
+			@QueryParam(Constants.QPpassword) String Password,
+			@QueryParam(Constants.QPchatid) int ChatID,
 			@QueryParam(Constants.QPacknowledge) String Acknowledge);
 }

@@ -1295,10 +1295,6 @@ public class User {
 							+ this.Id + " and ReadTimestamp = 0)");
 			if (rsCheckNewChat != null) {
 				while (rsCheckNewChat.next()) {
-					if (out.getNew() == null) {
-						OCN.New n = new OCN.New();
-						out.setNew(n);
-					}
 					// We have a userToChatID now identifiy the Chat
 
 					CNC oNC = new CNC();
@@ -1309,7 +1305,7 @@ public class User {
 					oNC.setCID(rsCheckNewChat.getInt("c.ID"));
 					oNC.setCN(rsCheckNewChat.getString("c.Chatname"));
 
-					out.getNew().getCNC().add(oNC);
+					out.getCNC().add(oNC);
 				}
 			}
 
@@ -1339,10 +1335,6 @@ public class User {
 							+ this.Id + ") group by UserToChatID");
 			if (rsCheckNewMessages != null) {
 				while (rsCheckNewMessages.next()) {
-					if (out.getNew() == null) {
-						OCN.New n = new OCN.New();
-						out.setNew(n);
-					}
 					// We have a userToChatID now identifiy the Chat
 
 					CNM oNM = new CNM();
@@ -1365,7 +1357,7 @@ public class User {
 									.getString("Chatname"));
 						}
 					}
-					out.getNew().getCNM().add(oNM);
+					out.getCNM().add(oNM);
 				}
 			}
 		} catch (SQLException e) {
@@ -1766,8 +1758,8 @@ public class User {
 			stuserinchat = con.createStatement();
 
 			rsuserinchat = stuserinchat
-					.executeQuery("SELECT * FROM UserToChats WHERE ChatID = "
-							+ in.getCID() + "AND UserID = " + in.getUID());
+					.executeQuery("select * from UserToChats where ChatID = "
+							+ in.getCID() + " and UserID = " + this.Id);
 			if (rsuserinchat != null) {
 				while (rsuserinchat.next()) {
 					/* We have found the Message, now check the Owner */
@@ -1792,14 +1784,13 @@ public class User {
 					// the Database.
 					if (out.getACK().equalsIgnoreCase(
 							Constants.ACKNOWLEDGE_TRUE)) {
-						String SQLUpdateRead = "UPDATE UserToChats SET ReadTimestamp = ? WHERE ChatID = ? AND UserID = ?";
+						String SQLUpdateRead = "UPDATE UserToChats SET ReadTimestamp = ? WHERE ID = ?";
 						PreparedStatement pstmt = null;
 
 						pstmt = con.prepareStatement(SQLUpdateRead);
 						pstmt.setLong(1,
 								rsuserinchat.getLong("TempReadTimestamp"));
-						pstmt.setInt(2, in.getCID());
-						pstmt.setInt(3, in.getUID());
+						pstmt.setInt(2, rsuserinchat.getInt("ID"));
 						pstmt.executeUpdate();
 					}
 				}

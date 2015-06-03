@@ -182,7 +182,7 @@ public class TestCheckNew extends JerseyTest {
 		}
 		OCN out = target.request().get(OCN.class);
 
-		Assert.assertNotNull(out.getNew().getCNC());
+		Assert.assertNotNull(out.getCNC());
 	}
 
 	@Test
