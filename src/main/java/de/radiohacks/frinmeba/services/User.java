@@ -41,6 +41,7 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
+import de.radiohacks.frinmeba.modelshort.C;
 import de.radiohacks.frinmeba.modelshort.CNC;
 import de.radiohacks.frinmeba.modelshort.CNM;
 import de.radiohacks.frinmeba.modelshort.IAckCD;
@@ -89,6 +90,7 @@ import de.radiohacks.frinmeba.modelshort.OSTeM;
 import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.modelshort.OU;
+import de.radiohacks.frinmeba.modelshort.U;
 
 public class User {
 
@@ -294,11 +296,11 @@ public class User {
 
 			while (resultSet.next()) {
 				if (this.Id != resultSet.getInt("Id")) {
-					de.radiohacks.frinmeba.modelshort.OLiUs.User u = new de.radiohacks.frinmeba.modelshort.OLiUs.User();
+					U u = new U();
 					u.setUN(resultSet.getString("Username"));
 					u.setE(resultSet.getString("Email"));
 					u.setUID(resultSet.getInt("Id"));
-					out.getUser().add(u);
+					out.getU().add(u);
 				}
 			}
 		} catch (SQLException e) {
@@ -338,7 +340,7 @@ public class User {
 			if (rsusertochats != null) {
 				while (rsusertochats.next()) {
 
-					de.radiohacks.frinmeba.modelshort.OLiCh.Chat outchat = new de.radiohacks.frinmeba.modelshort.OLiCh.Chat();
+					C outchat = new C();
 					stchats = con.createStatement();
 					rschats = stchats
 							.executeQuery("Select Chatname, OwningUserID from Chats where ID = "
@@ -368,7 +370,7 @@ public class User {
 						}
 					}
 					if (rscount > 0) {
-						out.getChat().add(outchat);
+						out.getC().add(outchat);
 					} else {
 						out.setET(Constants.NO_ACTIVE_CHATS);
 					}

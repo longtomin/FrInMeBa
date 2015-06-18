@@ -391,6 +391,6 @@ public class TestGetMessageInformation extends JerseyTest {
 		}
 		OGMI out = target.request().get(OGMI.class);
 
-		// Assert.assertEquals(textmnsg2_org, out.getTextMessage());
+		Assert.assertNotNull(out.getMID());
 	}
 }

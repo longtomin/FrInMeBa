@@ -146,8 +146,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -174,7 +173,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertNotNull(out.getUser());
+		Assert.assertNotNull(out.getU());
 	}
 
 	@Test
@@ -223,8 +222,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -240,8 +238,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -263,8 +260,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -281,7 +277,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertNotNull(out.getUser());
+		Assert.assertNotNull(out.getU());
 	}
 
 	@Test
@@ -305,8 +301,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -330,8 +325,7 @@ public class TestListUser extends JerseyTest {
 		}
 		OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test

@@ -123,7 +123,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		help.CreateActiveUser(username2_org, username2, password2_org,
 				email2_org);
 		int uid1 = help.getUserID(username1_org);
-		int uid2 = help.getUserID(username2_org);
+		help.getUserID(username2_org);
 		cid = help.CreateChat(username1_org, "TestChat");
 		txtmsgid1 = help.CreateContentMessage("TEST Text Message von User1",
 				Constants.TYP_TEXT);

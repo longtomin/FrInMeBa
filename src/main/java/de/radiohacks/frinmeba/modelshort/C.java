@@ -52,12 +52,11 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice>
- *         &lt;sequence>
- *           &lt;element name="ACK" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;/sequence>
- *         &lt;element name="ET" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *       &lt;/choice>
+ *       &lt;sequence>
+ *         &lt;element name="CN" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="CID" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element ref="{}OU"/>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -67,63 +66,82 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "ack",
-    "et"
+    "cn",
+    "cid",
+    "ou"
 })
-@XmlRootElement(name = "OAckCD")
-public class OAckCD {
+@XmlRootElement(name = "C")
+public class C {
 
-    @XmlElement(name = "ACK")
-    protected String ack;
-    @XmlElement(name = "ET")
-    protected String et;
+    @XmlElement(name = "CN", required = true)
+    protected String cn;
+    @XmlElement(name = "CID")
+    protected int cid;
+    @XmlElement(name = "OU", required = true)
+    protected OU ou;
 
     /**
-     * Gets the value of the ack property.
+     * Gets the value of the cn property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getACK() {
-        return ack;
+    public String getCN() {
+        return cn;
     }
 
     /**
-     * Sets the value of the ack property.
+     * Sets the value of the cn property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setACK(String value) {
-        this.ack = value;
+    public void setCN(String value) {
+        this.cn = value;
     }
 
     /**
-     * Gets the value of the et property.
+     * Gets the value of the cid property.
+     * 
+     */
+    public int getCID() {
+        return cid;
+    }
+
+    /**
+     * Sets the value of the cid property.
+     * 
+     */
+    public void setCID(int value) {
+        this.cid = value;
+    }
+
+    /**
+     * Gets the value of the ou property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link OU }
      *     
      */
-    public String getET() {
-        return et;
+    public OU getOU() {
+        return ou;
     }
 
     /**
-     * Sets the value of the et property.
+     * Sets the value of the ou property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link OU }
      *     
      */
-    public void setET(String value) {
-        this.et = value;
+    public void setOU(OU value) {
+        this.ou = value;
     }
 
 }

@@ -134,7 +134,7 @@ public class TestListChat extends JerseyTest {
 		}
 		OLiCh out = target.request().get(OLiCh.class);
 
-		Assert.assertNotNull(out.getChat());
+		Assert.assertNotNull(out.getC());
 	}
 
 	@Test
