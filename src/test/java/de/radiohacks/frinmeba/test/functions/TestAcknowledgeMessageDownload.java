@@ -109,12 +109,15 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 	final static String textmsg = Base64.encodeBase64String(textmsg_org
 			.getBytes(Charset.forName(Constants.CharacterSet)));
 
-	// final static String md5sumimg_org = "e36ba04dd1ad642a6e8c74c72a4aabc";
-	// final static String md5sumimg = Base64.encodeBase64String(md5sumimg_org
-	// .getBytes(Charset.forName(Constants.CharacterSet)));
-	// final static String md5sumtxt_org = "[B@2e41b2e9";
-	// final static String md5sumtxt = Base64.encodeBase64String(md5sumtxt_org
-	// .getBytes(Charset.forName(Constants.CharacterSet)));
+	final static String md5sumimg_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+	final static String md5sumimg = Base64.encodeBase64String(md5sumimg_org
+			.getBytes(Charset.forName(Constants.CharacterSet)));
+	final static String md5sumvid_org = "ba0623b8c7a7520092ee1ff71da0bbea";
+	final static String md5sumvid = Base64.encodeBase64String(md5sumvid_org
+			.getBytes(Charset.forName(Constants.CharacterSet)));
+	final static String md5sumtxt_org = "[B@2e41b2e9";
+	final static String md5sumtxt = Base64.encodeBase64String(md5sumtxt_org
+			.getBytes(Charset.forName(Constants.CharacterSet)));
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -379,7 +382,8 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 
 		int msgimgid = uploadImageContent("image/upload?"
 				+ Constants.QPusername + "=" + username + "&"
-				+ Constants.QPpassword + "=" + password);
+				+ Constants.QPpassword + "=" + password + "&"
+				+ Constants.QPacknowledge + "=" + md5sumimg);
 
 		helperDatabase help = new helperDatabase();
 		help.CreateChat(username_org, "Test Chat");
@@ -424,7 +428,8 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 
 		int msgvidid = uploadVideoContent("video/upload?"
 				+ Constants.QPusername + "=" + username + "&"
-				+ Constants.QPpassword + "=" + password);
+				+ Constants.QPpassword + "=" + password + "&"
+				+ Constants.QPacknowledge + "=" + md5sumvid);
 
 		helperDatabase help = new helperDatabase();
 		help.CreateChat(username_org, "Test Chat");

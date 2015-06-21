@@ -56,6 +56,7 @@ public interface ImageUtil {
 	public OSImM uploadImage(
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
+			@QueryParam(Constants.QPacknowledge) String Acknowledge,
 			@FormDataParam("file") InputStream fileInputStream,
 			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
 

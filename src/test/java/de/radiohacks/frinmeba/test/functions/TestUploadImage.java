@@ -95,6 +95,10 @@ public class TestUploadImage extends JerseyTest {
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
 			.getBytes(Charset.forName(Constants.CharacterSet)));
+	// Acknowledge
+	final static String acknowledge_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+	final static String acknowledge = Base64.encodeBase64String(acknowledge_org
+			.getBytes(Charset.forName(Constants.CharacterSet)));
 
 	final static String functionurl = "image/upload";
 
@@ -166,7 +170,6 @@ public class TestUploadImage extends JerseyTest {
 		} else {
 			target = target(functionurl).queryParam(Constants.QPusername,
 					username);
-			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -224,7 +227,6 @@ public class TestUploadImage extends JerseyTest {
 			target = client.target(TestConfig.URL + functionurl)
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPusername, username);
-			;
 		} else {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, username);
@@ -241,8 +243,65 @@ public class TestUploadImage extends JerseyTest {
 
 		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSImM.class);
-		Assert.assertNotNull(out.getIID());
-		Assert.assertNotNull(out.getIF());
+		Assert.assertEquals(Constants.UPLOAD_FAILED, out.getET());
+	}
+
+	@Test
+	public void testUploadImageUserAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder()
+					.register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPacknowledge, acknowledge)
+					.queryParam(Constants.QPusername, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QPacknowledge,
+					acknowledge).queryParam(Constants.QPusername, username);
+		}
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("test.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
+
+	@Test
+	public void testUploadImagePasswordAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder()
+					.register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPacknowledge, acknowledge);
+		} else {
+			target = target(functionurl).queryParam(Constants.QPpassword,
+					password).queryParam(Constants.QPacknowledge, acknowledge);
+		}
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("test.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
@@ -254,11 +313,13 @@ public class TestUploadImage extends JerseyTest {
 
 			target = client.target(TestConfig.URL + functionurl)
 					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-			;
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
+			target = target(functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -276,6 +337,35 @@ public class TestUploadImage extends JerseyTest {
 	}
 
 	@Test
+	public void testUploadImageUserPasswordNoAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder()
+					.register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QPpassword,
+					password).queryParam(Constants.QPusername, username);
+		}
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("test.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+		Assert.assertEquals(Constants.UPLOAD_FAILED, out.getET());
+	}
+
+	@Test
 	public void testUploadImageUserWrongPassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -288,15 +378,16 @@ public class TestUploadImage extends JerseyTest {
 							Constants.QPpassword,
 							Base64.encodeBase64String("XXX".getBytes(Charset
 									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-			;
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge);
 		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username);
-			;
+			target = target(functionurl)
+					.queryParam(
+							Constants.QPpassword,
+							Base64.encodeBase64String("XXX".getBytes(Charset
+									.forName(Constants.CharacterSet))))
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -324,11 +415,9 @@ public class TestUploadImage extends JerseyTest {
 			target = client.target(TestConfig.URL + functionurl)
 					.queryParam(Constants.QPpassword, password)
 					.queryParam(Constants.QPusername, "XXX");
-			;
 		} else {
 			target = target(functionurl).queryParam(Constants.QPpassword,
 					password).queryParam(Constants.QPusername, "XXX");
-			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -356,12 +445,10 @@ public class TestUploadImage extends JerseyTest {
 			target = client.target(TestConfig.URL + functionurl)
 					.queryParam(Constants.QPpassword, "XXX")
 					.queryParam(Constants.QPusername, username);
-			;
 		} else {
 			target = target(functionurl)
 					.queryParam(Constants.QPpassword, "XXX").queryParam(
 							Constants.QPusername, username);
-			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -377,5 +464,72 @@ public class TestUploadImage extends JerseyTest {
 				OSImM.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
+
+	@Test
+	public void testUploadImageUserEncodeFailureAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder()
+					.register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge_org);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge_org);
+		}
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("test.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
+
+	@Test
+	public void testUploadImageUserPasswordAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder()
+					.register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge);
+		}
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("test.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
+
+		Assert.assertNotNull(out.getIID());
+		Assert.assertNotNull(out.getIF());
 	}
 }

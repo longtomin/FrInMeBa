@@ -53,6 +53,7 @@ public class Constants {
 	public final static String ENCODING_ERROR = "ENCODING_ERROR";
 	public final static String NO_CONTENT_GIVEN = "NO_CONTENT_GIVEN";
 	public final static String MESSAGE_NOT_READ = "MESSAGE_NOT_READ";
+	public final static String UPLOAD_FAILED = "UPLOAD_FAILED";
 
 	public final static String USER_ADDED = "USER_ADDED";
 	public final static String SIGNUP_SUCCESSFUL = "SIGNUP_SUCCESSFUL";
