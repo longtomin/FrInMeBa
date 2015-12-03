@@ -119,197 +119,112 @@ public class TestRemoveUserFromChat extends JerseyTest {
 
 	@Test
 	public void testRemoveUserFromChatUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUserPasswordChatID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPchatid, chatid);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUserPasswordUserID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPuserid, userid);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUserPasswordChatIDUserID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPuserid, userid)
+				.queryParam(Constants.QPchatid, chatid);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals("REMOVED", out.getR());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username);
-			;
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPuserid, userid)
+				.queryParam(Constants.QPchatid, chatid);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "XXX");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, "XXX");
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, "XXX")
+				.queryParam(Constants.QPuserid, userid)
+				.queryParam(Constants.QPchatid, chatid);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX").queryParam(
-							Constants.QPusername, username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "XXX")
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPuserid, userid)
+				.queryParam(Constants.QPchatid, chatid);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username);
 		OReUC out = target.request().delete(OReUC.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testRemoveUserFromChatPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password);
 		OReUC out = target.request().delete(OReUC.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
-
 }

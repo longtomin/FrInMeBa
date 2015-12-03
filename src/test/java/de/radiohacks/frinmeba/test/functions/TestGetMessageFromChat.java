@@ -182,223 +182,117 @@ public class TestGetMessageFromChat extends JerseyTest {
 
 	@Test
 	public void testGetMessageFromChatUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username1);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, username1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username1);
-			;
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username1);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, "XXX");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, "XXX");
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, "XXX");
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX").queryParam(
-							Constants.QPusername, username1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, "XXX");
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserPasswordChatID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPchatid, cid1to2);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPchatid, cid1to2);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPchatid, cid1to2);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertNotNull(out.getM());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserPasswordTimestamp() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPtimestamp, 0);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPtimestamp, 0);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPtimestamp, 0);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserPasswordChatIDTimestampToBig() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(Constants.QPchatid, cid1to2)
-					.queryParam(Constants.QPtimestamp, 200);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(Constants.QPchatid, cid1to2)
-					.queryParam(Constants.QPtimestamp, 200);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password2)
+				.queryParam(Constants.QPusername, username2)
+				.queryParam(Constants.QPtimestamp, 200)
+				.queryParam(Constants.QPchatid, cid1to2);
 		OFMFC out = target.request().get(OFMFC.class);
-
 		Assert.assertEquals(3, out.getM().size());
 	}
 
 	@Test
 	public void testGetMessageFromChatUserPasswordChatIDTimestampNewMessages() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPchatid, cid3to12)
-					.queryParam(Constants.QPtimestamp, 0);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPchatid, cid3to12)
-					.queryParam(Constants.QPtimestamp, 0);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPtimestamp, 0)
+				.queryParam(Constants.QPchatid, cid3to12);
 		OFMFC out = target.request().get(OFMFC.class);
-
-		// Size 3
 		Assert.assertNotNull(out.getM().size());
 		Assert.assertEquals(3, out.getM().size());
 	}

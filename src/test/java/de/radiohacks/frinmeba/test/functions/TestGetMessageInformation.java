@@ -126,6 +126,18 @@ public class TestGetMessageInformation extends JerseyTest {
 	final static String textmnsg2 = Base64.encodeBase64String(textmnsg2_org
 			.getBytes(Charset.forName(Constants.CharacterSet)));
 
+	static int msgid11;
+	static int msgid12;
+	static int msgid13;
+	static int msgid14;
+	static int msgid15;
+
+	static int msgid21;
+	static int msgid22;
+	static int msgid23;
+	static int msgid24;
+	static int msgid25;
+
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
 		return new GrizzlyWebTestContainerFactory();
@@ -160,237 +172,181 @@ public class TestGetMessageInformation extends JerseyTest {
 		msg2 = help.CreateContentMessage(textmnsg2, Constants.TYP_TEXT);
 
 		int cid = help.CreateChat(username1_org, "Test1 Chat");
+		int u2c1 = help.AddUserToChat(help.getUserID(username1_org), cid);
 		int u2c2 = help.AddUserToChat(help.getUserID(username2_org), cid);
 		int u2c3 = help.AddUserToChat(help.getUserID(username3_org), cid);
 		int u2c4 = help.AddUserToChat(help.getUserID(username4_org), cid);
 		int u2c5 = help.AddUserToChat(help.getUserID(username5_org), cid);
+
+		int cid2 = help.CreateChat(username2_org, "Test1 Chat 2");
+		int u2c12 = help.AddUserToChat(help.getUserID(username1_org), cid2);
+		int u2c22 = help.AddUserToChat(help.getUserID(username2_org), cid2);
+		int u2c32 = help.AddUserToChat(help.getUserID(username3_org), cid2);
+		int u2c42 = help.AddUserToChat(help.getUserID(username4_org), cid2);
+
 		// User2Chat anlegen 3-5 x
 
-		int origin1 = help.insertMessage(help.getUserID(username1_org), u2c2,
+		msgid11 = help.insertMessage(help.getUserID(username1_org), u2c1,
 				Constants.TYP_TEXT, msg1, 0, true);
-		help.insertMessage(help.getUserID(username1_org), u2c3,
-				Constants.TYP_TEXT, msg1, origin1, false);
-		help.insertMessage(help.getUserID(username1_org), u2c4,
-				Constants.TYP_TEXT, msg1, origin1, false);
-		help.insertMessage(help.getUserID(username1_org), u2c5,
-				Constants.TYP_TEXT, msg1, origin1, false);
+		msgid12 = help.insertMessage(help.getUserID(username1_org), u2c2,
+				Constants.TYP_TEXT, msg1, msgid11, false);
+		msgid13 = help.insertMessage(help.getUserID(username1_org), u2c3,
+				Constants.TYP_TEXT, msg1, msgid11, false);
+		msgid14 = help.insertMessage(help.getUserID(username1_org), u2c4,
+				Constants.TYP_TEXT, msg1, msgid11, false);
+		msgid15 = help.insertMessage(help.getUserID(username1_org), u2c5,
+				Constants.TYP_TEXT, msg1, msgid11, false);
 
-		// Nachrichten einfuegen
+		msgid22 = help.insertMessage(help.getUserID(username2_org), u2c22,
+				Constants.TYP_TEXT, msg2, 0, true);
+		msgid21 = help.insertMessage(help.getUserID(username2_org), u2c12,
+				Constants.TYP_TEXT, msg2, msgid22, false);
+		msgid23 = help.insertMessage(help.getUserID(username2_org), u2c32,
+				Constants.TYP_TEXT, msg2, msgid22, false);
+		msgid24 = help.insertMessage(help.getUserID(username2_org), u2c42,
+				Constants.TYP_TEXT, msg2, msgid22, false);
+
 	}
 
 	@Test
 	public void testGetMessageInformationUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username1);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationUserTextmessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPmessageid, msg1)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPmessageid, msg1).queryParam(
-							Constants.QPusername, username1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPmessageid, msg2);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationPasswordTextmessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPmessageid, msg1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPmessageid, msg1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPmessageid, msgid11);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, username1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username1).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet))));
-			;
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPmessageid, msgid11);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, "�$%1234");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, "�$%1234");
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, "�$%1234")
+				.queryParam(Constants.QPmessageid, msgid11);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "�$%1234")
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					"�$%1234").queryParam(Constants.QPusername, username1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "�$%1234")
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPmessageid, msgid11);
 		OGMI out = target.request().get(OGMI.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testGetMessageInformationUserPasswordTextmessage1() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPmessageid, msgid11);
 		OGMI out = target.request().get(OGMI.class);
-
-		Assert.assertNotNull(out.getMID());
-		Assert.assertNotNull(out.getNT());
-		Assert.assertNotNull(out.getNR());
-		Assert.assertNotNull(out.getNS());
+		Assert.assertNotNull(out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().get(0).getMI().size());
 	}
 
 	@Test
 	public void testGetMessageInformationUserPasswordTextmessage2() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg2);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg2);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPmessageid, msgid21);
 		OGMI out = target.request().get(OGMI.class);
+		Assert.assertNotNull(out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().get(0).getMI().size());
+	}
 
-		Assert.assertNotNull(out.getMID());
+	@Test
+	public void testGetMessageInformationUserPasswordMultipleMessages() {
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPmessageid, msgid11)
+				.queryParam(Constants.QPmessageid, msgid21);
+		OGMI out = target.request().get(OGMI.class);
+		Assert.assertNotNull(out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().get(1).getMI().size());
+	}
+
+	@Test
+	public void testGetMessageInformationUserPasswordMultipleMessagesNotOwner() {
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password5)
+				.queryParam(Constants.QPusername, username5)
+				.queryParam(Constants.QPmessageid, msgid15)
+				.queryParam(Constants.QPmessageid, msgid22);
+		OGMI out = target.request().get(OGMI.class);
+		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
 	}
 }

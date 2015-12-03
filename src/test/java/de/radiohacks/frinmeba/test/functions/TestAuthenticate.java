@@ -106,14 +106,8 @@ public class TestAuthenticate extends JerseyTest {
 
 	@Test
 	public void testAuthenticateUpNoValues() {
-		System.out.print("Start testAuthenticateUpNoValues\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OAuth out = target.request().get(OAuth.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -121,18 +115,10 @@ public class TestAuthenticate extends JerseyTest {
 
 	@Test
 	public void testAuthenticateUserPassword() {
-		System.out.print("Start testAuthenticateUserPassword\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username);
 		OAuth out = target.request().get(OAuth.class);
 
 		Assert.assertEquals(Constants.AUTHENTICATE_TRUE, out.getA());
@@ -140,47 +126,26 @@ public class TestAuthenticate extends JerseyTest {
 
 	@Test
 	public void testAuthenticateUserWrongPassword() {
-		System.out.print("Start testAuthenticateUserWrongPassword\n");
 		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username);
-			;
-		}
+		target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username);
 		OAuth out = target.request().get(OAuth.class);
-
 		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAuthenticateUserEncodeFailureUser() {
-		System.out.print("Start testAuthenticateUserEncodeFailureUser\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "XXX");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, "XXX");
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, "XXX");
 		OAuth out = target.request().get(OAuth.class);
 
 		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
@@ -189,20 +154,10 @@ public class TestAuthenticate extends JerseyTest {
 
 	@Test
 	public void testAuthenticateUserEncodeFailurePassword() {
-		System.out.print("Start testAuthenticateUserEncodeFailurePassword\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX").queryParam(
-							Constants.QPusername, username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "XXX")
+				.queryParam(Constants.QPusername, username);
 		OAuth out = target.request().get(OAuth.class);
 
 		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
@@ -211,18 +166,9 @@ public class TestAuthenticate extends JerseyTest {
 
 	@Test
 	public void testAuthenticateUser() {
-		System.out.print("Start testAuthenticateUser\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username);
 		OAuth out = target.request().get(OAuth.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -230,18 +176,9 @@ public class TestAuthenticate extends JerseyTest {
 
 	@Test
 	public void testAuthenticatePassword() {
-		System.out.print("Start testAuthenticatePassword\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password);
 		OAuth out = target.request().get(OAuth.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());

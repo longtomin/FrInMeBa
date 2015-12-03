@@ -133,7 +133,7 @@ public class helperDatabase {
 		}
 		return chatid;
 	}
-	
+
 	public int getUser2ChatID(int inUserID, int inChatID) {
 
 		int chatid = 0;
@@ -144,7 +144,8 @@ public class helperDatabase {
 			st = con.createStatement();
 			ResultSet res = st
 					.executeQuery("select id from UserToChats where ChatID = '"
-							+ inChatID + "'" + " AND UserID = '" + inUserID + "'");
+							+ inChatID + "'" + " AND UserID = '" + inUserID
+							+ "'");
 			while (res.next()) {
 				chatid = res.getInt(1);
 			}

@@ -138,7 +138,7 @@ public class TestClient extends JerseyTest {
 
 	// Generelle Testfunktion welche von junit ausgeführt wird.
 	// Hier werden alle Subfunktionen der Reihe nach aufgerufen.
-	@Test
+	// @Test
 	public void test() {
 		StartSignup();
 		StartActivate();

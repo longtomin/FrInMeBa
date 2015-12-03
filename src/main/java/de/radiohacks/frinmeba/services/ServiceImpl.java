@@ -30,6 +30,7 @@ package de.radiohacks.frinmeba.services;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.ws.rs.Path;
 
@@ -140,32 +141,25 @@ public class ServiceImpl implements ServiceUtil {
 	}
 
 	@Override
-	public OIMIC insertMessageIntoChat(String User, String Password,
-			int ChatID, int MessageID, String MessageType) {
+	public OIMIC insertMessageIntoChat(IIMIC in) {
 
-		logger.debug("Start insertMessageIntoChat with User = " + User
-				+ " Password = " + Password + " ChatID = " + ChatID
-				+ " MessageID = " + MessageID + " MessageType = " + MessageType);
+		logger.debug("Start insertMessageIntoChat with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " ChatID = " + in.getCID()
+				+ " MessageID = " + in.getMID() + " MessageType = "
+				+ in.getMT());
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 		OIMIC out = new OIMIC();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(MessageType)) {
-					IIMIC in = new IIMIC();
-					in.setUN(actuser.base64Decode(User));
-					in.setPW(actuser.base64Decode(Password));
-					in.setCID(ChatID);
-					in.setMID(MessageID);
-					in.setMT(actuser.base64Decode(MessageType));
-
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.checkValueMust(in.getMT())) {
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(in.getPW()));
+					inauth.setUN(in.getUN());
 
 					actuser.authenticate(inauth, outauth);
 
@@ -173,6 +167,13 @@ public class ServiceImpl implements ServiceUtil {
 							Constants.AUTHENTICATE_FALSE)) {
 						out.setET(outauth.getET());
 					} else {
+						String tmp = actuser.base64Decode(in.getUN());
+						in.setUN(tmp);
+						tmp = actuser.base64Decode(in.getPW());
+						in.setPW(tmp);
+						tmp = actuser.base64Decode(in.getMT());
+						in.setMT(tmp);
+
 						/* Check if Chat exists */
 						if (!actcheck.CheckChatID(in.getCID())) {
 							out.setET(Constants.NONE_EXISTING_CHAT);
@@ -231,18 +232,18 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End insertMessageIntoChat with User = " + User
-				+ " Password = " + Password + " ChatID = " + ChatID
-				+ " MessageID = " + MessageID + " MessageType = " + MessageType);
+		logger.debug("End insertMessageIntoChat with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " ChatID = " + in.getCID()
+				+ " MessageID = " + in.getMID() + " MessageType = "
+				+ in.getMT());
 		return out;
 	}
 
 	@Override
-	public OSTeM sendTextMessage(String User, String Password,
-			String TextMessage) {
+	public OSTeM sendTextMessage(ISTeM in) {
 
-		logger.debug("Start sendTextMessage with User = " + User
-				+ " Password = " + Password + " TextMessage = " + TextMessage);
+		logger.debug("Start sendTextMessage with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " TextMessage = " + in.getTM());
 
 		OSTeM out = new OSTeM();
 		MySqlConnection mc = new MySqlConnection();
@@ -250,25 +251,25 @@ public class ServiceImpl implements ServiceUtil {
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(TextMessage)) {
-
-					ISTeM in = new ISTeM();
-					in.setPW(actuser.base64Decode(Password));
-					in.setUN(actuser.base64Decode(User));
-					in.setTM(TextMessage);
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.checkValueMust(in.getTM())) {
 
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(in.getPW()));
+					inauth.setUN(in.getUN());
 					actuser.authenticate(inauth, outauth);
 
 					if (outauth.getA().equalsIgnoreCase(
 							Constants.AUTHENTICATE_FALSE)) {
 						out.setET(outauth.getET());
 					} else {
+						String tmp = actuser.base64Decode(in.getUN());
+						in.setUN(tmp);
+						tmp = actuser.base64Decode(in.getPW());
+						in.setPW(tmp);
+
 						actuser.sendTextMessage(in, out);
 					}
 				} else {
@@ -310,16 +311,17 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End sendTextMessage with User = " + User + " Password = "
-				+ Password + " TextMessage = " + TextMessage);
+		logger.debug("End sendTextMessage with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " TextMessage = " + in.getTM());
 		return out;
 	}
 
 	@Override
-	public OSiUp SingUpUser(String User, String Password, String Email) {
+	// public OSiUp SingUpUser(String User, String Password, String Email) {
+	public OSiUp SingUpUser(ISiUp in) {
 
-		logger.debug("Start SingUpUser with User = " + User + " Password = "
-				+ Password + " Email = " + Email);
+		logger.debug("Start SingUpUser with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " Email = " + in.getE());
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -327,13 +329,15 @@ public class ServiceImpl implements ServiceUtil {
 		Check actcheck = new Check(con);
 		OSiUp out = new OSiUp();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Email)) {
-					ISiUp in = new ISiUp();
-					in.setUN(User);
-					in.setPW(actuser.base64Decode(Password));
-					in.setE(actuser.base64Decode(Email));
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.checkValueMust(in.getE())) {
+					String tmp = actuser.base64Decode(in.getPW());
+					in.setPW(tmp);
+					// tmp = actuser.base64Decode(in.getUN());
+					// in.setUN(tmp);
+					tmp = actuser.base64Decode(in.getE());
+					in.setE(tmp);
 
 					if (!actcheck.checkEmail(in.getE())) {
 						out.setET(Constants.INVALID_EMAIL_ADRESS);
@@ -379,17 +383,17 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End SingUpUser with User = " + User + " Password = "
-				+ Password + " Email = " + Email);
+		logger.debug("End SingUpUser with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " Email = " + in.getE());
 
 		return out;
 	}
 
 	@Override
-	public OCrCh CreateChat(String User, String Password, String Chatname) {
+	public OCrCh CreateChat(ICrCh in) {
 
-		logger.debug("Start CreateChat with User = " + User + " Password = "
-				+ Password + " Chatname = " + Chatname);
+		logger.debug("Start CreateChat with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " Chatname = " + in.getCN());
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -397,24 +401,25 @@ public class ServiceImpl implements ServiceUtil {
 		OCrCh out = new OCrCh();
 		Check actcheck = new Check(con);
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Chatname)) {
-					ICrCh in = new ICrCh();
-					in.setPW(actuser.base64Decode(Password));
-					in.setUN(actuser.base64Decode(User));
-					in.setCN(actuser.base64Decode(Chatname));
-
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.checkValueMust(in.getCN())) {
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(in.getPW()));
+					inauth.setUN(in.getUN());
 					actuser.authenticate(inauth, outauth);
 
 					if (outauth.getA().equalsIgnoreCase(
 							Constants.AUTHENTICATE_FALSE)) {
 						out.setET(outauth.getET());
 					} else {
+						String tmp = actuser.base64Decode(in.getPW());
+						in.setPW(tmp);
+						tmp = actuser.base64Decode(in.getUN());
+						in.setUN(tmp);
+						tmp = actuser.base64Decode(in.getCN());
+						in.setCN(tmp);
 						actuser.createChat(in, out);
 					}
 				} else {
@@ -456,8 +461,8 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End CreateChat with User = " + User + " Password = "
-				+ Password + " Chatname = " + Chatname);
+		logger.debug("End CreateChat with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " Chatname = " + in.getCN());
 		return out;
 	}
 
@@ -474,11 +479,6 @@ public class ServiceImpl implements ServiceUtil {
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
-				IDeCh in = new IDeCh();
-				in.setCID(ChatID);
-				in.setPW(actuser.base64Decode(Password));
-				in.setUN(actuser.base64Decode(User));
-
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
 				inauth.setPW(actuser.base64Decode(Password));
@@ -490,9 +490,13 @@ public class ServiceImpl implements ServiceUtil {
 					out.setET(outauth.getET());
 				} else {
 					/* Check if Chat exists */
-					if (!actcheck.CheckChatID(in.getCID())) {
+					if (!actcheck.CheckChatID(ChatID)) {
 						out.setET(Constants.NONE_EXISTING_CHAT);
 					} else {
+						IDeCh in = new IDeCh();
+						in.setUN(actuser.base64Decode(User));
+						in.setPW(actuser.base64Decode(Password));
+						in.setCID(ChatID);
 						actuser.deleteChat(in, out);
 					}
 				}
@@ -530,10 +534,10 @@ public class ServiceImpl implements ServiceUtil {
 	}
 
 	@Override
-	public OAdUC AddUserToChat(String User, String Password, int UserID,
-			int ChatID) {
-		logger.debug("Start AddUserToChat with User = " + User + " Password = "
-				+ Password + " ChatID = " + ChatID + "UserID = " + UserID);
+	public OAdUC AddUserToChat(IAdUC in) {
+		logger.debug("Start AddUserToChat with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " ChatID = " + in.getCID()
+				+ "UserID = " + in.getUID());
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -541,18 +545,12 @@ public class ServiceImpl implements ServiceUtil {
 		Check actcheck = new Check(con);
 		OAdUC out = new OAdUC();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				IAdUC in = new IAdUC();
-				in.setCID(ChatID);
-				in.setUID(UserID);
-				in.setPW(actuser.base64Decode(Password));
-				in.setUN(actuser.base64Decode(User));
-
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
-				inauth.setPW(actuser.base64Decode(Password));
-				inauth.setUN(User);
+				inauth.setPW(actuser.base64Decode(in.getPW()));
+				inauth.setUN(in.getUN());
 
 				actuser.authenticate(inauth, outauth);
 
@@ -568,6 +566,10 @@ public class ServiceImpl implements ServiceUtil {
 						if (!actcheck.CheckUserID(in.getUID())) {
 							out.setET(Constants.NONE_EXISTING_USER);
 						} else {
+							String tmp = actuser.base64Decode(in.getUN());
+							in.setUN(tmp);
+							tmp = actuser.base64Decode(in.getPW());
+							in.setPW(tmp);
 							actuser.addUserToChat(in, out);
 						}
 					}
@@ -600,14 +602,15 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End AddUserToChat with User = " + User + " Password = "
-				+ Password + " ChatID = " + ChatID + "UserID = " + UserID);
+		logger.debug("End AddUserToChat with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " ChatID = " + in.getCID()
+				+ "UserID = " + in.getUID());
 		return out;
 	}
 
 	@Override
-	public OReUC RemoveUserFromChat(String User, String Password, int ChatID,
-			int UserID) {
+	public OReUC RemoveUserFromChat(String User, String Password, int UserID,
+			int ChatID) {
 
 		logger.debug("Start RemoveUserFromChat with User = " + User
 				+ " Password = " + Password + " ChatID = " + ChatID
@@ -621,13 +624,6 @@ public class ServiceImpl implements ServiceUtil {
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
-
-				IReUC in = new IReUC();
-				in.setCID(ChatID);
-				in.setUID(UserID);
-				in.setPW(actuser.base64Decode(Password));
-				in.setUN(actuser.base64Decode(User));
-
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
 				inauth.setPW(actuser.base64Decode(Password));
@@ -640,13 +636,18 @@ public class ServiceImpl implements ServiceUtil {
 					out.setET(outauth.getET());
 				} else {
 					/* Check if Chat exists */
-					if (!actcheck.CheckChatID(in.getCID())) {
+					if (!actcheck.CheckChatID(ChatID)) {
 						out.setET(Constants.NONE_EXISTING_CHAT);
 					} else {
 						/* Check if Message exists */
-						if (!actcheck.CheckUserID(in.getUID())) {
+						if (!actcheck.CheckUserID(UserID)) {
 							out.setET(Constants.NONE_EXISTING_USER);
 						} else {
+							IReUC in = new IReUC();
+							in.setUN(actuser.base64Decode(User));
+							in.setPW(actuser.base64Decode(Password));
+							in.setUID(UserID);
+							in.setCID(ChatID);
 							actuser.removeUserFromChat(in, out);
 						}
 					}
@@ -1041,53 +1042,12 @@ public class ServiceImpl implements ServiceUtil {
 		return out;
 	}
 
-	/*
-	 * @Override public OutCheckNewMessages checkNewMessages(String User, String
-	 * Password) { logger.debug("Start checkNewMessages with User = " + User +
-	 * " Password = " + Password);
-	 * 
-	 * OutCheckNewMessages out = new OutCheckNewMessages(); MySqlConnection mc =
-	 * new MySqlConnection(); Connection con = mc.getMySqlConnection(); User
-	 * actuser = new User(con); Check actcheck = new Check(con);
-	 * 
-	 * if (actcheck.checkValueMust(User)) { if
-	 * (actcheck.checkValueMust(Password)) {
-	 * 
-	 * InCheckNewMessages in = new InCheckNewMessages();
-	 * in.setPW(actuser.base64Decode(Password));
-	 * in.setUN(actuser.base64Decode(User));
-	 * 
-	 * IAuth inauth = new IAuth(); OAuth outauth = new OAuth();
-	 * inauth.setPW(actuser.base64Decode(Password)); inauth.setUN(User);
-	 * 
-	 * actuser.authenticate(inauth, outauth);
-	 * 
-	 * if (outauth.getAuthenticated().equalsIgnoreCase(
-	 * Constants.AUTHENTICATE_FALSE)) { out.setET(outauth.getErrortext()); }
-	 * else { // Check if Chat exists actuser.checkNewMessages(in, out); } //
-	 * Password check failed } else { if
-	 * (actcheck.getLastError().equalsIgnoreCase( Constants.NO_CONTENT_GIVEN)) {
-	 * out.setET(Constants.NO_USERNAME_OR_PASSWORD); } else if
-	 * (actcheck.getLastError().equalsIgnoreCase( Constants.ENCODING_ERROR)) {
-	 * out.setET(Constants.ENCODING_ERROR); } } // User check failed } else { if
-	 * (actcheck.getLastError().equalsIgnoreCase( Constants.NO_CONTENT_GIVEN)) {
-	 * out.setET(Constants.NO_USERNAME_OR_PASSWORD); } else if
-	 * (actcheck.getLastError().equalsIgnoreCase( Constants.ENCODING_ERROR)) {
-	 * out.setET(Constants.ENCODING_ERROR); } }
-	 * 
-	 * if (con != null) { try { con.close(); } catch (SQLException e) { // TODO
-	 * Auto-generated catch block e.printStackTrace(); } }
-	 * 
-	 * logger.debug("End checkNewMessages with User = " + User + " Password = "
-	 * + Password); return out; }
-	 */
-
 	@Override
 	public ODMFC deleteMessageFromChat(String User, String Password,
 			int MessageID) {
 
 		logger.debug("Start deleteMessageFromChat with User = " + User
-				+ " Password = " + Password);
+				+ " Password = " + Password + " MessageID = " + MessageID);
 
 		ODMFC out = new ODMFC();
 		MySqlConnection mc = new MySqlConnection();
@@ -1097,12 +1057,6 @@ public class ServiceImpl implements ServiceUtil {
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
-
-				IDMFC in = new IDMFC();
-				in.setPW(actuser.base64Decode(Password));
-				in.setUN(actuser.base64Decode(User));
-				in.setMID(MessageID);
-
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
 				inauth.setPW(actuser.base64Decode(Password));
@@ -1116,9 +1070,13 @@ public class ServiceImpl implements ServiceUtil {
 				} else {
 					if (MessageID > 0) {
 						if (actcheck.CheckMessageID(MessageID)) {
-							actuser.fillUserinfo(in.getUN());
+							actuser.fillUserinfo(actuser.base64Decode(User));
 							if (actcheck.CheckOwnMessage(actuser.getID(),
-									in.getMID())) {
+									MessageID)) {
+								IDMFC in = new IDMFC();
+								in.setUN(actuser.base64Decode(User));
+								in.setPW(actuser.base64Decode(Password));
+								in.setMID(MessageID);
 								actuser.deleteMessageFromChat(in, out);
 							} else {
 								out.setET(Constants.NOT_MESSAGE_OWNER);
@@ -1166,9 +1124,9 @@ public class ServiceImpl implements ServiceUtil {
 	}
 
 	@Override
-	public OSShT setShowTimeStamp(String User, String Password, int MessageID) {
-		logger.debug("Start setShowTimeStamp with User = " + User
-				+ " Password = " + Password + " MessageID = " + MessageID);
+	public OSShT setShowTimeStamp(ISShT in) {
+		logger.debug("Start setShowTimeStamp with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " MessageID = " + in.getMID());
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -1176,17 +1134,12 @@ public class ServiceImpl implements ServiceUtil {
 		Check actcheck = new Check(con);
 		OSShT out = new OSShT();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				ISShT in = new ISShT();
-				in.setUN(actuser.base64Decode(User));
-				in.setPW(actuser.base64Decode(Password));
-				in.setMID(MessageID);
-
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
-				inauth.setPW(actuser.base64Decode(Password));
-				inauth.setUN(User);
+				inauth.setPW(actuser.base64Decode(in.getPW()));
+				inauth.setUN(in.getUN());
 
 				actuser.authenticate(inauth, outauth);
 
@@ -1203,9 +1156,14 @@ public class ServiceImpl implements ServiceUtil {
 						} else {
 							// Check if it is your own Message. Do not update
 							// ShowTimeStamps for other people
-							actuser.fillUserinfo(in.getUN());
+							actuser.fillUserinfo(actuser.base64Decode(in
+									.getUN()));
 							if (actcheck.CheckOwnMessage(actuser.getID(),
 									in.getMID())) {
+								String tmp = actuser.base64Decode(in.getUN());
+								in.setUN(tmp);
+								tmp = actuser.base64Decode(in.getPW());
+								in.setPW(tmp);
 								actuser.setShowTimeStamp(in, out);
 							} else {
 								out.setET(Constants.NOT_MESSAGE_OWNER);
@@ -1243,14 +1201,14 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End setShowTimeStamp with User = " + User
-				+ " Password = " + " MessageID = " + MessageID);
+		logger.debug("End setShowTimeStamp with User = " + in.getUN()
+				+ " Password = " + in.getPW() + " MessageID = " + in.getMID());
 		return out;
 	}
 
 	@Override
 	public OGMI getMessageInformation(String User, String Password,
-			int MessageID) {
+			List<Integer> MessageID) {
 		logger.debug("Start getMessageInformation with User = " + User
 				+ " Password = " + Password);
 
@@ -1266,7 +1224,6 @@ public class ServiceImpl implements ServiceUtil {
 				IGMI in = new IGMI();
 				in.setPW(actuser.base64Decode(Password));
 				in.setUN(actuser.base64Decode(User));
-				in.setMID(MessageID);
 
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
@@ -1279,14 +1236,22 @@ public class ServiceImpl implements ServiceUtil {
 						Constants.AUTHENTICATE_FALSE)) {
 					out.setET(outauth.getET());
 				} else {
-					if (MessageID > 0) {
-						if (actcheck.CheckMessageID(MessageID)) {
-							actuser.getMessageInformation(in, out);
-						} else {
-							out.setET(Constants.NONE_EXISTING_MESSAGE);
+					boolean abort = false;
+					if (!MessageID.isEmpty() && MessageID.size() > 0) {
+						for (int i = 0; i < MessageID.size(); i++) {
+							if (actcheck.CheckMessageID(MessageID.get(i))) {
+								in.getMID().add(MessageID.get(i));
+							} else {
+								out.setET(Constants.NONE_EXISTING_MESSAGE);
+								abort = true;
+							}
 						}
 					} else {
 						out.setET(Constants.NONE_EXISTING_MESSAGE);
+						abort = true;
+					}
+					if (!abort) {
+						actuser.getMessageInformation(in, out);
 					}
 				}
 				// Password check failed
@@ -1325,10 +1290,9 @@ public class ServiceImpl implements ServiceUtil {
 	}
 
 	@Override
-	public OAckMD acknowledgeMessageDownload(String User, String Password,
-			int MessageID, String Acknowledge) {
-		logger.debug("Start acknowledgeMessageDownload with User = " + User
-				+ " Password = " + Password);
+	public OAckMD acknowledgeMessageDownload(IAckMD in) {
+		logger.debug("Start acknowledgeMessageDownload with User = "
+				+ in.getUN() + " Password = " + in.getPW());
 
 		OAckMD out = new OAckMD();
 		MySqlConnection mc = new MySqlConnection();
@@ -1336,19 +1300,13 @@ public class ServiceImpl implements ServiceUtil {
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Acknowledge)) {
-					IAckMD in = new IAckMD();
-					in.setPW(actuser.base64Decode(Password));
-					in.setUN(actuser.base64Decode(User));
-					in.setMID(MessageID);
-					in.setACK(actuser.base64Decode(Acknowledge));
-
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.checkValueMust(in.getACK())) {
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(in.getPW()));
+					inauth.setUN(in.getUN());
 
 					actuser.authenticate(inauth, outauth);
 
@@ -1356,8 +1314,14 @@ public class ServiceImpl implements ServiceUtil {
 							Constants.AUTHENTICATE_FALSE)) {
 						out.setET(outauth.getET());
 					} else {
-						if (MessageID > 0) {
-							if (actcheck.CheckMessageID(MessageID)) {
+						if (in.getMID() > 0) {
+							if (actcheck.CheckMessageID(in.getMID())) {
+								String tmp = actuser.base64Decode(in.getUN());
+								in.setUN(tmp);
+								tmp = actuser.base64Decode(in.getPW());
+								in.setPW(tmp);
+								tmp = actuser.base64Decode(in.getACK());
+								in.setACK(tmp);
 								actuser.acknowledgeMessageDownload(in, out);
 							} else {
 								out.setET(Constants.NONE_EXISTING_MESSAGE);
@@ -1405,16 +1369,15 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End acknowledgeMessageDownload with User = " + User
-				+ " Password = " + Password);
+		logger.debug("End acknowledgeMessageDownload with User = " + in.getUN()
+				+ " Password = " + in.getPW());
 		return out;
 	}
 
 	@Override
-	public OAckCD acknowledgeChatDownload(String User, String Password,
-			int ChatID, String Acknowledge) {
-		logger.debug("Start acknowledgeChatDownload with User = " + User
-				+ " Password = " + Password);
+	public OAckCD acknowledgeChatDownload(IAckCD in) {
+		logger.debug("Start acknowledgeChatDownload with User = " + in.getUN()
+				+ " Password = " + in.getPW());
 
 		OAckCD out = new OAckCD();
 		MySqlConnection mc = new MySqlConnection();
@@ -1422,19 +1385,13 @@ public class ServiceImpl implements ServiceUtil {
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Acknowledge)) {
-					IAckCD in = new IAckCD();
-					in.setPW(actuser.base64Decode(Password));
-					in.setUN(actuser.base64Decode(User));
-					in.setCID(ChatID);
-					in.setACK(actuser.base64Decode(Acknowledge));
-
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.checkValueMust(in.getACK())) {
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(in.getPW()));
+					inauth.setUN(in.getUN());
 
 					actuser.authenticate(inauth, outauth);
 
@@ -1442,8 +1399,14 @@ public class ServiceImpl implements ServiceUtil {
 							Constants.AUTHENTICATE_FALSE)) {
 						out.setET(outauth.getET());
 					} else {
-						if (ChatID > 0) {
-							if (actcheck.CheckChatID(ChatID)) {
+						if (in.getCID() > 0) {
+							if (actcheck.CheckChatID(in.getCID())) {
+								String tmp = actuser.base64Decode(in.getUN());
+								in.setUN(tmp);
+								tmp = actuser.base64Decode(in.getPW());
+								in.setPW(tmp);
+								tmp = actuser.base64Decode(in.getACK());
+								in.setACK(tmp);
 								actuser.acknowledgeChatDownload(in, out);
 							} else {
 								out.setET(Constants.NONE_EXISTING_CHAT);
@@ -1491,8 +1454,8 @@ public class ServiceImpl implements ServiceUtil {
 			}
 		}
 
-		logger.debug("End acknowledgeChatDownload with User = " + User
-				+ " Password = " + Password);
+		logger.debug("End acknowledgeChatDownload with User = " + in.getUN()
+				+ " Password = " + in.getPW());
 		return out;
 	}
 }

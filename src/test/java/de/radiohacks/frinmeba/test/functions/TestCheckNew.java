@@ -106,61 +106,32 @@ public class TestCheckNew extends JerseyTest {
 
 	@Test
 	public void testCheckNewMessagesUpNoValues() {
-		System.out.print("Start testCheckNewMessagesUpNoValues\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OCN out = target.request().get(OCN.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCheckNewMessagesUser() {
-		System.out.print("Start testCheckNewMessagesUser\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username);
 		OCN out = target.request().get(OCN.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCheckNewMessagesPassword() {
-		System.out.print("Start testCheckNewMessagesPassword\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password);
 		OCN out = target.request().get(OCN.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCheckNewMessagesUserPassword() {
-		System.out.print("Start testCheckNewMessagesUserPassword\n");
-		WebTarget target;
 		helperDatabase help = new helperDatabase();
 		int TxtmsgID = help.CreateContentMessage("Test Nachricht",
 				Constants.TYP_TEXT);
@@ -170,87 +141,45 @@ public class TestCheckNew extends JerseyTest {
 		help.insertMessage(UserID, User2ChatID, Constants.TYP_TEXT, TxtmsgID,
 				0, true);
 
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username);
 		OCN out = target.request().get(OCN.class);
-
 		Assert.assertNotNull(out.getCNC());
 	}
 
 	@Test
 	public void testCheckNewMessagesUserWrongPassword() {
-		System.out.print("Start testCheckNewMessagesUserWrongPassword\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username);
-			;
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username);
 		OCN out = target.request().get(OCN.class);
-
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCheckNewMessagesUserEncodeFailureUser() {
-		System.out.print("Start testCheckNewMessagesUserEncodeFailureUser\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "XXX");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, "$!%1234");
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, "$!%1234");
 		OCN out = target.request().get(OCN.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testCheckNewMessagesUserEncodeFailurePassword() {
-		System.out
-				.print("Start testCheckNewMessagesUserEncodeFailurePassword\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$!%1234")
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX").queryParam(
-							Constants.QPusername, username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "$!%1234")
+				.queryParam(Constants.QPusername, username);
 		OCN out = target.request().get(OCN.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

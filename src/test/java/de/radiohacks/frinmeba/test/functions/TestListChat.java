@@ -108,13 +108,8 @@ public class TestListChat extends JerseyTest {
 
 	@Test
 	public void testListChatUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -122,16 +117,10 @@ public class TestListChat extends JerseyTest {
 
 	@Test
 	public void testListChatUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username);
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertNotNull(out.getC());
@@ -139,23 +128,14 @@ public class TestListChat extends JerseyTest {
 
 	@Test
 	public void testListChatUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username);
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
@@ -163,15 +143,9 @@ public class TestListChat extends JerseyTest {
 
 	@Test
 	public void testListChatUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username);
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -179,15 +153,9 @@ public class TestListChat extends JerseyTest {
 
 	@Test
 	public void testListChatPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password);
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -195,16 +163,10 @@ public class TestListChat extends JerseyTest {
 
 	@Test
 	public void testListChatEncodingErrorUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1233");
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, "$%&1233");
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, "$%&1233");
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
@@ -212,16 +174,10 @@ public class TestListChat extends JerseyTest {
 
 	@Test
 	public void testListChatEncodingErrorPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					"$%&1233").queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "$%&1233")
+				.queryParam(Constants.QPusername, username);
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());

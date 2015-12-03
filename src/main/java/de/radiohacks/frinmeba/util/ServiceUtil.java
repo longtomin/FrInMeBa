@@ -28,13 +28,26 @@
  */
 package de.radiohacks.frinmeba.util;
 
+import java.util.List;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import de.radiohacks.frinmeba.modelshort.IAckCD;
+import de.radiohacks.frinmeba.modelshort.IAckMD;
+import de.radiohacks.frinmeba.modelshort.IAdUC;
+import de.radiohacks.frinmeba.modelshort.ICrCh;
+import de.radiohacks.frinmeba.modelshort.IIMIC;
+import de.radiohacks.frinmeba.modelshort.ISShT;
+import de.radiohacks.frinmeba.modelshort.ISTeM;
+import de.radiohacks.frinmeba.modelshort.ISiUp;
 import de.radiohacks.frinmeba.modelshort.OAckCD;
 import de.radiohacks.frinmeba.modelshort.OAckMD;
 import de.radiohacks.frinmeba.modelshort.OAdUC;
@@ -64,19 +77,17 @@ public interface ServiceUtil {
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password);
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/signup")
-	public OSiUp SingUpUser(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPemail) String Email);
+	public OSiUp SingUpUser(ISiUp in);
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/createchat")
-	public OCrCh CreateChat(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPchatname) String Chatname);
+	public OCrCh CreateChat(ICrCh in);
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_XML)
@@ -85,13 +96,11 @@ public interface ServiceUtil {
 			@QueryParam(Constants.QPpassword) String Password,
 			@QueryParam(Constants.QPchatid) int ChatID);
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/addusertochat")
-	public OAdUC AddUserToChat(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPuserid) int UserID,
-			@QueryParam(Constants.QPchatid) int ChatID);
+	public OAdUC AddUserToChat(IAdUC in);
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_XML)
@@ -99,8 +108,8 @@ public interface ServiceUtil {
 	public OReUC RemoveUserFromChat(
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPchatid) int ChatID,
-			@QueryParam(Constants.QPuserid) int UserID);
+			@QueryParam(Constants.QPuserid) int UserID,
+			@QueryParam(Constants.QPchatid) int ChatID);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
@@ -115,12 +124,11 @@ public interface ServiceUtil {
 	public OLiCh ListChats(@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password);
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/sendtextmessage")
-	public OSTeM sendTextMessage(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPtextmessage) String TextMessage);
+	public OSTeM sendTextMessage(ISTeM in);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
@@ -129,15 +137,11 @@ public interface ServiceUtil {
 			@QueryParam(Constants.QPpassword) String Password,
 			@QueryParam(Constants.QPtextmessageid) int TextMessageID);
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/insertmessageintochat")
-	public OIMIC insertMessageIntoChat(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPchatid) int ChatID,
-			@QueryParam(Constants.QPmessageid) int MessageID,
-			@QueryParam(Constants.QPmessagetype) String MessageType);
+	public OIMIC insertMessageIntoChat(IIMIC in);
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_XML)
@@ -162,13 +166,11 @@ public interface ServiceUtil {
 	public OCN checkNew(@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password);
 
-	@GET
+	@POST
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/setshowtimestamp")
-	public OSShT setShowTimeStamp(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPmessageid) int MessageID);
+	public OSShT setShowTimeStamp(ISShT in);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
@@ -176,23 +178,17 @@ public interface ServiceUtil {
 	public OGMI getMessageInformation(
 			@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPmessageid) int MessageID);
+			@QueryParam(Constants.QPmessageid) List<Integer> MessageID);
 
-	@GET
+	@POST
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/acknowledgemessagedownload")
-	public OAckMD acknowledgeMessageDownload(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPmessageid) int MessageID,
-			@QueryParam(Constants.QPacknowledge) String Acknowledge);
-	
-	@GET
+	public OAckMD acknowledgeMessageDownload(IAckMD in);
+
+	@POST
 	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/acknowledgechatdownload")
-	public OAckCD acknowledgeChatDownload(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPchatid) int ChatID,
-			@QueryParam(Constants.QPacknowledge) String Acknowledge);
+	public OAckCD acknowledgeChatDownload(IAckCD in);
 }

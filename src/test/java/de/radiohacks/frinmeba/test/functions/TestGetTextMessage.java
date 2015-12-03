@@ -118,13 +118,8 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -132,17 +127,9 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -150,17 +137,9 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessagePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -168,17 +147,10 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUserTextmessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPtextmessageid, msg1)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPtextmessageid,
-					msg1).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPtextmessageid, msg1)
+				.queryParam(Constants.QPusername, username);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -186,17 +158,10 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessagePasswordTextmessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPtextmessageid, msg1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPtextmessageid, msg1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPtextmessageid, msg1);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -204,17 +169,10 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
@@ -223,25 +181,14 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet))));
-			;
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
@@ -249,18 +196,10 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "�$%1234");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, "�$%1234");
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, "�$%1234");
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
@@ -268,18 +207,10 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "�$%1234")
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					"�$%1234").queryParam(Constants.QPusername, username);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "�$%1234")
+				.queryParam(Constants.QPusername, username);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
@@ -287,21 +218,11 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUserPasswordTextmessage1() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, msg1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, msg1);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPtextmessageid, msg1);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(textmnsg1_org, out.getTM());
@@ -309,21 +230,11 @@ public class TestGetTextMessage extends JerseyTest {
 
 	@Test
 	public void testGetTextMessageUserPasswordTextmessage2() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, msg2);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, msg2);
-			;
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPtextmessageid, msg2);
 		OGTeM out = target.request().get(OGTeM.class);
 
 		Assert.assertEquals(textmnsg2_org, out.getTM());

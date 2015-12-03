@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,6 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.ISTeM;
 import de.radiohacks.frinmeba.modelshort.OSTeM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
@@ -56,16 +60,13 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 public class TestSendTextMessage extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @PUT
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/sendtextmessage") public OSTeM
-	 * sendTextMessage(@QueryParam(Constants.QPusername) String User,
+	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPtextmessage) String TextMessage);
+	 * @Path("/sendtextmessage") public OSTeM sendTextMessage(ISTeM in);
 	 */
 
 	// Username welche anzulegen ist
@@ -110,320 +111,144 @@ public class TestSendTextMessage extends JerseyTest {
 		help.CreateActiveUser(username_org, username, password_org, email_org);
 	}
 
+	private OSTeM callTarget(ISTeM in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OSTeM.class);
+	}
+
 	@Test
 	public void testSendTextMessageUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessagePasswordMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPtextmessage, textmessage);
-
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-		// Assert.assertNotNull(out.getTextID());
 	}
 
 	@Test
 	public void testSendTextMessageUserMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, textmessage);
-
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setUN(username);
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-		// Assert.assertNotNull(out.getTextID());
 	}
 
 	@Test
 	public void testSendTextMessageUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password);
-
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(Constants.QPpassword, password);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		in.setUN(username);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NO_TEXTMESSAGE_GIVEN, out.getET());
-		// Assert.assertNotNull(out.getTextID());
 	}
 
 	@Test
 	public void testSendTextMessageMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPtextmessage, textmessage);
-
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPtextmessage,
-					textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-		// Assert.assertNotNull(out.getTextID());
 	}
 
 	@Test
 	public void testSendTextMessageUserPasswordMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, textmessage);
-
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
-		// Assert.assertEquals(Constants.NO_TEXTMESSAGE_GIVEN,
-		// out.getET());
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		in.setUN(username);
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertNotNull(out.getTID());
 	}
 
 	@Test
 	public void testSendTextMessageUserWrongPasswordMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setUN(username);
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessageWrongUserPasswordMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(
-							Constants.QPusername,
-							Base64.encodeBase64String("ZZZ".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(
-							Constants.QPusername,
-							Base64.encodeBase64String("ZZZ".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessageWrongUserWrongPasswordMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(
-							Constants.QPusername,
-							Base64.encodeBase64String("ZZZ".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(
-							Constants.QPusername,
-							Base64.encodeBase64String("ZZZ".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessageUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setUN(username);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessagePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessageEncodimgErrorUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1234")
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1234")
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		in.setUN("$%&1234");
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessageEncodimgErrorPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$%&1234")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "$%&1234")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, textmessage);
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW("$%&1234");
+		in.setUN(username);
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testSendTextMessageEncodimgErrorTextMessage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, "$%&1234");
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessage, "$%&1234");
-			;
-		}
-		OSTeM out = target.request().get(OSTeM.class);
-
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		in.setUN(username);
+		in.setTM("$%&1234");
+		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

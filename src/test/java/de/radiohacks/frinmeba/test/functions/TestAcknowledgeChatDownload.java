@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.client.ClientConfig;
@@ -47,6 +50,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.IAckCD;
 import de.radiohacks.frinmeba.modelshort.OAckCD;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
@@ -58,19 +62,14 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 public class TestAcknowledgeChatDownload extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @POST
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/acknowledgechatdownload") public OAckCD acknowledgeChatDownload(
+	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPusername) String User,
-	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPchatid) int ChatID,
-	 * 
-	 * @QueryParam(Constants.QPacknowledge) String Acknowledge);
+	 * @Path("/acknowledgechatdownload") public OAckCD
+	 * acknowledgeChatDownload(IAckCD in);
 	 */
 
 	// Username welche anzulegen ist
@@ -89,7 +88,7 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
 	final static String functionurl = "user/acknowledgechatdownload";
 
 	final static String chatname_org = "Test Nachnricht fuer Acknowledge";
-	final static String chatnem = Base64.encodeBase64String(chatname_org
+	final static String chatname = Base64.encodeBase64String(chatname_org
 			.getBytes(Charset.forName(Constants.CharacterSet)));
 
 	static int cid;
@@ -131,163 +130,89 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
 
 	}
 
+	private OAckCD callTarget(IAckCD in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
+		Response response = target.request()
+				.buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OAckCD.class);
+	}
+
 	@Test
 	public void testAcknowledgeChatDownloadUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-
-		OAckCD out = target.request().get(OAckCD.class);
+		IAckCD in = new IAckCD();
+		OAckCD out = callTarget(in);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAcknowledgeChatDownloadUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-			;
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAcknowledgeChatDownloadPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setPW(password);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAcknowledgeChatDownloadUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
 	}
 
 	@Test
 	public void testAcknowledgeChatDownloadUserPasswordNoAcknowledge() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, cid);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, cid);
-			;
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(cid);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
 	}
 
 	@Test
 	public void testAcknowledgeChatDownloadUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, password);
-			;
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, password);
-			;
-			;
-		}
-		OAckCD out = target.request().get(OAckCD.class);
+		int hashCode = chatname_org.hashCode();
+		String sha1b64 = new String(Base64.encodeBase64(String
+				.valueOf(hashCode).getBytes()),
+				Charset.forName(Constants.CharacterSet));
 
+		IAckCD in = new IAckCD();
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setUN(username);
+		in.setACK(sha1b64);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAcknowledgeChatDownloadUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "XXX");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, "XXX");
-			;
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setUN("XXX");
+		in.setPW(password);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testAcknowledgeChatDownloadUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX").queryParam(
-							Constants.QPusername, username);
-			;
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW("XXX");
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
@@ -299,26 +224,15 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
 				.valueOf(hashCode).getBytes()),
 				Charset.forName(Constants.CharacterSet));
 
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, cid)
-					.queryParam(Constants.QPacknowledge, sha1b64);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, cid)
-					.queryParam(Constants.QPacknowledge, sha1b64);
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(cid);
+		in.setACK(sha1b64);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getACK());
 	}
-	
+
 	@Test
 	public void testAcknowledgeChatDownloadUserPasswordAcknowledge() {
 
@@ -327,21 +241,11 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
 				.valueOf(hashCode).getBytes()),
 				Charset.forName(Constants.CharacterSet));
 
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, sha1b64);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, sha1b64);
-		}
-		OAckCD out = target.request().get(OAckCD.class);
-
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		in.setACK(sha1b64);
+		OAckCD out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 }

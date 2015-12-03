@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,6 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.ICrCh;
 import de.radiohacks.frinmeba.modelshort.OCrCh;
 import de.radiohacks.frinmeba.modelshort.ODeCh;
 import de.radiohacks.frinmeba.services.Constants;
@@ -57,11 +61,11 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 public class TestDeleteChat extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @DELETE
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/deletechat") public OutDeleteChat
+	 * @Path("/deletechat") public ODeCh
 	 * DeleteChat(@QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password,
@@ -106,246 +110,143 @@ public class TestDeleteChat extends JerseyTest {
 		help.CreateActiveUser(username_org, username, password_org, email_org);
 	}
 
+	private OCrCh callCreateChat(ICrCh in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + "user/createchat");
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OCrCh.class);
+	}
+
 	@Test
 	public void testDeleteChatUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatUserPasswordChatid() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPchatid, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 
-		// Now we create a chat to delete it afterwards
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + "user/createchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target("user/createchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		}
-		OCrCh out2 = target.request().get(OCrCh.class);
+		ICrCh inCreateChat = new ICrCh();
+		inCreateChat.setUN(username);
+		inCreateChat.setPW(password);
+		inCreateChat.setCN(Base64.encodeBase64String("Testchat"
+				.getBytes(Charset.forName(Constants.CharacterSet))));
+		OCrCh out2 = callCreateChat(inCreateChat);
 
 		Assert.assertEquals("Testchat", out2.getCN());
 
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, out2.getCID());
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, out2.getCID());
-		}
-		ODeCh out3 = target.request().delete(ODeCh.class);
+		WebTarget target2 = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPchatid, out2.getCID());
+		ODeCh out3 = target2.request().delete(ODeCh.class);
 
 		Assert.assertEquals(Constants.CHAT_DELETED, out3.getR());
-
 	}
 
 	@Test
 	public void testDeleteChatUserWrongPasswordChatid() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1);
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1);
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPchatid, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatChatid() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPchatid, 1);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPchatname,
-					"Testchat");
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPchatid, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, username);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatUserChatid() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(Constants.QPchatname, "Testchat");
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatPasswordChatid() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, 1);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPchatid, 1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPchatid, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatEncodingErrorUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1234")
-					.queryParam(Constants.QPchatid, 1);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1234")
-					.queryParam(Constants.QPchatid, 1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password)
+				.queryParam(Constants.QPusername, "$%&1234")
+				.queryParam(Constants.QPchatid, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testDeleteChatEncodingErrorPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$%&1234")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "$%&1234")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "$%&1234")
+				.queryParam(Constants.QPusername, username)
+				.queryParam(Constants.QPchatid, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
-
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

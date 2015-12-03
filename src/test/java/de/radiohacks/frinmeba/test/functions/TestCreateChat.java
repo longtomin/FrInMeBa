@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,6 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.ICrCh;
 import de.radiohacks.frinmeba.modelshort.OCrCh;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
@@ -56,16 +60,13 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 public class TestCreateChat extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @PUT
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/createchat") public OutCreateChat
-	 * CreateChat(@QueryParam(Constants.QPusername) String User,
+	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPchatname) String Chatname);
+	 * @Path("/createchat") public OCrCh CreateChat(ICrCh in);
 	 */
 
 	// Username welche anzulegen ist
@@ -105,274 +106,128 @@ public class TestCreateChat extends JerseyTest {
 		help.CreateActiveUser(username_org, username, password_org, email_org);
 	}
 
+	private OCrCh callTarget(ICrCh in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OCrCh.class);
+	}
+
 	@Test
 	public void testCreateChatUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCreateChatUserPasswordChatname() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setPW(password);
+		in.setUN(username);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals("Testchat", out.getCN());
 	}
 
 	@Test
 	public void testCreateChatUserWrongPasswordChatname() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setUN(username);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCreateChatUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setUN(username);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCreateChatPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setPW(password);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCreateChatChatname() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPchatname, "Testchat");
-		} else {
-			target = target(functionurl).queryParam(Constants.QPchatname,
-					"Testchat");
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCreateChatUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setPW(password);
+		in.setUN(username);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.MISSING_CHATNAME, out.getET());
 	}
 
 	@Test
 	public void testCreateChatUserChatname() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(
-					Constants.QPchatname,
-					Base64.encodeBase64String("Testchat".getBytes(Charset
-							.forName(Constants.CharacterSet))));
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setUN(username);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCreateChatPasswordChatname() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(
-					Constants.QPchatname,
-					Base64.encodeBase64String("Testchat".getBytes(Charset
-							.forName(Constants.CharacterSet))));
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setPW(password);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testCreateChatEncodingErrorUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setPW(password);
+		in.setUN("$%&1233");
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testCreateChatEncodingErrorPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("Testchat"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setPW("$%&1233");
+		in.setUN(username);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testCreateChatEncodingErrorChatname() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatname, "$%&1233");
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatname, "$%&1233");
-		}
-		OCrCh out = target.request().get(OCrCh.class);
-
+		ICrCh in = new ICrCh();
+		in.setCN("$%&1233");
+		in.setPW(password);
+		in.setUN(username);
+		OCrCh out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 }

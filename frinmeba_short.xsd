@@ -28,17 +28,60 @@
     either expressed or implied, of the FreeBSD Project.
 
 -->
-<!-- Abbreviations: UN = Username PW = Password E = Email A = Authenticated 
-	ET = Errortext UID = UserID OU = OwningUser OUID = OwningUserID OUN = OwnningUserName 
-	CN = Chatname CID = ChatID MID = MessageID MT = MessageTyp S = Search SdT 
-	= SendTimestamp RdT = ReadTimestamp ShT = ShowTimestamp ACK = Acknowledge 
-	NT = NumberTotal NR = NumberRead NS = NumberShow TM = TextMessage TID = TextID 
-	IID = ImageID IM = ImageMessage IMD5 = ImageMD5Hash IF = ImageFilename IS 
-	= ImageSize VID = VideoID VM = VideoMessage VMD5 = VideoMD5Hash VF = VideoFilename 
-	VS = VideoSize FID = FileID FM = FileMessage FMD5 = FileMD5Hash FF = FileFilename 
-	FS = FileSize R = Result TMID = TextMsgID IMID = ImageMsgID CMID = ContactMsgID 
-	LMID = LocationMsgID FMID = FileMsgID VMID = VideoMsgID OMID = OriginMsgID 
-	LID = LocationID TID = TextID LM = LocationMessage -->
+<!-- Abbreviations:
+ A = Authenticated 
+ ACK = Acknowledge
+ C = Chat
+ CID = ChatID
+ CMID = ContactMsgID 
+ CN = Chatname
+ E = Email
+ ET = Errortext
+ FF = FileFilename 
+ FID = FileID
+ FM = FileMessage
+ FMD5 = FileMD5Hash
+ FMID = FileMsgID
+ FS = FileSize
+ IF = ImageFilename
+ IID = ImageID
+ IM = ImageMessage
+ IMD5 = ImageMD5Hash
+ IMID = ImageMsgID
+ IS = ImageSize
+ LID = LocationID
+ LM = LocationMessage
+ LMID = LocationMsgID
+ MI = MessageInformation
+ MID = MessageID
+ MT = MessageTyp
+ NR = NumberRead
+ NS = NumberShow
+ NT = NumberTotal
+ OMID = OriginMsgID 
+ OU = OwningUser
+ OUID = OwningUserID 
+ OUN = OwnningUserName 
+ PW = Password
+ R = Result
+ RdT = ReadTimestamp
+ S = Search 
+ SdT = SendTimestamp
+ ShT = ShowTimestamp
+ TID = TextID
+ TID = TextID 
+ TM = TextMessage
+ TMID = TextMsgID
+ U = User
+ UID = UserID 
+ UN = Username
+ VF = VideoFilename 
+ VID = VideoID
+ VM = VideoMessage
+ VMD5 = VideoMD5Hash
+ VMID = VideoMsgID
+ VS = VideoSize
+ -->
 <xs:schema attributeFormDefault="unqualified"
 	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
@@ -50,7 +93,24 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	<xs:element name="U">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:int" name="UID" />
+				<xs:element type="xs:string" name="E" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="C">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="CN" />
+				<xs:element type="xs:int" name="CID" />
+				<xs:element ref="OU" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="M">
 		<xs:complexType>
 			<xs:sequence>
@@ -91,7 +151,25 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	<xs:element name="MI">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:int" name="UID" />
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:long" name="RD" />
+				<xs:element type="xs:long" name="SH" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MIB">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:int" name="MID" />
+				<xs:element type="xs:long" name="SD" />
+				<xs:element ref="MI" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="IAuth">
 		<!-- In Authenticate -->
 		<xs:complexType>
@@ -246,15 +324,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element name="User" minOccurs="0" maxOccurs="unbounded">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element type="xs:string" name="UN" />
-								<xs:element type="xs:int" name="UID" />
-								<xs:element type="xs:string" name="E" />
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
+					<xs:element ref="U" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
@@ -275,15 +345,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element name="Chat" minOccurs="0" maxOccurs="unbounded">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element type="xs:string" name="CN" />
-								<xs:element type="xs:int" name="CID" />
-								<xs:element ref="OU" />
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
+					<xs:element ref="C" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
@@ -386,7 +448,7 @@
 			<xs:sequence>
 				<xs:element type="xs:string" name="UN" />
 				<xs:element type="xs:string" name="PW" />
-				<xs:element type="xs:int" name="MID" />
+				<xs:element type="xs:int" name="MID" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -394,12 +456,7 @@
 		<!-- Out Get Message Information -->
 		<xs:complexType>
 			<xs:choice>
-				<xs:sequence>
-					<xs:element type="xs:int" name="MID" />
-					<xs:element type="xs:int" name="NT" />
-					<xs:element type="xs:int" name="NR" />
-					<xs:element type="xs:int" name="NS" />
-				</xs:sequence>
+				<xs:element ref="MIB" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -431,14 +488,8 @@
 			<xs:sequence>
 				<xs:element type="xs:string" name="UN" />
 				<xs:element type="xs:string" name="PW" />
-				<xs:element name="LM">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element type="xs:string" name="Lat" />
-							<xs:element type="xs:string" name="Lon" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
+				<xs:element type="xs:string" name="Lat" />
+				<xs:element type="xs:string" name="Lon" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -622,14 +673,8 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element name="LM">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element type="xs:string" name="Lat" />
-								<xs:element type="xs:string" name="Lon" />
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
+					<xs:element type="xs:string" name="Lat" />
+					<xs:element type="xs:string" name="Lon" />
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>

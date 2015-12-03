@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,6 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.IIMIC;
 import de.radiohacks.frinmeba.modelshort.OIMIC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
@@ -56,20 +60,14 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 public class TestInserMessageIntoChat extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @PUT
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/insertmessageintochat") public OIMIC
-	 * insertMessageIntoChat(@QueryParam(Constants.QPusername) String User,
+	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPchatid) int ChatID,
-	 * 
-	 * @QueryParam(Constants.QPmessageid) int MessageID,
-	 * 
-	 * @QueryParam(Constants.QPmessagetype) String MessageType);
+	 * @Path("/insertmessageintochat") public OIMIC insertMessageIntoChat(IIMIC
+	 * in);
 	 */
 
 	final static String username1_org = "Test1";
@@ -182,527 +180,228 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		help.AddUserToChat(help.getUserID(username5_org), cid);
 	}
 
+	private OIMIC callTarget(IIMIC in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OIMIC.class);
+	}
+
 	@Test
 	public void testInserMessageIntoChatUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username1);
-			;
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1);
-			;
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setPW(password1);
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, username1);
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW(password1);
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserWrongPasswordNoMessageType() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username1);
-			;
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserWrongPasswordMessageType() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-			;
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, "XXX");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, "XXX");
-			;
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN("XXX");
+		in.setPW(password1);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(contactmsgid);
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX").queryParam(
-							Constants.QPusername, username1);
-			;
-		}
-		OIMIC out = target.request().get(OIMIC.class);
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW("XXX");
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(contactmsgid);
+		OIMIC out = callTarget(in);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeChatID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPchatid, cid);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
 	}
 
-	// TODO restlichen Kombinationen der Paramter noch durchpr�fen
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid1);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid1);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setMID(contactmsgid);
+		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser1() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid1)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid1)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(txtmsgid1);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser3() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password3)
-					.queryParam(Constants.QPusername, username3)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid3)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password3)
-					.queryParam(Constants.QPusername, username3)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid3)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username3);
+		in.setPW(password3);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(txtmsgid3);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser2() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid2)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, txtmsgid2)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username2);
+		in.setPW(password2);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(txtmsgid2);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDImage() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_IMAGE
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, imagemsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_IMAGE
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, imagemsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username2);
+		in.setPW(password2);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_IMAGE.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(imagemsgid);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDVideo() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_VIDEO
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, videomsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_VIDEO
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, videomsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username2);
+		in.setPW(password2);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_VIDEO.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(videomsgid);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDLocation() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_LOCATION
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, locationmsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_LOCATION
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, locationmsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username2);
+		in.setPW(password2);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_LOCATION
+				.getBytes(Charset.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(locationmsgid);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDFile() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_FILE
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, filemsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_FILE
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, filemsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username2);
+		in.setPW(password2);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_FILE.getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(filemsgid);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}
 
 	@Test
 	public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDContact() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_CONTACT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, contactmsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password2)
-					.queryParam(Constants.QPusername, username2)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_CONTACT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPmessageid, contactmsgid)
-					.queryParam(Constants.QPchatid, cid);
-
-		}
-		OIMIC out = target.request().get(OIMIC.class);
-
+		IIMIC in = new IIMIC();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
+				.getBytes(Charset.forName(Constants.CharacterSet))));
+		in.setCID(cid);
+		in.setMID(contactmsgid);
+		OIMIC out = callTarget(in);
 		Assert.assertNotNull(out.getMID());
 		Assert.assertNotNull(out.getSdT());
 	}

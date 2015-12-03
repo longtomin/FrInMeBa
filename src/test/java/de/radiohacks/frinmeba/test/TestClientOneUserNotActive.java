@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,6 +48,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.IAdUC;
+import de.radiohacks.frinmeba.modelshort.ICrCh;
+import de.radiohacks.frinmeba.modelshort.IIMIC;
+import de.radiohacks.frinmeba.modelshort.ISTeM;
+import de.radiohacks.frinmeba.modelshort.ISiUp;
 import de.radiohacks.frinmeba.modelshort.OAdUC;
 import de.radiohacks.frinmeba.modelshort.OAuth;
 import de.radiohacks.frinmeba.modelshort.OCrCh;
@@ -149,84 +157,50 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out18.getET());
 	}
 
+	private OSiUp callTarget(ISiUp in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + "user/signup");
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OSiUp.class);
+	}
+
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
 	private OSiUp TestSignUpNoValues() {
-
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + "user/signup");
-		} else {
-			target = target("user/signup");
-		}
-		return target.request().get(OSiUp.class);
+		ISiUp in = new ISiUp();
+		return callTarget(in);
 	}
 
 	public OSiUp TestSignUpWithEmail() {
-
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/signup")
-					.queryParam(Constants.QPemail, email);
-		} else {
-			target = target("user/signup").queryParam(Constants.QPemail, email);
-		}
-		return target.request().get(OSiUp.class);
+		ISiUp in = new ISiUp();
+		in.setE(email);
+		return callTarget(in);
 	}
 
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
 	public OSiUp TestSignUpWithEmailUser() {
-
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/signup")
-					.queryParam(Constants.QPemail, email)
-					.queryParam(Constants.QPusername, username);
-			;
-		} else {
-			target = target("user/signup").queryParam(Constants.QPemail, email)
-					.queryParam(Constants.QPusername, username);
-			;
-		}
-		return target.request().get(OSiUp.class);
+		ISiUp in = new ISiUp();
+		in.setE(email);
+		in.setUN(username);
+		return callTarget(in);
 	}
 
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
 	public OSiUp TestSignUpWithEmailPassword() {
-
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/signup")
-					.queryParam(Constants.QPemail, email)
-					.queryParam(Constants.QPpassword, password);
-		} else {
-			target = target("user/signup").queryParam(Constants.QPemail, email)
-					.queryParam(Constants.QPpassword, password);
-
-		}
-		return target.request().get(OSiUp.class);
+		ISiUp in = new ISiUp();
+		in.setE(email);
+		in.setPW(password);
+		return callTarget(in);
 	}
 
 	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
 	public OSiUp TestSignUpWithEmailUserPassword() {
-
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/signup")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPemail, email)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target("user/signup")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPemail, email)
-					.queryParam(Constants.QPusername, username);
-		}
-		return target.request().get(OSiUp.class);
+		ISiUp in = new ISiUp();
+		in.setE(email);
+		in.setUN(username);
+		in.setPW(password);
+		return callTarget(in);
 	}
 
 	public OAuth TestAuthenticateNotActive() {
@@ -245,29 +219,17 @@ public class TestClientOneUserNotActive extends JerseyTest {
 	}
 
 	public OCrCh TestCreateChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + "user/createchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("TestXXX"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target("user/createchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(
-							Constants.QPchatname,
-							Base64.encodeBase64String("TestXXX"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
-		}
-		return target.request().get(OCrCh.class);
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + "user/createchat");
+		ICrCh in = new ICrCh();
+		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setPW(password);
+		in.setUN(username);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OCrCh.class);
 	}
 
 	public ODeCh TestDeleteChatNotActive() {
@@ -288,22 +250,17 @@ public class TestClientOneUserNotActive extends JerseyTest {
 	}
 
 	public OAdUC TestAddUserToChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/addusertochat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPuserid, 1)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target("user/addusertochat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPuserid, 1)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPusername, username);
-		}
-		return target.request().get(OAdUC.class);
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + "user/addusertochat");
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(1);
+		in.setUID(1);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OAdUC.class);
 	}
 
 	public OReUC TestRemoveUserFromChatNotActive() {
@@ -364,29 +321,17 @@ public class TestClientOneUserNotActive extends JerseyTest {
 	}
 
 	public OSTeM TestSendTextMessageNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + "user/sendtextmessage")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPtextmessage,
-							Base64.encodeBase64String("Text Message"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target("user/sendtextmessage")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(
-							Constants.QPtextmessage,
-							Base64.encodeBase64String("Text Message"
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		}
-		return target.request().get(OSTeM.class);
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + "user/sendtextmessage");
+		ISTeM in = new ISTeM();
+		in.setPW(password);
+		in.setUN(username);
+		in.setTM(Base64.encodeBase64String("Text Message".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OSTeM.class);
 	}
 
 	public OGTeM TestGetTextMessageNotActive() {
@@ -407,33 +352,20 @@ public class TestClientOneUserNotActive extends JerseyTest {
 	}
 
 	public OIMIC TestInsertMessageIntoChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + "user/insertmessageintochat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, 1)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		} else {
-			target = target("user/insertmessageintochat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, 1)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(
-							Constants.QPmessagetype,
-							Base64.encodeBase64String(Constants.TYP_TEXT
-									.getBytes(Charset
-											.forName(Constants.CharacterSet))));
-		}
-		return target.request().get(OIMIC.class);
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + "user/insertmessageintochat");
+		IIMIC in = new IIMIC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
+				.getBytes(Charset.forName(Constants.CharacterSet))));
+		in.setCID(1);
+		in.setMID(1);
+
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OIMIC.class);
 	}
 
 	public OFMFC TestGetMessageFromChatNotActive() {

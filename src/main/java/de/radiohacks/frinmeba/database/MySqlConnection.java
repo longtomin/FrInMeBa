@@ -41,9 +41,13 @@ public class MySqlConnection {
 	private Connection con = null;
 	private static String dbHost = "localhost"; // Hostname
 	private static String dbPort = "3306"; // Port -- Standard: 3306
-	private static String dbName = "aim"; // Datenbankname
-	private static String dbUser = "aim"; // Datenbankuser
-	private static String dbPass = "aim"; // Datenbankpasswort
+	private static String dbName = "frinme_db"; // Datenbankname
+	private static String dbUser = "frinme_db"; // Datenbankuser
+	private static String dbPass = "LfvnvdKKhuX3DbXa"; // Datenbankpasswort
+
+//	private static String dbName = "aim"; // Datenbankname
+//	private static String dbUser = "aim"; // Datenbankuser
+//	private static String dbPass = "aim"; // Datenbankpasswort
 
 	public Connection getMySqlConnection() {
 		logger.debug("Start getMySqlConnection");

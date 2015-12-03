@@ -138,14 +138,14 @@ public class createDatabaseTables {
 	private final static String AlterChats = "ALTER TABLE `Chats` "
 			+ "ADD CONSTRAINT `Chats_ibfk_1` FOREIGN KEY (`OwningUserID`) REFERENCES `Users` (`ID`)";
 
-	private final static String AlterMessages1 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`OwningUserID`) REFERENCES `aim`.`Users`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-	private final static String AlterMessages2 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`UsertoChatID`) REFERENCES `aim`.`UserToChats`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-	private final static String AlterMessages3 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`TextMsgID`) REFERENCES `aim`.`Text`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-	private final static String AlterMessages4 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`ImageMsgID`) REFERENCES `aim`.`Image`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-	private final static String AlterMessages5 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`LocationMsgID`) REFERENCES `aim`.`Location`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-	private final static String AlterMessages6 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`ContactMsgID`) REFERENCES `aim`.`Contact`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-	private final static String AlterMessages7 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`FileMsgID`) REFERENCES `aim`.`File`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-	private final static String AlterMessages8 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`VideoMsgID`) REFERENCES `aim`.`Video`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages1 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`OwningUserID`) REFERENCES `frinme_db`.`Users`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages2 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`UsertoChatID`) REFERENCES `frinme_db`.`UserToChats`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages3 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`TextMsgID`) REFERENCES `frinme_db`.`Text`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages4 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`ImageMsgID`) REFERENCES `frinme_db`.`Image`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages5 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`LocationMsgID`) REFERENCES `frinme_db`.`Location`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages6 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`ContactMsgID`) REFERENCES `frinme_db`.`Contact`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages7 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`FileMsgID`) REFERENCES `frinme_db`.`File`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+	private final static String AlterMessages8 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`VideoMsgID`) REFERENCES `frinme_db`.`Video`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
 		
 	private final static String AlterUserToChats = "ALTER TABLE `UserToChats` "
 			+ "ADD CONSTRAINT `UserToChats_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`), "

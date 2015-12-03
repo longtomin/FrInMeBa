@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,6 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.IAdUC;
 import de.radiohacks.frinmeba.modelshort.OAdUC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
@@ -56,18 +60,13 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 public class TestAddUserToChat extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @PUT
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/addusertochat") public OutAddUserToChat
-	 * AddUserToChat(@QueryParam(Constants.QPusername) String User,
+	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPuserid) int UserID,
-	 * 
-	 * @QueryParam(Constants.QPchatid) int ChatID);
+	 * @Path("/addusertochat") public OAdUC AddUserToChat(IAdUC in);
 	 */
 
 	// Username welche anzulegen ist
@@ -133,208 +132,122 @@ public class TestAddUserToChat extends JerseyTest {
 
 	}
 
+	private OAdUC callTarget(IAdUC in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OAdUC.class);
+	}
+
 	@Test
 	public void testAddUserToChatUpNoValues() {
-		System.out.print("Start testAddUserToChatUpNoValues\n");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
-
+		IAdUC in = new IAdUC();
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordUserIDChatID() {
-		System.out.print("Start testAddUserToChatUserPasswordUserIDChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.USER_ADDED, out.getR());
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordUserID() {
-		System.out.print("Start testAddUserToChatUserPasswordUserID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordChatID() {
-		System.out.print("Start testAddUserToChatUserPasswordChatID\n");
-		helperDatabase help = new helperDatabase();
-		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(chatid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserUserIDChatID() {
-		System.out.print("Start testAddUserToChatUserUserIDChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatPasswordUserIDChatID() {
-		System.out.print("Start testAddUserToChatPasswordUserIDChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setPW(password);
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserPassword() {
-		System.out.print("Start testAddUserToChatUserPassword\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
-
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
-
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserUserID() {
-		System.out.print("Start testAddUserToChatUserUserID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserChatID() {
-		System.out.print("Start testAddUserToChatUserChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(Constants.QPchatid, chatid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setCID(chatid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatPasswordUserID() {
-		System.out.print("Start testAddUserToChatPasswordUserID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setPW(password);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
@@ -343,17 +256,10 @@ public class TestAddUserToChat extends JerseyTest {
 		System.out.print("Start testAddUserToChatPasswordChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, chatid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPchatid, chatid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setPW(password);
+		in.setCID(chatid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
@@ -362,281 +268,138 @@ public class TestAddUserToChat extends JerseyTest {
 		System.out.print("Start testAddUserToChatUserIDChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUser() {
-		System.out.print("Start testAddUserToChatUser\n");
-		helperDatabase help = new helperDatabase();
-		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatPassword() {
-		System.out.print("Start testAddUserToChatPassword\n");
-		helperDatabase help = new helperDatabase();
-		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setPW(password);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserID() {
-		System.out.print("Start testAddUserToChatUserID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatChatID() {
-		System.out.print("Start testAddUserToChatChatID\n");
-		helperDatabase help = new helperDatabase();
-		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPchatid, chatid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPchatid, chatid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setCID(chatid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatWrongUserPasswordUserIDChatID() {
-		System.out
-				.print("Start testAddUserToChatWrongUserPasswordUserIDChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(
-							Constants.QPusername,
-							Base64.encodeBase64String("blah".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(
-							Constants.QPusername,
-							Base64.encodeBase64String("blah".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(Base64.encodeBase64String("blah".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setPW(password);
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserWrongPasswordUserIDChatID() {
-		System.out
-				.print("Start testAddUserToChatUserWrongPasswordUserIDChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("blah".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("blah".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(Base64.encodeBase64String("blah".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordWrongUserIDChatID() {
-		System.out
-				.print("Start testAddUserToChatUserPasswordWrongUserIDChatID\n");
-		helperDatabase help = new helperDatabase();
-		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, 47);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, 47);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(chatid);
+		in.setUID(47);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordUserIDWrongChatID() {
-		System.out
-				.print("Start testAddUserToChatUserPasswordUserIDWrongChatID\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 47)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 47)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(47);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordUserIDChatID_Again() {
-		System.out
-				.print("Start testAddUserToChatUserPasswordUserIDChatID_Again\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
 		help.AddUserToChat(userid, chatid);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.USER_ALREADY_IN_CHAT, out.getET());
-
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordUserIDChatID_foreignChat() {
-		System.out
-				.print("Start testAddUserToChatUserPasswordUserIDChatID_foreignChat\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
 		int chatid2 = help.CreateChat(username2_org, "Chat2");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid2)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid2)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(chatid2);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.NOT_CHAT_OWNER, out.getET());
 
 	}
 
 	@Test
 	public void testAddUserToChatUserPasswordUserIDChatID_selfAdd() {
-		System.out
-				.print("Start testAddUserToChatUserPasswordUserIDChatID_selfAdd\n");
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username_org);
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
-		}
-		OAdUC out = target.request().get(OAdUC.class);
+		IAdUC in = new IAdUC();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
 		Assert.assertEquals(Constants.CHAT_OWNER_NOT_ADDED, out.getET());
-
 	}
 }

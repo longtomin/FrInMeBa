@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,6 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.ISShT;
 import de.radiohacks.frinmeba.modelshort.OSShT;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
@@ -56,15 +60,13 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 public class TestSetShowTimeStamp extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @POST
 	 * 
-	 * @Path("/setshowtimestamp") public OSShT setShowTimeStamp(
+	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPusername) String User,
+	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPmessageid) int MessageID);
+	 * @Path("/setshowtimestamp") public OSShT setShowTimeStamp(ISShT in);
 	 */
 
 	final static String username1_org = "Test1";
@@ -123,7 +125,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		help.CreateActiveUser(username2_org, username2, password2_org,
 				email2_org);
 		int uid1 = help.getUserID(username1_org);
-		help.getUserID(username2_org);
 		cid = help.CreateChat(username1_org, "TestChat");
 		txtmsgid1 = help.CreateContentMessage("TEST Text Message von User1",
 				Constants.TYP_TEXT);
@@ -150,219 +151,110 @@ public class TestSetShowTimeStamp extends JerseyTest {
 
 		// TODO Nachricht in einem Chat einfuegen bestimmt fuer 2 User.
 		// Einmal den eigenen TimeStamp setzen.
-		// Einmal versuchen die Nachricht für den User 2 den Timestamp zu setzen
+		// Einmal versuchen die Nachricht für den User 2 den Timestamp zu
+		// setzen
 		// = ERROR
+	}
+
+	private OSShT callTarget(ISShT in) {
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
+		Response response = target.request()
+				.buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OSShT.class);
 	}
 
 	@Test
 	public void testSetShowTimeStampUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		ISShT in = new ISShT();
+		OSShT out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username1);
-			;
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		OSShT out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1);
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD,
-				out.getET());
+		ISShT in = new ISShT();
+		in.setPW(password1);
+		OSShT out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, username1);
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		in.setPW(password1);
+		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPpassword,
-					Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet)))).queryParam(
-					Constants.QPusername, username1);
-			;
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, "XXX");
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, "XXX");
-			;
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN("XXX");
+		in.setPW(password1);
+		in.setMID(msg1);
+		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX").queryParam(
-							Constants.QPusername, username1);
-			;
-		}
-
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		in.setPW("XXX");
+		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampUserPasswordMsgNotRead1() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg2);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg2);
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMID(msg2);
+		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getET());
 	}
 
 	@Test
 	public void testSetShowTimeStampUserPasswordMsgNotRead() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg1);
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMID(msg1);
+		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getET());
-		// Assert.assertNotNull(out.getShowTimestamp());
 	}
 
 	@Test
 	public void testSetShowTimeStampUserPasswordMsgWrongMsg() {
 		helperDatabase help = new helperDatabase();
 		help.setTimestamp(msg2, 11, "READ");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg2);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg2);
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMID(msg2);
+		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
 		help.setTimestamp(msg2, 0, "READ");
 	}
@@ -371,23 +263,11 @@ public class TestSetShowTimeStamp extends JerseyTest {
 	public void testSetShowTimeStampUserPasswordMsgRightMsg() {
 		helperDatabase help = new helperDatabase();
 		help.setTimestamp(msg1, 11, "READ");
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg1);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPmessageid, msg1);
-		}
-		OSShT out = target.request().get(
-				OSShT.class);
-
+		ISShT in = new ISShT();
+		in.setUN(username1);
+		in.setPW(password1);
+		in.setMID(msg1);
+		OSShT out = callTarget(in);
 		Assert.assertNotNull(out.getShT());
 		help.setTimestamp(msg1, 0, "READ");
 	}

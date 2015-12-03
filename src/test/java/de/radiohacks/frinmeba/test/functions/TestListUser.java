@@ -137,13 +137,8 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
+		WebTarget target = ClientBuilder.newClient().target(
+				TestConfig.URL + functionurl);
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -151,26 +146,15 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserUserPasswordSearch() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(
+						Constants.QPsearch,
+						Base64.encodeBase64String("Test".getBytes(Charset
+								.forName(Constants.CharacterSet))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertNotNull(out.getU());
@@ -178,32 +162,18 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserUserWrongPasswordSearch() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QPpassword,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPpassword,
+						Base64.encodeBase64String("XXX".getBytes(Charset
+								.forName(Constants.CharacterSet))))
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(
+						Constants.QPsearch,
+						Base64.encodeBase64String("Test".getBytes(Charset
+								.forName(Constants.CharacterSet))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
@@ -211,15 +181,9 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username1);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username1);
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -227,15 +191,9 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1);
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -243,21 +201,13 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserSearch() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl).queryParam(
-					Constants.QPsearch,
-					Base64.encodeBase64String("Test".getBytes(Charset
-							.forName(Constants.CharacterSet))));
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(
+						Constants.QPsearch,
+						Base64.encodeBase64String("Test".getBytes(Charset
+								.forName(Constants.CharacterSet))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -265,16 +215,10 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1);
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(Constants.QPusername, username1);
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1);
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertNotNull(out.getU());
@@ -282,23 +226,14 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserUserSearch() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username1).queryParam(
-					Constants.QPsearch,
-					Base64.encodeBase64String("Test".getBytes(Charset
-							.forName(Constants.CharacterSet))));
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(
+						Constants.QPsearch,
+						Base64.encodeBase64String("Test".getBytes(Charset
+								.forName(Constants.CharacterSet))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -306,23 +241,14 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserPasswordSearch() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password1).queryParam(
-					Constants.QPsearch,
-					Base64.encodeBase64String("Test".getBytes(Charset
-							.forName(Constants.CharacterSet))));
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(
+						Constants.QPsearch,
+						Base64.encodeBase64String("Test".getBytes(Charset
+								.forName(Constants.CharacterSet))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -330,26 +256,15 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserEncodingErrorUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, "$%&1233")
+				.queryParam(
+						Constants.QPsearch,
+						Base64.encodeBase64String("Test".getBytes(Charset
+								.forName(Constants.CharacterSet))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
@@ -357,26 +272,15 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserEncodingErrorPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(
-							Constants.QPsearch,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))));
-		}
+		WebTarget target = ClientBuilder
+				.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, "$%&1233")
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(
+						Constants.QPsearch,
+						Base64.encodeBase64String("Test".getBytes(Charset
+								.forName(Constants.CharacterSet))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
@@ -384,19 +288,11 @@ public class TestListUser extends JerseyTest {
 
 	@Test
 	public void testListUserEncodingErrorSearch() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPsearch, "$%&1233");
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password1)
-					.queryParam(Constants.QPusername, username1)
-					.queryParam(Constants.QPsearch, "$%&1233");
-		}
+		WebTarget target = ClientBuilder.newClient()
+				.target(TestConfig.URL + functionurl)
+				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QPsearch, "$%&1233");
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
