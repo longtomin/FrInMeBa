@@ -212,7 +212,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		ISShT in = new ISShT();
 		in.setUN("XXX");
 		in.setPW(password1);
-		in.setMID(msg1);
+		in.getMID().add(msg1);
 		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
@@ -231,7 +231,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		ISShT in = new ISShT();
 		in.setUN(username1);
 		in.setPW(password1);
-		in.setMID(msg2);
+		in.getMID().add(msg2);
 		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getET());
 	}
@@ -241,7 +241,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		ISShT in = new ISShT();
 		in.setUN(username1);
 		in.setPW(password1);
-		in.setMID(msg1);
+		in.getMID().add(msg1);
 		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.MESSAGE_NOT_READ, out.getET());
 	}
@@ -253,7 +253,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		ISShT in = new ISShT();
 		in.setUN(username1);
 		in.setPW(password1);
-		in.setMID(msg2);
+		in.getMID().add(msg2);
 		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
 		help.setTimestamp(msg2, 0, "READ");
@@ -266,7 +266,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		ISShT in = new ISShT();
 		in.setUN(username1);
 		in.setPW(password1);
-		in.setMID(msg1);
+		in.getMID().add(msg1);
 		OSShT out = callTarget(in);
 		Assert.assertNotNull(out.getShT());
 		help.setTimestamp(msg1, 0, "READ");

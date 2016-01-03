@@ -1147,32 +1147,45 @@ public class ServiceImpl implements ServiceUtil {
 						Constants.AUTHENTICATE_FALSE)) {
 					out.setET(outauth.getET());
 				} else {
-					/* Check if Message exists */
-					if (!actcheck.CheckMessageID(in.getMID())) {
-						out.setET(Constants.NONE_EXISTING_MESSAGE);
-					} else {
-						if (!actcheck.CheckMessageIDReadTimestamp(in.getMID())) {
-							out.setET(Constants.MESSAGE_NOT_READ);
-						} else {
-							// Check if it is your own Message. Do not update
-							// ShowTimeStamps for other people
-							actuser.fillUserinfo(actuser.base64Decode(in
-									.getUN()));
-							if (actcheck.CheckOwnMessage(actuser.getID(),
-									in.getMID())) {
-								String tmp = actuser.base64Decode(in.getUN());
-								in.setUN(tmp);
-								tmp = actuser.base64Decode(in.getPW());
-								in.setPW(tmp);
-								actuser.setShowTimeStamp(in, out);
+					actuser.fillUserinfo(actuser.base64Decode(in.getUN()));
+					String tmp = actuser.base64Decode(in.getUN());
+					in.setUN(tmp);
+					tmp = actuser.base64Decode(in.getPW());
+					in.setPW(tmp);
+					boolean abort = false;
+					if (!in.getMID().isEmpty() && in.getMID().size() > 0) {
+						for (int i = 0; i < in.getMID().size(); i++) {
+							/* Check if Message exists */
+							if (!actcheck.CheckMessageID(in.getMID().get(i))) {
+								out.setET(Constants.NONE_EXISTING_MESSAGE);
+								abort = true;
 							} else {
-								out.setET(Constants.NOT_MESSAGE_OWNER);
+								if (!actcheck.CheckMessageIDReadTimestamp(in
+										.getMID().get(i))) {
+									out.setET(Constants.MESSAGE_NOT_READ);
+									abort = true;
+								} else {
+									// Check if it is your own Message. Do not
+									// update
+									// ShowTimeStamps for other people
+									if (!actcheck
+											.CheckOwnMessage(actuser.getID(),
+													in.getMID().get(i))) {
+										out.setET(Constants.NOT_MESSAGE_OWNER);
+										abort = true;
+									}
+								}
 							}
 						}
+						if (!abort) {
+							actuser.setShowTimeStamp(in, out);
+						}
+					} else {
+						out.setET(Constants.NONE_EXISTING_MESSAGE);
 					}
 				}
-				// Password check failed
 			} else {
+				// Password check failed
 				if (actcheck.getLastError().equalsIgnoreCase(
 						Constants.NO_CONTENT_GIVEN)) {
 					out.setET(Constants.NO_USERNAME_OR_PASSWORD);

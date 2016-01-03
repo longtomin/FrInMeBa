@@ -28,63 +28,23 @@
     either expressed or implied, of the FreeBSD Project.
 
 -->
-<!-- Abbreviations:
- A = Authenticated 
- ACK = Acknowledge
- C = Chat
- CID = ChatID
- CMID = ContactMsgID 
- CN = Chatname
- E = Email
- ET = Errortext
- FF = FileFilename 
- FID = FileID
- FM = FileMessage
- FMD5 = FileMD5Hash
- FMID = FileMsgID
- FS = FileSize
- IF = ImageFilename
- IID = ImageID
- IM = ImageMessage
- IMD5 = ImageMD5Hash
- IMID = ImageMsgID
- IS = ImageSize
- LID = LocationID
- LM = LocationMessage
- LMID = LocationMsgID
- MI = MessageInformation
- MID = MessageID
- MT = MessageTyp
- NR = NumberRead
- NS = NumberShow
- NT = NumberTotal
- OMID = OriginMsgID 
- OU = OwningUser
- OUID = OwningUserID 
- OUN = OwnningUserName 
- PW = Password
- R = Result
- RdT = ReadTimestamp
- S = Search 
- SdT = SendTimestamp
- ShT = ShowTimestamp
- TID = TextID
- TID = TextID 
- TM = TextMessage
- TMID = TextMsgID
- U = User
- UID = UserID 
- UN = Username
- VF = VideoFilename 
- VID = VideoID
- VM = VideoMessage
- VMD5 = VideoMD5Hash
- VMID = VideoMsgID
- VS = VideoSize
- -->
+<!-- Abbreviations: A = Authenticated ACK = Acknowledge C = Chat CID = ChatID 
+	CMID = ContactMsgID CN = Chatname E = Email ET = Errortext FF = FileFilename 
+	FID = FileID FM = FileMessage FMD5 = FileMD5Hash FMID = FileMsgID FS = FileSize 
+	IF = ImageFilename IID = ImageID IM = ImageMessage IMD5 = ImageMD5Hash IMID 
+	= ImageMsgID IS = ImageSize LID = LocationID LM = LocationMessage LMID = 
+	LocationMsgID MI = MessageInformation MID = MessageID MT = MessageTyp NR 
+	= NumberRead NS = NumberShow NT = NumberTotal OMID = OriginMsgID OU = OwningUser 
+	OUID = OwningUserID OUN = OwnningUserName PW = Password R = Result RdT = 
+	ReadTimestamp S = Search SdT = SendTimestamp ShT = ShowTimestamp TID = TextID 
+	TID = TextID TM = TextMessage TMID = TextMsgID U = User UID = UserID UN = 
+	Username VF = VideoFilename VID = VideoID VM = VideoMessage VMD5 = VideoMD5Hash 
+	VMID = VideoMsgID VS = VideoSize -->
 <xs:schema attributeFormDefault="unqualified"
 	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+	<!-- below the XSD Schema for elements in lists are describe until the restfunction 
+		starts -->
 	<xs:element name="OU">
 		<xs:complexType>
 			<xs:sequence>
@@ -170,6 +130,16 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="ShT">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:int" name="MID" />
+				<xs:element type="xs:long" name="T" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- below the XSD Schema for each restfunction starts -->
 	<xs:element name="IAuth">
 		<!-- In Authenticate -->
 		<xs:complexType>
@@ -381,7 +351,7 @@
 			<xs:sequence>
 				<xs:element type="xs:string" name="UN" />
 				<xs:element type="xs:string" name="PW" />
-				<xs:element type="xs:int" name="MID" />
+				<xs:element type="xs:int" name="MID" minOccurs="1" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -390,8 +360,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element type="xs:int" name="MID" />
-					<xs:element type="xs:long" name="ShT" />
+					<xs:element ref="ShT" minOccurs="1" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
@@ -448,7 +417,8 @@
 			<xs:sequence>
 				<xs:element type="xs:string" name="UN" />
 				<xs:element type="xs:string" name="PW" />
-				<xs:element type="xs:int" name="MID" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element type="xs:int" name="MID" minOccurs="0"
+					maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

@@ -92,6 +92,7 @@ import de.radiohacks.frinmeba.modelshort.OSTeM;
 import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.modelshort.OU;
+import de.radiohacks.frinmeba.modelshort.ShT;
 import de.radiohacks.frinmeba.modelshort.U;
 
 public class User {
@@ -1399,14 +1400,26 @@ public class User {
 
 		long currentTime = System.currentTimeMillis() / 1000L;
 
+		String ShowUpdate = "UPDATE Messages SET ShowTimestamp = ? where ID = ";
+		
+		for (int i=0; i < in.getMID().size(); i++) {
+			if (i == in.getMID().size()-1) {
+				ShowUpdate += in.getMID().get(i);
+            } else {
+            	ShowUpdate += in.getMID().get(i) + " OR ID = ";
+            }
+		}
+		
 		try {
-			String updateMessage = "UPDATE Messages SET ShowTimestamp = ? where ID = ?";
-			PreparedStatement prepSt = con.prepareStatement(updateMessage);
+			PreparedStatement prepSt = con.prepareStatement(ShowUpdate);
 			prepSt.setLong(1, currentTime);
-			prepSt.setInt(2, in.getMID());
 			prepSt.executeUpdate();
-			out.setShT(currentTime);
-			out.setMID(in.getMID());
+			for (int j = 0; j < in.getMID().size(); j++) {
+				ShT s = new ShT();
+				s.setMID(in.getMID().get(j));
+				s.setT(currentTime);
+				out.getShT().add(s);
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

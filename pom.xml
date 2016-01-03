@@ -42,7 +42,8 @@
 		<junit.version>4.11</junit.version>
 		<jdk.version>1.6</jdk.version>
 		<mycila.version>2.8</mycila.version>
-	</properties>
+	    <log4j.configuration>log4j.properties</log4j.configuration>
+</properties>
 	<dependencies>
 		<dependency>
 			<groupId>mysql</groupId>

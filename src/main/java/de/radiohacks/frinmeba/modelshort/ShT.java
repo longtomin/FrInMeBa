@@ -53,8 +53,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="OUN" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="OUID" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="MID" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="T" type="{http://www.w3.org/2001/XMLSchema}long"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -65,55 +65,47 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "oun",
-    "ouid"
+    "mid",
+    "t"
 })
-@XmlRootElement(name = "OU")
-public class OU {
+@XmlRootElement(name = "ShT")
+public class ShT {
 
-    @XmlElement(name = "OUN", required = true)
-    protected String oun;
-    @XmlElement(name = "OUID")
-    protected int ouid;
+    @XmlElement(name = "MID")
+    protected int mid;
+    @XmlElement(name = "T")
+    protected long t;
 
     /**
-     * Gets the value of the oun property.
+     * Gets the value of the mid property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getOUN() {
-        return oun;
+    public int getMID() {
+        return mid;
     }
 
     /**
-     * Sets the value of the oun property.
+     * Sets the value of the mid property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setOUN(String value) {
-        this.oun = value;
+    public void setMID(int value) {
+        this.mid = value;
     }
 
     /**
-     * Gets the value of the ouid property.
+     * Gets the value of the t property.
      * 
      */
-    public int getOUID() {
-        return ouid;
+    public long getT() {
+        return t;
     }
 
     /**
-     * Sets the value of the ouid property.
+     * Sets the value of the t property.
      * 
      */
-    public void setOUID(int value) {
-        this.ouid = value;
+    public void setT(long value) {
+        this.t = value;
     }
 
 }
