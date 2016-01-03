@@ -64,6 +64,7 @@ import de.radiohacks.frinmeba.modelshort.IReUC;
 import de.radiohacks.frinmeba.modelshort.ISImM;
 import de.radiohacks.frinmeba.modelshort.ISShT;
 import de.radiohacks.frinmeba.modelshort.ISTeM;
+import de.radiohacks.frinmeba.modelshort.ISU;
 import de.radiohacks.frinmeba.modelshort.ISViM;
 import de.radiohacks.frinmeba.modelshort.ISiUp;
 import de.radiohacks.frinmeba.modelshort.M;
@@ -89,6 +90,7 @@ import de.radiohacks.frinmeba.modelshort.OReUC;
 import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.modelshort.OSShT;
 import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.modelshort.OSU;
 import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.modelshort.OU;
@@ -290,11 +292,11 @@ public class User {
 			statement = con.createStatement();
 			if (in.getS() != null && !in.getS().isEmpty()) {
 				resultSet = statement
-						.executeQuery("select Username, Id, Email from Users where Active = 1 and Username like '%"
+						.executeQuery("select Username, Id, Email, AuthenticationTime from Users where Active = 1 and Username like '%"
 								+ in.getS() + "%'");
 			} else {
 				resultSet = statement
-						.executeQuery("select Username, Id, Email from Users where Active = 1");
+						.executeQuery("select Username, Id, Email, AuthenticationTime from Users where Active = 1");
 			}
 
 			while (resultSet.next()) {
@@ -1075,40 +1077,6 @@ public class User {
 							} else {
 								msg.setRdT(rs2.getLong("ReadTimestamp"));
 							}
-
-							/*
-							 * Now get the numbers for the status at the
-							 * frontend
-							 */
-							sttotal = con.createStatement();
-							rstotal = sttotal
-									.executeQuery("SELECT Count(*) from Messages where OriginMsgID = "
-											+ rs2.getInt("OriginMsgID"));
-							if (rstotal != null) {
-								while (rstotal.next()) {
-									msg.setNT(rstotal.getInt(1));
-								}
-							}
-							stread = con.createStatement();
-							rsread = stread
-									.executeQuery("SELECT Count(*) from Messages where OriginMsgID = "
-											+ rs2.getInt("OriginMsgID")
-											+ " AND ReadTimestamp > 0");
-							if (rsread != null) {
-								while (rsread.next()) {
-									msg.setNR(rsread.getInt(1));
-								}
-							}
-							stshow = con.createStatement();
-							rsshow = stshow
-									.executeQuery("SELECT Count(*) from Messages where OriginMsgID = "
-											+ rs2.getInt("OriginMsgID")
-											+ " AND ShowTimestamp > 0");
-							if (rsshow != null) {
-								while (rsshow.next()) {
-									msg.setNS(rsshow.getInt(1));
-								}
-							}
 							out.getM().add(msg);
 						}
 					}
@@ -1401,15 +1369,15 @@ public class User {
 		long currentTime = System.currentTimeMillis() / 1000L;
 
 		String ShowUpdate = "UPDATE Messages SET ShowTimestamp = ? where ID = ";
-		
-		for (int i=0; i < in.getMID().size(); i++) {
-			if (i == in.getMID().size()-1) {
+
+		for (int i = 0; i < in.getMID().size(); i++) {
+			if (i == in.getMID().size() - 1) {
 				ShowUpdate += in.getMID().get(i);
-            } else {
-            	ShowUpdate += in.getMID().get(i) + " OR ID = ";
-            }
+			} else {
+				ShowUpdate += in.getMID().get(i) + " OR ID = ";
+			}
 		}
-		
+
 		try {
 			PreparedStatement prepSt = con.prepareStatement(ShowUpdate);
 			prepSt.setLong(1, currentTime);
@@ -1846,17 +1814,16 @@ public class User {
 			storiginmsgid = con.createStatement();
 
 			String MessageIDQuery = "SELECT * FROM Messages WHERE ID = ";
-			
-			for (int i=0; i < in.getMID().size(); i++) {
-				if (i == in.getMID().size()-1) {
+
+			for (int i = 0; i < in.getMID().size(); i++) {
+				if (i == in.getMID().size() - 1) {
 					MessageIDQuery += in.getMID().get(i);
-                } else {
-                	MessageIDQuery += in.getMID().get(i) + " OR ID = ";
-                }
+				} else {
+					MessageIDQuery += in.getMID().get(i) + " OR ID = ";
+				}
 			}
 			boolean abort = false;
-			rsoriginmsgid = storiginmsgid
-					.executeQuery(MessageIDQuery);
+			rsoriginmsgid = storiginmsgid.executeQuery(MessageIDQuery);
 			if (rsoriginmsgid != null) {
 				while (rsoriginmsgid.next()) {
 					/* We have found the Message, now check the Owner */
@@ -1864,8 +1831,7 @@ public class User {
 					PreparedStatement pstmtOwner = null;
 
 					pstmtOwner = con.prepareStatement(SQLUserID);
-					pstmtOwner.setInt(1,
-							rsoriginmsgid.getInt("UsertoChatID"));
+					pstmtOwner.setInt(1, rsoriginmsgid.getInt("UsertoChatID"));
 					ResultSet rsOwner = pstmtOwner.executeQuery();
 					if (rsOwner != null) {
 						while (rsOwner.next()) {
@@ -1873,44 +1839,55 @@ public class User {
 							if (this.Id == rsOwner.getInt("UserID")) {
 								MIB msgout = new MIB();
 								msgout.setMID(rsoriginmsgid.getInt("ID"));
-								msgout.setSD(rsoriginmsgid.getLong("SendTimestamp"));
+								msgout.setSD(rsoriginmsgid
+										.getLong("SendTimestamp"));
 								stdetailinfo = con.createStatement();
 								rsdetailinfo = stdetailinfo
 										.executeQuery("SELECT * from Messages where OriginMsgID = "
-												+ rsoriginmsgid.getInt("OriginMsgID"));
+												+ rsoriginmsgid
+														.getInt("OriginMsgID"));
 								if (rsdetailinfo != null) {
 									while (rsdetailinfo.next()) {
 										MI msginfo = new MI();
 
-										// Prepared Statement um UserID zu ermitteln
+										// Prepared Statement um UserID zu
+										// ermitteln
 										PreparedStatement pstmtUN = null;
 
-										pstmtUN = con.prepareStatement("SELECT Username FROM Users WHERE ID in (Select UserID from UserToChats where ID in (select UserToChatID from Messages where ID = ?))");
+										pstmtUN = con
+												.prepareStatement("SELECT Username FROM Users WHERE ID in (Select UserID from UserToChats where ID in (select UserToChatID from Messages where ID = ?))");
 										pstmtUN.setInt(1,
 												rsdetailinfo.getInt("ID"));
 										ResultSet rsUN = pstmtUN.executeQuery();
 										if (rsUN != null) {
 											while (rsUN.next()) {
-												msginfo.setUN(rsUN.getString("Username"));
+												msginfo.setUN(rsUN
+														.getString("Username"));
 											}
 										}
-										
-										// Prepared Statement um UserID zu ermitteln
+
+										// Prepared Statement um UserID zu
+										// ermitteln
 										PreparedStatement pstmtUID = null;
 
-										pstmtUID = con.prepareStatement(SQLUserID);
-										pstmtUID.setInt(1,
-												rsdetailinfo.getInt("UsertoChatID"));
-										ResultSet rsUID = pstmtUID.executeQuery();
+										pstmtUID = con
+												.prepareStatement(SQLUserID);
+										pstmtUID.setInt(1, rsdetailinfo
+												.getInt("UsertoChatID"));
+										ResultSet rsUID = pstmtUID
+												.executeQuery();
 										if (rsUID != null) {
 											while (rsUID.next()) {
-												msginfo.setUID(rsUID.getInt("UserID"));
+												msginfo.setUID(rsUID
+														.getInt("UserID"));
 											}
 										}
-										
-										//msginfo.setUN(rsUID.getString("Username"));
-										msginfo.setRD(rsdetailinfo.getLong("ReadTimestamp"));
-										msginfo.setSH(rsdetailinfo.getInt("ShowTimestamp"));
+
+										// msginfo.setUN(rsUID.getString("Username"));
+										msginfo.setRD(rsdetailinfo
+												.getLong("ReadTimestamp"));
+										msginfo.setSH(rsdetailinfo
+												.getInt("ShowTimestamp"));
 										msgout.getMI().add(msginfo);
 									}
 								}
@@ -1922,7 +1899,8 @@ public class User {
 							}
 						}
 					}
-					if (abort) break;
+					if (abort)
+						break;
 				}
 			}
 			if (abort) {
@@ -1997,6 +1975,50 @@ public class User {
 				}
 				if (stmessageinchat != null) {
 					stmessageinchat.close();
+				}
+			} catch (SQLException e) {
+				// Do nothing we are closing
+			}
+		}
+	}
+
+	public void syncuser(ISU in, OSU out) {
+		logger.debug("Start syncuser with In = " + in.toString());
+		ResultSet rsuser = null;
+		Statement stuser = null;
+
+		try {
+			stuser = con.createStatement();
+
+			String UserIDQuery = "SELECT * FROM Users WHERE ID = ";
+
+			for (int i = 0; i < in.getUID().size(); i++) {
+				if (i == in.getUID().size() - 1) {
+					UserIDQuery += in.getUID().get(i);
+				} else {
+					UserIDQuery += in.getUID().get(i) + " OR ID = ";
+				}
+			}
+			rsuser = stuser.executeQuery(UserIDQuery);
+			if (rsuser != null) {
+				while (rsuser.next()) {
+					U uinfo = new U();
+					uinfo.setLA(rsuser.getLong("AuthenticationTime"));
+					uinfo.setUID(rsuser.getInt("ID"));
+					uinfo.setUN(rsuser.getString("Username"));
+					out.getU().add(uinfo);
+				}
+			}
+		} catch (SQLException e) {
+			out.setET(Constants.DB_ERROR);
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rsuser != null) {
+					rsuser.close();
+				}
+				if (stuser != null) {
+					stuser.close();
 				}
 			} catch (SQLException e) {
 				// Do nothing we are closing

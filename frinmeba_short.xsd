@@ -59,6 +59,7 @@
 				<xs:element type="xs:string" name="UN" />
 				<xs:element type="xs:int" name="UID" />
 				<xs:element type="xs:string" name="E" />
+				<xs:element type="xs:long" name="LA" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -87,9 +88,6 @@
 				<xs:element type="xs:int" name="FMID" />
 				<xs:element type="xs:int" name="VMID" />
 				<xs:element type="xs:int" name="OMID" />
-				<xs:element type="xs:int" name="NT" />
-				<xs:element type="xs:int" name="NR" />
-				<xs:element type="xs:int" name="NS" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -829,6 +827,26 @@
 					<xs:element type="xs:string" name="VM" />
 					<xs:element type="xs:long" name="VS" />
 					<xs:element type="xs:string" name="VMD5" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISU">
+	<!-- In Sync User Data -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="UID" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSU">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="U" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>

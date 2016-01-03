@@ -65,6 +65,7 @@ import de.radiohacks.frinmeba.modelshort.OLiUs;
 import de.radiohacks.frinmeba.modelshort.OReUC;
 import de.radiohacks.frinmeba.modelshort.OSShT;
 import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.modelshort.OSU;
 import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 
@@ -191,4 +192,11 @@ public interface ServiceUtil {
 	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/acknowledgechatdownload")
 	public OAckCD acknowledgeChatDownload(IAckCD in);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/syncuser")
+	public OSU syncuser(@QueryParam(Constants.QPusername) String User,
+			@QueryParam(Constants.QPpassword) String Password,
+			@QueryParam(Constants.QPuserid) List<Integer> UserID);
 }

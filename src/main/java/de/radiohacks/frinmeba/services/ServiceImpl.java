@@ -55,6 +55,7 @@ import de.radiohacks.frinmeba.modelshort.ILiUs;
 import de.radiohacks.frinmeba.modelshort.IReUC;
 import de.radiohacks.frinmeba.modelshort.ISShT;
 import de.radiohacks.frinmeba.modelshort.ISTeM;
+import de.radiohacks.frinmeba.modelshort.ISU;
 import de.radiohacks.frinmeba.modelshort.ISiUp;
 import de.radiohacks.frinmeba.modelshort.OAckCD;
 import de.radiohacks.frinmeba.modelshort.OAckMD;
@@ -73,6 +74,7 @@ import de.radiohacks.frinmeba.modelshort.OLiUs;
 import de.radiohacks.frinmeba.modelshort.OReUC;
 import de.radiohacks.frinmeba.modelshort.OSShT;
 import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.modelshort.OSU;
 import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.util.ServiceUtil;
 
@@ -1469,6 +1471,88 @@ public class ServiceImpl implements ServiceUtil {
 
 		logger.debug("End acknowledgeChatDownload with User = " + in.getUN()
 				+ " Password = " + in.getPW());
+		return out;
+	}
+
+	@Override
+	public OSU syncuser(String User, String Password, List<Integer> UserID) {
+		logger.debug("Start syncuser with User = " + User + " Password = "
+				+ Password);
+
+		OSU out = new OSU();
+		MySqlConnection mc = new MySqlConnection();
+		Connection con = mc.getMySqlConnection();
+		User actuser = new User(con);
+		Check actcheck = new Check(con);
+
+		if (actcheck.checkValueMust(User)) {
+			if (actcheck.checkValueMust(Password)) {
+
+				ISU in = new ISU();
+				in.setPW(actuser.base64Decode(Password));
+				in.setUN(actuser.base64Decode(User));
+
+				IAuth inauth = new IAuth();
+				OAuth outauth = new OAuth();
+				inauth.setPW(actuser.base64Decode(Password));
+				inauth.setUN(User);
+
+				actuser.authenticate(inauth, outauth);
+
+				if (outauth.getA().equalsIgnoreCase(
+						Constants.AUTHENTICATE_FALSE)) {
+					out.setET(outauth.getET());
+				} else {
+					boolean abort = false;
+					if (!UserID.isEmpty() && UserID.size() > 0) {
+						for (int i = 0; i < UserID.size(); i++) {
+							if (actcheck.CheckUserID(UserID.get(i))) {
+								in.getUID().add(UserID.get(i));
+							} else {
+								out.setET(Constants.NONE_EXISTING_USER);
+								abort = true;
+							}
+						}
+					} else {
+						out.setET(Constants.NONE_EXISTING_USER);
+						abort = true;
+					}
+					if (!abort) {
+						actuser.syncuser(in, out);
+					}
+				}
+				// Password check failed
+			} else {
+				if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.NO_CONTENT_GIVEN)) {
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+				} else if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.ENCODING_ERROR)) {
+					out.setET(Constants.ENCODING_ERROR);
+				}
+			}
+			// User check failed
+		} else {
+			if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.NO_CONTENT_GIVEN)) {
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+			} else if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.ENCODING_ERROR)) {
+				out.setET(Constants.ENCODING_ERROR);
+			}
+		}
+
+		if (con != null) {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		logger.debug("End getMessageInformation with User = " + User
+				+ " Password = " + Password);
 		return out;
 	}
 }
