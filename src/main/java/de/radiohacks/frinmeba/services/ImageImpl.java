@@ -28,6 +28,7 @@
  */
 package de.radiohacks.frinmeba.services;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -52,10 +54,12 @@ import de.radiohacks.frinmeba.database.MySqlConnection;
 import de.radiohacks.frinmeba.modelshort.IAuth;
 import de.radiohacks.frinmeba.modelshort.IGImM;
 import de.radiohacks.frinmeba.modelshort.IGImMMD;
+import de.radiohacks.frinmeba.modelshort.ISIcM;
 import de.radiohacks.frinmeba.modelshort.ISImM;
 import de.radiohacks.frinmeba.modelshort.OAuth;
 import de.radiohacks.frinmeba.modelshort.OGImM;
 import de.radiohacks.frinmeba.modelshort.OGImMMD;
+import de.radiohacks.frinmeba.modelshort.OSIcM;
 import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.util.ImageUtil;
 
@@ -66,7 +70,7 @@ public class ImageImpl implements ImageUtil {
 	 */
 
 	@Override
-	public OSImM uploadImage(String User, String Password, String Acknowldge,
+	public OSImM uploadImage(String User, String Password, String Acknowledge,
 			InputStream fileInputStream,
 			FormDataContentDisposition contentDispositionHeader) {
 
@@ -78,7 +82,7 @@ public class ImageImpl implements ImageUtil {
 
 		if (actcheck.checkValueMust(User)) {
 			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Acknowldge)) {
+				if (actcheck.checkValueMust(Acknowledge)) {
 
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
@@ -131,15 +135,15 @@ public class ImageImpl implements ImageUtil {
 									}
 									String md5Hex = md5.toString();
 
-									out.setIF(filetime
+									out.setImF(filetime
 											+ contentDispositionHeader
 													.getFileName());
-									in.setIM(filetime
+									in.setImM(filetime
 											+ contentDispositionHeader
 													.getFileName());
-									in.setIMD5(md5Hex);
+									in.setImMD5(md5Hex);
 
-									if (actuser.base64Decode(Acknowldge)
+									if (actuser.base64Decode(Acknowledge)
 											.equalsIgnoreCase(md5Hex)) {
 										actuser.sendImageMessage(in, out);
 									} else {
@@ -386,5 +390,153 @@ public class ImageImpl implements ImageUtil {
 
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public OSIcM uploadIcon(String User, String Password, String Acknowledge,
+			InputStream fileInputStream,
+			FormDataContentDisposition contentDispositionHeader) {
+
+		OSIcM out = new OSIcM();
+		MySqlConnection mc = new MySqlConnection();
+		Connection con = mc.getMySqlConnection();
+		User actuser = new User(con);
+		Check actcheck = new Check(con);
+
+		if (actcheck.checkValueMust(User)) {
+			if (actcheck.checkValueMust(Password)) {
+				if (actcheck.checkValueMust(Acknowledge)) {
+
+					IAuth inauth = new IAuth();
+					OAuth outauth = new OAuth();
+					inauth.setPW(actuser.base64Decode(Password));
+					inauth.setUN(User);
+
+					ISIcM in = new ISIcM();
+					in.setPW(actuser.base64Decode(Password));
+					in.setUN(actuser.base64Decode(User));
+
+					/* First check if the User is valid */
+					actuser.authenticate(inauth, outauth);
+
+					if (outauth.getA().equalsIgnoreCase(
+							Constants.AUTHENTICATE_FALSE)) {
+						out.setET(outauth.getET());
+					} else {
+						if (contentDispositionHeader != null) {
+							if (fileInputStream != null) {
+								if (contentDispositionHeader.getFileName() != null
+										&& !contentDispositionHeader
+												.getFileName().isEmpty()) {
+
+									// Now we save the Image
+									long currentTime = System
+											.currentTimeMillis() / 1000L;
+									String filetime = Objects.toString(
+											currentTime, null);
+
+									String filePath = Constants.SERVER_UPLOAD_LOCATION_FOLDER
+											+ Constants.SERVER_IMAGE_FOLDER
+											+ filetime
+											+ contentDispositionHeader
+													.getFileName();
+
+									// save the file to the server
+									saveFile(fileInputStream, filePath);
+									// Insert the New Image Message into the
+									// Database an set
+									// the out
+									// Information.
+
+									File f = new File(filePath);
+
+									BufferedImage img;
+									int width = 1;
+									int heigth = 0;
+									try {
+										img = ImageIO.read(f);
+										width = img.getWidth();
+										heigth = img.getHeight();
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									if (heigth != width) {
+										out.setET(Constants.NO_QUADRAT_IMAGE);
+									} else {
+										HashCode md5 = null;
+										try {
+											md5 = Files.hash(
+													new File(filePath),
+													Hashing.md5());
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+										String md5Hex = md5.toString();
+
+										out.setIcF(filetime
+												+ contentDispositionHeader
+														.getFileName());
+										in.setIcM(filetime
+												+ contentDispositionHeader
+														.getFileName());
+										in.setIcMD5(md5Hex);
+
+										if (actuser.base64Decode(Acknowledge)
+												.equalsIgnoreCase(md5Hex)) {
+											actuser.sendIconMessage(in, out);
+										} else {
+											out.setET(Constants.UPLOAD_FAILED);
+										}
+									}
+								} else {
+									out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
+								}
+							} else {
+								out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
+							}
+						} else {
+							out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
+						}
+					}
+				} else {
+					if (actcheck.getLastError().equalsIgnoreCase(
+							Constants.NO_CONTENT_GIVEN)) {
+						out.setET(Constants.UPLOAD_FAILED);
+					} else if (actcheck.getLastError().equalsIgnoreCase(
+							Constants.ENCODING_ERROR)) {
+						out.setET(Constants.ENCODING_ERROR);
+					}
+				}
+			} else {
+				if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.NO_CONTENT_GIVEN)) {
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+				} else if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.ENCODING_ERROR)) {
+					out.setET(Constants.ENCODING_ERROR);
+				}
+			}
+		} else {
+			if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.NO_CONTENT_GIVEN)) {
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+			} else if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.ENCODING_ERROR)) {
+				out.setET(Constants.ENCODING_ERROR);
+			}
+		}
+
+		if (con != null) {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return out;
 	}
 }

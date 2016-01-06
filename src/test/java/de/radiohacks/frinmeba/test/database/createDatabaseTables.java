@@ -40,8 +40,10 @@ public class createDatabaseTables {
 			+ "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT, "
 			+ "`Chatname` varchar(50) NOT NULL, "
 			+ "`OwningUserID` int(10) unsigned NOT NULL, "
+			+ "`IconID` int(10) unsigned DEFAULT NULL, "
 			+ "PRIMARY KEY (`ID`), "
-			+ "KEY `OwningUserID` (`OwningUserID`) "
+			+ "KEY `OwningUserID` (`OwningUserID`), "
+			+ "KEY `IconID` (`IconID`) "
 			+ ") ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1";
 
 	private final static String CreateContact = "CREATE TABLE IF NOT EXISTS `Contact` ( "
@@ -113,9 +115,11 @@ public class createDatabaseTables {
 			+ "`Status` tinyint(3) DEFAULT NULL, "
 			+ "`AuthenticationTime` bigint(20) NOT NULL DEFAULT '0', "
 			+ "`Active` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'User activ set by admin', "
-			+ "PRIMARY KEY (`ID`) "
-			+ ") ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ";
-
+			+ "`IconID` int(10) unsigned DEFAULT NULL, "
+			+ "PRIMARY KEY (`ID`), "
+			+ "KEY `IconID` (`IconID`) "
+			+ ") ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1";
+	
 	private final static String CreateUserToChats = "CREATE TABLE IF NOT EXISTS `UserToChats` ( "
 			+ "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT, "
 			+ "`UserID` int(10) unsigned NOT NULL, "
@@ -136,6 +140,7 @@ public class createDatabaseTables {
 			+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1";
 
 	private final static String AlterChats = "ALTER TABLE `Chats` "
+			+ "ADD CONSTRAINT `Chats_ibfk_2` FOREIGN KEY (`IconID`) REFERENCES `Image` (`ID`), "
 			+ "ADD CONSTRAINT `Chats_ibfk_1` FOREIGN KEY (`OwningUserID`) REFERENCES `Users` (`ID`)";
 
 	private final static String AlterMessages1 = "ALTER TABLE `Messages` ADD  FOREIGN KEY (`OwningUserID`) REFERENCES `frinme_db`.`Users`(`ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
@@ -151,6 +156,9 @@ public class createDatabaseTables {
 			+ "ADD CONSTRAINT `UserToChats_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`), "
 			+ "ADD CONSTRAINT `UserToChats_ibfk_2` FOREIGN KEY (`ChatID`) REFERENCES `Chats` (`ID`)";
 
+	private final static String AlterUsers = "ALTER TABLE `Users` "
+			+ "ADD CONSTRAINT `Users_ibfk_1` FOREIGN KEY (`IconID`) REFERENCES `Image` (`ID`);";
+	
 	public createDatabaseTables() {
 	};
 	
@@ -159,17 +167,17 @@ public class createDatabaseTables {
 		try {
 			Connection con = new MySqlConnection().getMySqlConnection();
 			st = con.createStatement();
-			st.execute(CreateChats);
+			st.execute(CreateVideo);
+			st.execute(CreateText);
 			st.execute(CreateContact);
 			st.execute(CreateFiles);
 			st.execute(CreateImage);
+			st.execute(CreateChats);
 			st.execute(CreateLocation);
-			st.execute(CreateMessages);
-			st.execute(CreateText);
 			st.execute(CreateUsers);
+			st.execute(CreateMessages);
 			st.execute(CreateUserToChats);
-			st.execute(CreateVideo);
-
+			
 			st.execute(AlterChats);
 			st.execute(AlterMessages1);
 			st.execute(AlterMessages2);
@@ -180,6 +188,7 @@ public class createDatabaseTables {
 			st.execute(AlterMessages7);
 			st.execute(AlterMessages8);
 			st.execute(AlterUserToChats);
+			st.execute(AlterUsers);
 			con.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

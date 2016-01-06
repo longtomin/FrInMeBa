@@ -36,8 +36,6 @@
 
 package de.radiohacks.frinmeba.modelshort;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -54,12 +52,12 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice>
- *         &lt;sequence>
- *           &lt;element ref="{}C" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;/sequence>
- *         &lt;element name="ET" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *       &lt;/choice>
+ *       &lt;sequence>
+ *         &lt;element name="UN" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="PW" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="IcM" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="IcMD5" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -69,68 +67,117 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "c",
-    "et"
+    "un",
+    "pw",
+    "icM",
+    "icMD5"
 })
-@XmlRootElement(name = "OLiCh")
-public class OLiCh {
+@XmlRootElement(name = "ISIcM")
+public class ISIcM {
 
-    @XmlElement(name = "C")
-    protected List<C> c;
-    @XmlElement(name = "ET")
-    protected String et;
-
-    /**
-     * Gets the value of the c property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the c property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getC().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link C }
-     * 
-     * 
-     */
-    public List<C> getC() {
-        if (c == null) {
-            c = new ArrayList<C>();
-        }
-        return this.c;
-    }
+    @XmlElement(name = "UN", required = true)
+    protected String un;
+    @XmlElement(name = "PW", required = true)
+    protected String pw;
+    @XmlElement(name = "IcM", required = true)
+    protected String icM;
+    @XmlElement(name = "IcMD5", required = true)
+    protected String icMD5;
 
     /**
-     * Gets the value of the et property.
+     * Gets the value of the un property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getET() {
-        return et;
+    public String getUN() {
+        return un;
     }
 
     /**
-     * Sets the value of the et property.
+     * Sets the value of the un property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setET(String value) {
-        this.et = value;
+    public void setUN(String value) {
+        this.un = value;
+    }
+
+    /**
+     * Gets the value of the pw property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPW() {
+        return pw;
+    }
+
+    /**
+     * Sets the value of the pw property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPW(String value) {
+        this.pw = value;
+    }
+
+    /**
+     * Gets the value of the icM property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getIcM() {
+        return icM;
+    }
+
+    /**
+     * Sets the value of the icM property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setIcM(String value) {
+        this.icM = value;
+    }
+
+    /**
+     * Gets the value of the icMD5 property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getIcMD5() {
+        return icMD5;
+    }
+
+    /**
+     * Sets the value of the icMD5 property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setIcMD5(String value) {
+        this.icMD5 = value;
     }
 
 }

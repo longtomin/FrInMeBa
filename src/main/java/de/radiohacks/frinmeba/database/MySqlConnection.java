@@ -43,7 +43,8 @@ public class MySqlConnection {
 	private static String dbPort = "3306"; // Port -- Standard: 3306
 	private static String dbName = "frinme_db"; // Datenbankname
 	private static String dbUser = "frinme_db"; // Datenbankuser
-	private static String dbPass = "LfvnvdKKhuX3DbXa"; // Datenbankpasswort
+	private static String dbPass = "frinme_db"; // Datenbankpasswort
+	//private static String dbPass = "LfvnvdKKhuX3DbXa"; // Datenbankpasswort
 
 //	private static String dbName = "aim"; // Datenbankname
 //	private static String dbUser = "aim"; // Datenbankuser

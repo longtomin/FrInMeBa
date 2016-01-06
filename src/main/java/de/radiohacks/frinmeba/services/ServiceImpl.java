@@ -49,7 +49,9 @@ import de.radiohacks.frinmeba.modelshort.IDeCh;
 import de.radiohacks.frinmeba.modelshort.IFMFC;
 import de.radiohacks.frinmeba.modelshort.IGMI;
 import de.radiohacks.frinmeba.modelshort.IGTeM;
+import de.radiohacks.frinmeba.modelshort.IICIc;
 import de.radiohacks.frinmeba.modelshort.IIMIC;
+import de.radiohacks.frinmeba.modelshort.IIUIc;
 import de.radiohacks.frinmeba.modelshort.ILiCh;
 import de.radiohacks.frinmeba.modelshort.ILiUs;
 import de.radiohacks.frinmeba.modelshort.IReUC;
@@ -68,7 +70,9 @@ import de.radiohacks.frinmeba.modelshort.ODeCh;
 import de.radiohacks.frinmeba.modelshort.OFMFC;
 import de.radiohacks.frinmeba.modelshort.OGMI;
 import de.radiohacks.frinmeba.modelshort.OGTeM;
+import de.radiohacks.frinmeba.modelshort.OICIc;
 import de.radiohacks.frinmeba.modelshort.OIMIC;
+import de.radiohacks.frinmeba.modelshort.OIUIc;
 import de.radiohacks.frinmeba.modelshort.OLiCh;
 import de.radiohacks.frinmeba.modelshort.OLiUs;
 import de.radiohacks.frinmeba.modelshort.OReUC;
@@ -1553,6 +1557,154 @@ public class ServiceImpl implements ServiceUtil {
 
 		logger.debug("End getMessageInformation with User = " + User
 				+ " Password = " + Password);
+		return out;
+	}
+
+	@Override
+	public OIUIc insertusericon(IIUIc in) {
+		logger.debug("Start insertusericon with User = " + in.getUN()
+				+ " Icon = " + in.getIcID());
+
+		OIUIc out = new OIUIc();
+		MySqlConnection mc = new MySqlConnection();
+		Connection con = mc.getMySqlConnection();
+		User actuser = new User(con);
+		Check actcheck = new Check(con);
+
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.CheckContenMessageID(in.getIcID(),
+						Constants.TYP_IMAGE)) {
+					IAuth inauth = new IAuth();
+					OAuth outauth = new OAuth();
+					inauth.setPW(actuser.base64Decode(in.getPW()));
+					inauth.setUN(in.getUN());
+					actuser.authenticate(inauth, outauth);
+
+					if (outauth.getA().equalsIgnoreCase(
+							Constants.AUTHENTICATE_FALSE)) {
+						out.setET(outauth.getET());
+					} else {
+						String tmp = actuser.base64Decode(in.getUN());
+						in.setUN(tmp);
+						tmp = actuser.base64Decode(in.getPW());
+						in.setPW(tmp);
+
+						actuser.insertUserIcon(in, out);
+					}
+				} else {
+					// Icon not found
+					out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+				}
+				// Password check failed
+			} else {
+				if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.NO_CONTENT_GIVEN)) {
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+				} else if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.ENCODING_ERROR)) {
+					out.setET(Constants.ENCODING_ERROR);
+				}
+			}
+			// User check failed
+		} else {
+			if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.NO_CONTENT_GIVEN)) {
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+			} else if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.ENCODING_ERROR)) {
+				out.setET(Constants.ENCODING_ERROR);
+			}
+		}
+
+		if (con != null) {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		logger.debug("End insertchaticon with User = " + in.getUN()
+				+ " Icon = " + in.getIcID());
+		return out;
+	}
+
+	@Override
+	public OICIc insertchaticon(IICIc in) {
+		logger.debug("Start insertchaticon with User = " + in.getUN()
+				+ " Icon = " + in.getIcID() + "ChatID = " + in.getCID());
+
+		OICIc out = new OICIc();
+		MySqlConnection mc = new MySqlConnection();
+		Connection con = mc.getMySqlConnection();
+		User actuser = new User(con);
+		Check actcheck = new Check(con);
+
+		if (actcheck.checkValueMust(in.getUN())) {
+			if (actcheck.checkValueMust(in.getPW())) {
+				if (actcheck.CheckChatID(in.getCID())) {
+					if (actcheck.CheckContenMessageID(in.getIcID(),
+							Constants.TYP_IMAGE)) {
+						IAuth inauth = new IAuth();
+						OAuth outauth = new OAuth();
+						inauth.setPW(actuser.base64Decode(in.getPW()));
+						inauth.setUN(in.getUN());
+						actuser.authenticate(inauth, outauth);
+
+						if (outauth.getA().equalsIgnoreCase(
+								Constants.AUTHENTICATE_FALSE)) {
+							out.setET(outauth.getET());
+						} else {
+							String tmp = actuser.base64Decode(in.getUN());
+							in.setUN(tmp);
+							tmp = actuser.base64Decode(in.getPW());
+							in.setPW(tmp);
+
+							actuser.insertChatIcon(in, out);
+						}
+					} else {
+						// Icon not found
+						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+					}
+				} else {
+					// Chat not found
+					out.setET(Constants.NONE_EXISTING_CHAT);
+				}
+
+				// Password check failed
+			} else {
+				if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.NO_CONTENT_GIVEN)) {
+					out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+				} else if (actcheck.getLastError().equalsIgnoreCase(
+						Constants.ENCODING_ERROR)) {
+					out.setET(Constants.ENCODING_ERROR);
+				}
+			}
+			// User check failed
+		} else {
+			if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.NO_CONTENT_GIVEN)) {
+				out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+			} else if (actcheck.getLastError().equalsIgnoreCase(
+					Constants.ENCODING_ERROR)) {
+				out.setET(Constants.ENCODING_ERROR);
+			}
+		}
+
+		if (con != null) {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		logger.debug("End insertchaticon with User = " + in.getUN()
+				+ " Icon = " + in.getIcID() + "ChatID = " + in.getCID());
 		return out;
 	}
 }

@@ -44,7 +44,9 @@ import de.radiohacks.frinmeba.modelshort.IAckCD;
 import de.radiohacks.frinmeba.modelshort.IAckMD;
 import de.radiohacks.frinmeba.modelshort.IAdUC;
 import de.radiohacks.frinmeba.modelshort.ICrCh;
+import de.radiohacks.frinmeba.modelshort.IICIc;
 import de.radiohacks.frinmeba.modelshort.IIMIC;
+import de.radiohacks.frinmeba.modelshort.IIUIc;
 import de.radiohacks.frinmeba.modelshort.ISShT;
 import de.radiohacks.frinmeba.modelshort.ISTeM;
 import de.radiohacks.frinmeba.modelshort.ISiUp;
@@ -59,7 +61,9 @@ import de.radiohacks.frinmeba.modelshort.ODeCh;
 import de.radiohacks.frinmeba.modelshort.OFMFC;
 import de.radiohacks.frinmeba.modelshort.OGMI;
 import de.radiohacks.frinmeba.modelshort.OGTeM;
+import de.radiohacks.frinmeba.modelshort.OICIc;
 import de.radiohacks.frinmeba.modelshort.OIMIC;
+import de.radiohacks.frinmeba.modelshort.OIUIc;
 import de.radiohacks.frinmeba.modelshort.OLiCh;
 import de.radiohacks.frinmeba.modelshort.OLiUs;
 import de.radiohacks.frinmeba.modelshort.OReUC;
@@ -199,4 +203,16 @@ public interface ServiceUtil {
 	public OSU syncuser(@QueryParam(Constants.QPusername) String User,
 			@QueryParam(Constants.QPpassword) String Password,
 			@QueryParam(Constants.QPuserid) List<Integer> UserID);
+
+	@PUT
+	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
+	@Path("/insertusericon")
+	public OIUIc insertusericon(IIUIc in);
+
+	@PUT
+	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
+	@Path("/insertchaticon")
+	public OICIc insertchaticon(IICIc in);
 }

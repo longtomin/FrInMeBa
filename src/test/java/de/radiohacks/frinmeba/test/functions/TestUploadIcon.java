@@ -54,7 +54,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OSImM;
+import de.radiohacks.frinmeba.modelshort.OSIcM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -62,20 +62,22 @@ import de.radiohacks.frinmeba.test.database.createDatabaseTables;
 import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
-public class TestUploadImage extends JerseyTest {
+public class TestUploadIcon extends JerseyTest {
 
 	/*
 	 * @POST
 	 * 
-	 * @Path("/upload")
+	 * @Path("/uploadicon")
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSImM uploadImage(
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSIcM uploadIcon(
 	 * 
 	 * @QueryParam(Constants.QPusername) String User,
 	 * 
 	 * @QueryParam(Constants.QPpassword) String Password,
+	 * 
+	 * @QueryParam(Constants.QPacknowledge) String Acknowledge,
 	 * 
 	 * @FormDataParam("file") InputStream fileInputStream,
 	 * 
@@ -100,7 +102,11 @@ public class TestUploadImage extends JerseyTest {
 	final static String acknowledge = Base64.encodeBase64String(acknowledge_org
 			.getBytes(Charset.forName(Constants.CharacterSet)));
 
-	final static String functionurl = "image/upload";
+	final static String acknowledge_quadrat_org = "35d8b6fcdef12c442d1a591f0842cccd";
+	final static String acknowledge_quadrat = Base64.encodeBase64String(acknowledge_quadrat_org
+			.getBytes(Charset.forName(Constants.CharacterSet)));
+
+	final static String functionurl = "image/uploadicon";
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -130,7 +136,7 @@ public class TestUploadImage extends JerseyTest {
 	}
 
 	@Test
-	public void testUploadImageUpNoValues() {
+	public void testUploadIconUpNoValues() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -151,14 +157,14 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUser() {
+	public void testUploadIconUser() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -181,14 +187,14 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testUploadImagePassword() {
+	public void testUploadIconPassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -211,14 +217,14 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserPassword() {
+	public void testUploadIconUserPassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -241,13 +247,13 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 		Assert.assertEquals(Constants.UPLOAD_FAILED, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserAcknowledge() {
+	public void testUploadIconUserAcknowledge() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -270,13 +276,13 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testUploadImagePasswordAcknowledge() {
+	public void testUploadIconPasswordAcknowledge() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -299,13 +305,13 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserPasswordNoDisposition() {
+	public void testUploadIconUserPasswordNoDisposition() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -331,13 +337,13 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 		Assert.assertEquals(Constants.NO_IMAGEMESSAGE_GIVEN, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserPasswordNoAcknowledge() {
+	public void testUploadIconUserPasswordNoAcknowledge() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -360,13 +366,13 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 		Assert.assertEquals(Constants.UPLOAD_FAILED, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserWrongPassword() {
+	public void testUploadIconUserWrongPassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -399,14 +405,14 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserEncodeFailureUser() {
+	public void testUploadIconUserEncodeFailureUser() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -429,14 +435,14 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserEncodeFailurePassword() {
+	public void testUploadIconUserEncodeFailurePassword() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -460,14 +466,14 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserEncodeFailureAcknowledge() {
+	public void testUploadIconUserEncodeFailureAcknowledge() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -493,14 +499,14 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
-	public void testUploadImageUserPasswordAcknowledge() {
+	public void testUploadIconUserPasswordAcknowledgeNoQuadrat() {
 		WebTarget target;
 		if (TestConfig.remote) {
 			Client client = ClientBuilder.newBuilder()
@@ -526,10 +532,43 @@ public class TestUploadImage extends JerseyTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		mp.bodyPart(fdp2);
 
-		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
 
-		Assert.assertNotNull(out.getImID());
-		Assert.assertNotNull(out.getImF());
+		Assert.assertEquals(out.getET(), Constants.NO_QUADRAT_IMAGE);
+	}
+
+	@Test
+	public void testUploadIconUserPasswordAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder()
+					.register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge_quadrat);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QPusername, username)
+					.queryParam(Constants.QPacknowledge, acknowledge_quadrat);
+		}
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/quadrat.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("quadrat.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSIcM.class);
+
+		Assert.assertNotNull(out.getIcID());
+		Assert.assertNotNull(out.getIcF());
 	}
 }

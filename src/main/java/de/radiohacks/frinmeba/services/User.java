@@ -42,7 +42,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import de.radiohacks.frinmeba.modelshort.C;
-import de.radiohacks.frinmeba.modelshort.CNC;
 import de.radiohacks.frinmeba.modelshort.CNM;
 import de.radiohacks.frinmeba.modelshort.IAckCD;
 import de.radiohacks.frinmeba.modelshort.IAckMD;
@@ -57,10 +56,13 @@ import de.radiohacks.frinmeba.modelshort.IGImM;
 import de.radiohacks.frinmeba.modelshort.IGMI;
 import de.radiohacks.frinmeba.modelshort.IGTeM;
 import de.radiohacks.frinmeba.modelshort.IGViM;
+import de.radiohacks.frinmeba.modelshort.IICIc;
 import de.radiohacks.frinmeba.modelshort.IIMIC;
+import de.radiohacks.frinmeba.modelshort.IIUIc;
 import de.radiohacks.frinmeba.modelshort.ILiCh;
 import de.radiohacks.frinmeba.modelshort.ILiUs;
 import de.radiohacks.frinmeba.modelshort.IReUC;
+import de.radiohacks.frinmeba.modelshort.ISIcM;
 import de.radiohacks.frinmeba.modelshort.ISImM;
 import de.radiohacks.frinmeba.modelshort.ISShT;
 import de.radiohacks.frinmeba.modelshort.ISTeM;
@@ -83,10 +85,13 @@ import de.radiohacks.frinmeba.modelshort.OGImM;
 import de.radiohacks.frinmeba.modelshort.OGMI;
 import de.radiohacks.frinmeba.modelshort.OGTeM;
 import de.radiohacks.frinmeba.modelshort.OGViM;
+import de.radiohacks.frinmeba.modelshort.OICIc;
 import de.radiohacks.frinmeba.modelshort.OIMIC;
+import de.radiohacks.frinmeba.modelshort.OIUIc;
 import de.radiohacks.frinmeba.modelshort.OLiCh;
 import de.radiohacks.frinmeba.modelshort.OLiUs;
 import de.radiohacks.frinmeba.modelshort.OReUC;
+import de.radiohacks.frinmeba.modelshort.OSIcM;
 import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.modelshort.OSShT;
 import de.radiohacks.frinmeba.modelshort.OSTeM;
@@ -305,6 +310,7 @@ public class User {
 					u.setUN(resultSet.getString("Username"));
 					u.setE(resultSet.getString("Email"));
 					u.setUID(resultSet.getInt("Id"));
+					u.setLA(resultSet.getLong("AuthenticationTime"));
 					out.getU().add(u);
 				}
 			}
@@ -598,14 +604,14 @@ public class User {
 			// TODO first check if Message already exists, idempotent?
 			/* First we create a chat room */
 			statement.executeUpdate(
-					"insert into Image (Image, MD5Sum) values ('" + in.getIM()
-							+ "', '" + in.getIMD5() + "')",
+					"insert into Image (Image, MD5Sum) values ('" + in.getImM()
+							+ "', '" + in.getImMD5() + "')",
 					Statement.RETURN_GENERATED_KEYS);
 			resultSet = statement.getGeneratedKeys();
 			if (resultSet != null && resultSet.next()) {
 				key = resultSet.getInt(1);
 			}
-			out.setIID(key);
+			out.setImID(key);
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
 			e.printStackTrace();
@@ -1270,7 +1276,7 @@ public class User {
 				while (rsCheckNewChat.next()) {
 					// We have a userToChatID now identifiy the Chat
 
-					CNC oNC = new CNC();
+					C oNC = new C();
 					OU oNCOU = new OU();
 					oNCOU.setOUID(rsCheckNewChat.getInt("u.ID"));
 					oNCOU.setOUN(rsCheckNewChat.getString("u.Username"));
@@ -1278,7 +1284,7 @@ public class User {
 					oNC.setCID(rsCheckNewChat.getInt("c.ID"));
 					oNC.setCN(rsCheckNewChat.getString("c.Chatname"));
 
-					out.getCNC().add(oNC);
+					out.getC().add(oNC);
 				}
 			}
 
@@ -1887,7 +1893,7 @@ public class User {
 										msginfo.setRD(rsdetailinfo
 												.getLong("ReadTimestamp"));
 										msginfo.setSH(rsdetailinfo
-												.getInt("ShowTimestamp"));
+												.getLong("ShowTimestamp"));
 										msgout.getMI().add(msginfo);
 									}
 								}
@@ -2006,6 +2012,7 @@ public class User {
 					uinfo.setLA(rsuser.getLong("AuthenticationTime"));
 					uinfo.setUID(rsuser.getInt("ID"));
 					uinfo.setUN(rsuser.getString("Username"));
+					uinfo.setE(rsuser.getString("Email"));
 					out.getU().add(uinfo);
 				}
 			}
@@ -2024,5 +2031,115 @@ public class User {
 				// Do nothing we are closing
 			}
 		}
+	}
+
+	public void sendIconMessage(ISIcM in, OSIcM out) {
+		logger.debug("Start sendIconMessage with In = " + in.toString());
+		int key = -1;
+		ResultSet resultSet = null;
+		Statement statement = null;
+
+		try {
+			statement = con.createStatement();
+			// TODO first check if Message already exists, idempotent?
+			/* First we create a chat room */
+			statement.executeUpdate(
+					"insert into Image (Image, MD5Sum) values ('" + in.getIcM()
+							+ "', '" + in.getIcMD5() + "')",
+					Statement.RETURN_GENERATED_KEYS);
+			resultSet = statement.getGeneratedKeys();
+			if (resultSet != null && resultSet.next()) {
+				key = resultSet.getInt(1);
+			}
+			out.setIcID(key);
+		} catch (SQLException e) {
+			out.setET(Constants.DB_ERROR);
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null) {
+					resultSet.close();
+				}
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				// Do nothing we are closing
+			}
+		}
+		logger.debug("End sendIconMessage with Out = " + out.toString());
+	}
+
+	public void insertChatIcon(IICIc in, OICIc out) {
+		logger.debug("Start insertChatIcon with In = " + in.toString());
+		Statement statement = null;
+		ResultSet resultSet = null;
+
+		fillUserinfo(in.getUN());
+		try {
+			statement = con.createStatement();
+			/* Check first if the Owning User is sending the Request */
+			resultSet = statement
+					.executeQuery("select OwningUserID from Chats where ID = '"
+							+ in.getCID() + "'");
+
+			if (resultSet.next()) {
+				if (this.Id == resultSet.getInt("OwningUserID")) {
+					statement.executeUpdate("UPDATE Chats SET IconID = "
+							+ in.getIcID() + " WHERE ID = " + in.getCID());
+					// Now we set the Timestamps to zero so that every client is
+					// getting
+					// the update
+					statement
+							.executeUpdate("UPDATE UserToChats SET ReadTimestamp = 0, TempReadTimestamp = 0 WHERE ChatID = "
+									+ in.getCID());
+					out.setR(Constants.ICON_ADDED);
+				} else {
+					out.setET(Constants.NOT_CHAT_OWNER);
+				}
+			}
+		} catch (SQLException e) {
+			out.setET(Constants.DB_ERROR);
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (resultSet != null) {
+					resultSet.close();
+				}
+			} catch (SQLException e) {
+				// Do nothing we are closing
+			}
+		}
+		logger.debug("End insertChatIcon with Out = " + out.toString());
+	}
+
+	public void insertUserIcon(IIUIc in, OIUIc out) {
+		logger.debug("Start insertUserIcon with In = " + in.toString());
+		Statement statement = null;
+
+		try {
+			fillUserinfo(in.getUN());
+			statement = con.createStatement();
+			// TODO first check if Message already exists, idempotent?
+			/* First we create a chat room */
+			statement.executeUpdate("UPDATE Users SET IconID = " + in.getIcID()
+					+ " WHERE ID = " + this.Id);
+			out.setR(Constants.ICON_ADDED);
+		} catch (SQLException e) {
+			out.setET(Constants.DB_ERROR);
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				// Do nothing we are closing
+			}
+		}
+		logger.debug("End insertUserIcon with Out = " + out.toString());
 	}
 }

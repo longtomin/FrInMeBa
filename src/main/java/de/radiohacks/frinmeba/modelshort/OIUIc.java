@@ -36,8 +36,6 @@
 
 package de.radiohacks.frinmeba.modelshort;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -56,7 +54,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;choice>
  *         &lt;sequence>
- *           &lt;element ref="{}C" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element name="R" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;/sequence>
  *         &lt;element name="ET" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/choice>
@@ -69,44 +67,39 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "c",
+    "r",
     "et"
 })
-@XmlRootElement(name = "OLiCh")
-public class OLiCh {
+@XmlRootElement(name = "OIUIc")
+public class OIUIc {
 
-    @XmlElement(name = "C")
-    protected List<C> c;
+    @XmlElement(name = "R")
+    protected String r;
     @XmlElement(name = "ET")
     protected String et;
 
     /**
-     * Gets the value of the c property.
+     * Gets the value of the r property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the c property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getC().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link C }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public List<C> getC() {
-        if (c == null) {
-            c = new ArrayList<C>();
-        }
-        return this.c;
+    public String getR() {
+        return r;
+    }
+
+    /**
+     * Sets the value of the r property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setR(String value) {
+        this.r = value;
     }
 
     /**

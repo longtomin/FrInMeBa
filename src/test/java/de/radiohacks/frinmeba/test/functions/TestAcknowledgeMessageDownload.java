@@ -175,7 +175,7 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 
 		OSImM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSImM.class);
-		return x.getIID();
+		return x.getImID();
 	}
 
 	public int uploadVideoContent(String url) {

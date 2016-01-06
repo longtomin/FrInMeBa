@@ -31,7 +31,10 @@ package de.radiohacks.frinmeba.test.functions;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -45,7 +48,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OCN;
+import de.radiohacks.frinmeba.modelshort.IIUIc;
+import de.radiohacks.frinmeba.modelshort.OIUIc;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -53,17 +57,17 @@ import de.radiohacks.frinmeba.test.database.createDatabaseTables;
 import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
-public class TestCheckNew extends JerseyTest {
+public class TestInsertUserIcon extends JerseyTest {
 
 	/*
-	 * @GET
+	 * @PUT
 	 * 
 	 * @Produces(MediaType.APPLICATION_XML)
 	 * 
-	 * @Path("/checknewmessages") public OCN
-	 * checkNewMessages(@QueryParam(Constants.QPusername) String User,
+	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
-	 * @QueryParam(Constants.QPpassword) String Password);
+	 * @Path("/insertmessageintochat") public OIMIC insertMessageIntoChat(IIMIC
+	 * in);
 	 */
 
 	// Username welche anzulegen ist
@@ -79,7 +83,10 @@ public class TestCheckNew extends JerseyTest {
 	final static String email = Base64.encodeBase64String(email_org
 			.getBytes(Charset.forName(Constants.CharacterSet)));
 
-	final static String functionurl = "user/checknew";
+	final static String functionurl = "user/insertusericon";
+
+	// Text Message
+	static int iconid;
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -95,91 +102,153 @@ public class TestCheckNew extends JerseyTest {
 
 	@BeforeClass
 	public static void prepareDB() {
-		System.out.print("Start prepareDB CheckNewMessages\n");
 		dropDatabaseTables drop = new dropDatabaseTables();
 		drop.dropTable();
 		createDatabaseTables create = new createDatabaseTables();
 		create.createTable();
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username_org, username, password_org, email_org);
+		iconid = help.InsertFixedImage();
 	}
 
-	@Test
-	public void testCheckNewMessagesUpNoValues() {
+	private OIUIc callTarget(IIUIc in) {
 		WebTarget target = ClientBuilder.newClient().target(
 				TestConfig.URL + functionurl);
-		OCN out = target.request().get(OCN.class);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		return response.readEntity(OIUIc.class);
+	}
+
+	@Test
+	public void testInsertUserIconUpNoValues() {
+		IIUIc in = new IIUIc();
+		OIUIc out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testCheckNewMessagesUser() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username);
-		OCN out = target.request().get(OCN.class);
+	public void testInsertUserIconPasswordMessage() {
+		IIUIc in = new IIUIc();
+		in.setPW(password);
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testCheckNewMessagesPassword() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password);
-		OCN out = target.request().get(OCN.class);
+	public void testInsertUserIconUserMessage() {
+		IIUIc in = new IIUIc();
+		in.setUN(username);
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testCheckNewMessagesUserPassword() {
-		helperDatabase help = new helperDatabase();
-		int TxtmsgID = help.CreateContentMessage("Test Nachricht",
-				Constants.TYP_TEXT);
-		int ChatID = help.CreateChat(username_org, "TestChat");
-		int UserID = help.getUserID(username_org);
-		int User2ChatID = help.AddUserToChat(UserID, ChatID);
-		help.insertMessage(UserID, User2ChatID, Constants.TYP_TEXT, TxtmsgID,
-				0, true);
-
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password)
-				.queryParam(Constants.QPusername, username);
-		OCN out = target.request().get(OCN.class);
-		Assert.assertNotNull(out.getC());
+	public void testInsertUserIconUserPassword() {
+		IIUIc in = new IIUIc();
+		in.setPW(password);
+		in.setUN(username);
+		OIUIc out = callTarget(in);
+		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE, out.getET());
 	}
 
 	@Test
-	public void testCheckNewMessagesUserWrongPassword() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(
-						Constants.QPpassword,
-						Base64.encodeBase64String("XXX".getBytes(Charset
-								.forName(Constants.CharacterSet))))
-				.queryParam(Constants.QPusername, username);
-		OCN out = target.request().get(OCN.class);
+	public void testInsertUserIconMessage() {
+		IIUIc in = new IIUIc();
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
+
+	@Test
+	public void testInsertUserIconUserPasswordMessage() {
+		IIUIc in = new IIUIc();
+		in.setPW(password);
+		in.setUN(username);
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
+		Assert.assertNotNull(out.getR());
+	}
+
+	@Test
+	public void testInsertUserIconUserWrongPasswordMessage() {
+		IIUIc in = new IIUIc();
+		in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setUN(username);
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
 
 	@Test
-	public void testCheckNewMessagesUserEncodeFailureUser() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password)
-				.queryParam(Constants.QPusername, "$!%1234");
-		OCN out = target.request().get(OCN.class);
+	public void testInsertUserIconWrongUserPasswordMessage() {
+		IIUIc in = new IIUIc();
+		in.setPW(password);
+		in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
+		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
+	}
+
+	@Test
+	public void testInsertUserIconWrongUserWrongPasswordMessage() {
+		IIUIc in = new IIUIc();
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
+				.forName(Constants.CharacterSet))));
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
+		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
+	}
+
+	@Test
+	public void testInsertUserIconUser() {
+		IIUIc in = new IIUIc();
+		in.setUN(username);
+		OIUIc out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
+
+	@Test
+	public void testInsertUserIconPassword() {
+		IIUIc in = new IIUIc();
+		in.setPW(password);
+		OIUIc out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
+
+	@Test
+	public void testInsertUserIconEncodimgErrorUser() {
+		IIUIc in = new IIUIc();
+		in.setPW(password);
+		in.setUN("$%&1234");
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
 
 	@Test
-	public void testCheckNewMessagesUserEncodeFailurePassword() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, "$!%1234")
-				.queryParam(Constants.QPusername, username);
-		OCN out = target.request().get(OCN.class);
+	public void testInsertUserIconEncodimgErrorPassword() {
+		IIUIc in = new IIUIc();
+		in.setPW("$%&1234");
+		in.setUN(username);
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
+
+	@Test
+	public void testInsertUserIconEncodimgErrorTextMessage() {
+		IIUIc in = new IIUIc();
+		in.setPW(password);
+		in.setUN(username);
+		in.setIcID(17);
+		OIUIc out = callTarget(in);
+		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE, out.getET());
 	}
 }

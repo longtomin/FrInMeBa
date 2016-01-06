@@ -44,6 +44,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import de.radiohacks.frinmeba.modelshort.OGImMMD;
+import de.radiohacks.frinmeba.modelshort.OSIcM;
 import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 
@@ -74,4 +75,15 @@ public interface ImageUtil {
 	public Response downloadImage(@PathParam(Constants.QPusername) String User,
 			@PathParam(Constants.QPpassword) String Password,
 			@PathParam(Constants.QPimageid) int imageid);
+	
+	@POST
+	@Path("/uploadicon")
+	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public OSIcM uploadIcon(
+			@QueryParam(Constants.QPusername) String User,
+			@QueryParam(Constants.QPpassword) String Password,
+			@QueryParam(Constants.QPacknowledge) String Acknowledge,
+			@FormDataParam("file") InputStream fileInputStream,
+			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
 }

@@ -59,11 +59,11 @@ public class dropDatabaseTables {
 			st.execute(DropText);
 			st.execute(DropUserToChats);
 			st.execute(DropChats);
+			st.execute(DropUsers);
 			st.execute(DropContact);
 			st.execute(DropFile);
 			st.execute(DropImage);
 			st.execute(DropLocation);
-			st.execute(DropUsers);
 			st.execute(DropVideo);
 			con.close();
 		} catch (SQLException e) {

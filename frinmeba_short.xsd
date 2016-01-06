@@ -60,6 +60,7 @@
 				<xs:element type="xs:int" name="UID" />
 				<xs:element type="xs:string" name="E" />
 				<xs:element type="xs:long" name="LA" />
+				<xs:element type="xs:int" name="ICID" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -68,6 +69,7 @@
 			<xs:sequence>
 				<xs:element type="xs:string" name="CN" />
 				<xs:element type="xs:int" name="CID" />
+				<xs:element type="xs:int" name="ICID" />
 				<xs:element ref="OU" />
 			</xs:sequence>
 		</xs:complexType>
@@ -91,7 +93,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="CNC">
+<!--<xs:element name="CNC">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element type="xs:string" name="CN" />
@@ -99,7 +101,7 @@
 				<xs:element ref="OU" />
 			</xs:sequence>
 		</xs:complexType>
-	</xs:element>
+	</xs:element>  -->
 	<xs:element name="CNM">
 		<xs:complexType>
 			<xs:sequence>
@@ -499,8 +501,8 @@
 			<xs:sequence>
 				<xs:element type="xs:string" name="UN" />
 				<xs:element type="xs:string" name="PW" />
-				<xs:element type="xs:string" name="IM" />
-				<xs:element type="xs:string" name="IMD5" />
+				<xs:element type="xs:string" name="ImM" />
+				<xs:element type="xs:string" name="ImMD5" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -509,8 +511,31 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element type="xs:int" name="IID" />
-					<xs:element type="xs:string" name="IF" />
+					<xs:element type="xs:int" name="ImID" />
+					<xs:element type="xs:string" name="ImF" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ISIcM">
+		<!-- In Send Image Message -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:string" name="IcM" />
+				<xs:element type="xs:string" name="IcMD5" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OSIcM">
+		<!-- Out Send Image Message -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:int" name="IcID" />
+					<xs:element type="xs:string" name="IcF" />
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
@@ -747,7 +772,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element ref="CNC" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element ref="C" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element ref="CNM" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
@@ -852,4 +877,48 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="IIUIc">
+		<!-- In Insert User Icon -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="IcID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OIUIc">
+		<!-- Out Insert User Icon -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="R" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IICIc">
+		<!-- In Insert Chat Icon -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="UN" />
+				<xs:element type="xs:string" name="PW" />
+				<xs:element type="xs:int" name="IcID" />
+				<xs:element type="xs:int" name="CID" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OICIc">
+		<!-- Out Insert Chat Icon -->
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element type="xs:string" name="R" />
+				</xs:sequence>
+				<xs:element type="xs:string" name="ET" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>
