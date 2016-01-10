@@ -1268,7 +1268,7 @@ public class User {
 
 			// First we check for unreaded chats
 			rsCheckNewChat = stCheckNewChat
-					.executeQuery("SELECT c.Chatname, c.ID, u.Username, u.ID FROM "
+					.executeQuery("SELECT c.Chatname, c.ID, u.Username, c.IconID, u.ID FROM "
 							+ "Chats c, Users u WHERE c.OwningUserID = u.ID and c.id IN "
 							+ "(SELECT ChatID FROM UserToChats WHERE UserID = "
 							+ this.Id + " and ReadTimestamp = 0)");
@@ -1283,6 +1283,7 @@ public class User {
 					oNC.setOU(oNCOU);
 					oNC.setCID(rsCheckNewChat.getInt("c.ID"));
 					oNC.setCN(rsCheckNewChat.getString("c.Chatname"));
+					oNC.setICID(rsCheckNewChat.getInt("c.IconID"));
 
 					out.getC().add(oNC);
 				}
