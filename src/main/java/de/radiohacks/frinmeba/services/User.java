@@ -2014,6 +2014,7 @@ public class User {
 					uinfo.setUID(rsuser.getInt("ID"));
 					uinfo.setUN(rsuser.getString("Username"));
 					uinfo.setE(rsuser.getString("Email"));
+					uinfo.setICID(rsuser.getInt("IconID"));
 					out.getU().add(uinfo);
 				}
 			}
