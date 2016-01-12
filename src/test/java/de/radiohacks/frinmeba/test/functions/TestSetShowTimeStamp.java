@@ -121,9 +121,9 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		create.createTable();
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username1_org, username1, password1_org,
-				email1_org);
+				email1_org, help.InsertFixedImage());
 		help.CreateActiveUser(username2_org, username2, password2_org,
-				email2_org);
+				email2_org, help.InsertFixedImage());
 		int uid1 = help.getUserID(username1_org);
 		cid = help.CreateChat(username1_org, "TestChat");
 		txtmsgid1 = help.CreateContentMessage("TEST Text Message von User1",

@@ -125,9 +125,9 @@ public class TestAddUserToChat extends JerseyTest {
 		createDatabaseTables create = new createDatabaseTables();
 		create.createTable();
 		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org);
+		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
 		help.CreateActiveUser(username2_org, username2, password2_org,
-				email2_org);
+				email2_org, help.InsertFixedImage());
 		chatid = help.CreateChat(username_org, chatname_org);
 
 	}

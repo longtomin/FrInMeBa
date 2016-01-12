@@ -120,9 +120,9 @@ public class TestInsertChatIcon extends JerseyTest {
 		create.createTable();
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username1_org, username1, password1_org,
-				email1_org);
+				email1_org, help.InsertFixedImage());
 		help.CreateActiveUser(username2_org, username2, password2_org,
-				email2_org);
+				email2_org, help.InsertFixedImage());
 		chatid1 = help.CreateChat(username1_org, "Chat_Test1");
 		chatid2 = help.CreateChat(username2_org, "Chat-Test2");
 		iconid = help.InsertFixedImage();

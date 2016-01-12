@@ -297,11 +297,11 @@ public class User {
 			statement = con.createStatement();
 			if (in.getS() != null && !in.getS().isEmpty()) {
 				resultSet = statement
-						.executeQuery("select Username, Id, Email, AuthenticationTime from Users where Active = 1 and Username like '%"
+						.executeQuery("select * from Users where Active = 1 and Username like '%"
 								+ in.getS() + "%'");
 			} else {
 				resultSet = statement
-						.executeQuery("select Username, Id, Email, AuthenticationTime from Users where Active = 1");
+						.executeQuery("select * from Users where Active = 1");
 			}
 
 			while (resultSet.next()) {
@@ -311,6 +311,7 @@ public class User {
 					u.setE(resultSet.getString("Email"));
 					u.setUID(resultSet.getInt("Id"));
 					u.setLA(resultSet.getLong("AuthenticationTime"));
+					u.setICID(resultSet.getInt("IconID"));
 					out.getU().add(u);
 				}
 			}

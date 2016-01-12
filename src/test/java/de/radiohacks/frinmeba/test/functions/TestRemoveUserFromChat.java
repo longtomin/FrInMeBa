@@ -107,7 +107,8 @@ public class TestRemoveUserFromChat extends JerseyTest {
 		createDatabaseTables create = new createDatabaseTables();
 		create.createTable();
 		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org);
+		help.CreateActiveUser(username_org, username, password_org, email_org,
+				help.InsertFixedImage());
 		userid = help.getUserID(username_org);
 		chatid = help.CreateChat(username_org, "TestChat");
 		int u2c = help.AddUserToChat(userid, chatid);

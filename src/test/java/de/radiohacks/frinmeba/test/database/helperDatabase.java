@@ -63,7 +63,7 @@ public class helperDatabase {
 	}
 
 	public void CreateActiveUser(String username, String B64username,
-			String password, String email) {
+			String password, String email, int IconID) {
 
 		try {
 			Connection con = new MySqlConnection().getMySqlConnection();
@@ -71,7 +71,7 @@ public class helperDatabase {
 			Statement st = con.createStatement();
 			long currentTime = System.currentTimeMillis() / 1000L;
 
-			st.executeUpdate("insert into Users(Username, B64Username, Password, Email, SignupDate, Status, AuthenticationTime, Active) values ('"
+			st.executeUpdate("insert into Users(Username, B64Username, Password, Email, SignupDate, Status, AuthenticationTime, Active, IconID) values ('"
 					+ username
 					+ "', '"
 					+ B64username
@@ -82,7 +82,7 @@ public class helperDatabase {
 					+ "', '"
 					+ currentTime
 					+ "', '0', '"
-					+ currentTime + "', '1')");
+					+ currentTime + "', '1', " + IconID + ")");
 			con.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

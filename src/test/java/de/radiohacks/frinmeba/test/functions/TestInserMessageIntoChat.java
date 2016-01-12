@@ -148,15 +148,15 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		create.createTable();
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username1_org, username1, password1_org,
-				email1_org);
+				email1_org, help.InsertFixedImage());
 		help.CreateActiveUser(username2_org, username2, password2_org,
-				email2_org);
+				email2_org, help.InsertFixedImage());
 		help.CreateActiveUser(username3_org, username3, password3_org,
-				email3_org);
+				email3_org, help.InsertFixedImage());
 		help.CreateActiveUser(username4_org, username4, password4_org,
-				email4_org);
+				email4_org, help.InsertFixedImage());
 		help.CreateActiveUser(username5_org, username5, password5_org,
-				email5_org);
+				email5_org, help.InsertFixedImage());
 		cid = help.CreateChat(username1_org, "TestChat");
 		txtmsgid1 = help.CreateContentMessage("TEST Text Message von User1",
 				Constants.TYP_TEXT);

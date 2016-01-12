@@ -111,7 +111,8 @@ public class TestGetTextMessage extends JerseyTest {
 		createDatabaseTables create = new createDatabaseTables();
 		create.createTable();
 		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org);
+		help.CreateActiveUser(username_org, username, password_org, email_org,
+				help.InsertFixedImage());
 		msg1 = help.CreateContentMessage(textmnsg1, Constants.TYP_TEXT);
 		msg2 = help.CreateContentMessage(textmnsg2, Constants.TYP_TEXT);
 	}

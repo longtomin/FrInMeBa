@@ -103,8 +103,9 @@ public class TestUploadIcon extends JerseyTest {
 			.getBytes(Charset.forName(Constants.CharacterSet)));
 
 	final static String acknowledge_quadrat_org = "35d8b6fcdef12c442d1a591f0842cccd";
-	final static String acknowledge_quadrat = Base64.encodeBase64String(acknowledge_quadrat_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+	final static String acknowledge_quadrat = Base64
+			.encodeBase64String(acknowledge_quadrat_org.getBytes(Charset
+					.forName(Constants.CharacterSet)));
 
 	final static String functionurl = "image/uploadicon";
 
@@ -132,7 +133,8 @@ public class TestUploadIcon extends JerseyTest {
 		createDatabaseTables create = new createDatabaseTables();
 		create.createTable();
 		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org);
+		help.CreateActiveUser(username_org, username, password_org, email_org,
+				help.InsertFixedImage());
 	}
 
 	@Test

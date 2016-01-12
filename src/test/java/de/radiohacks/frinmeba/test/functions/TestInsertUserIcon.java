@@ -107,7 +107,8 @@ public class TestInsertUserIcon extends JerseyTest {
 		createDatabaseTables create = new createDatabaseTables();
 		create.createTable();
 		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org);
+		help.CreateActiveUser(username_org, username, password_org, email_org,
+				help.InsertFixedImage());
 		iconid = help.InsertFixedImage();
 	}
 
@@ -151,7 +152,8 @@ public class TestInsertUserIcon extends JerseyTest {
 		in.setPW(password);
 		in.setUN(username);
 		OIUIc out = callTarget(in);
-		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE, out.getET());
+		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
+				out.getET());
 	}
 
 	@Test
@@ -249,6 +251,7 @@ public class TestInsertUserIcon extends JerseyTest {
 		in.setUN(username);
 		in.setIcID(17);
 		OIUIc out = callTarget(in);
-		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE, out.getET());
+		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
+				out.getET());
 	}
 }

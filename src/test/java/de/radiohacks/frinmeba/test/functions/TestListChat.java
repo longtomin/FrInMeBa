@@ -100,7 +100,8 @@ public class TestListChat extends JerseyTest {
 		createDatabaseTables create = new createDatabaseTables();
 		create.createTable();
 		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org);
+		help.CreateActiveUser(username_org, username, password_org, email_org,
+				help.InsertFixedImage());
 		help.CreateChat(username_org, "TESTCHAT1");
 		help.CreateChat(username_org, "TESTCHAT2");
 		help.CreateChat(username_org, "TESTCHAT3");

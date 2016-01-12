@@ -123,11 +123,11 @@ public class TestGetMessageFromChat extends JerseyTest {
 		create.createTable();
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username1_org, username1, password1_org,
-				email1_org);
+				email1_org, help.InsertFixedImage());
 		help.CreateActiveUser(username2_org, username2, password2_org,
-				email2_org);
+				email2_org, help.InsertFixedImage());
 		help.CreateActiveUser(username3_org, username3, password3_org,
-				email3_org);
+				email3_org, help.InsertFixedImage());
 		cid1to2 = help.CreateChat(username1_org, "1to2");
 		cid3to12 = help.CreateChat(username3_org, "3to12");
 		int m1 = help.CreateContentMessage("Text1", Constants.TYP_TEXT);

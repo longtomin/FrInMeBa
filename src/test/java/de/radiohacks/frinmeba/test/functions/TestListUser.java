@@ -128,11 +128,11 @@ public class TestListUser extends JerseyTest {
 		create.createTable();
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username1_org, username1, password1_org,
-				email1_org);
+				email1_org, help.InsertFixedImage());
 		help.CreateActiveUser(username2_org, username2, password2_org,
-				email2_org);
+				email2_org, help.InsertFixedImage());
 		help.CreateActiveUser(username3_org, username3, password3_org,
-				email3_org);
+				email3_org, help.InsertFixedImage());
 	}
 
 	@Test
