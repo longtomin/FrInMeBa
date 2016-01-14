@@ -355,7 +355,7 @@ public class User {
 					C outchat = new C();
 					stchats = con.createStatement();
 					rschats = stchats
-							.executeQuery("Select Chatname, OwningUserID from Chats where ID = "
+							.executeQuery("Select Chatname, OwningUserID, IconID from Chats where ID = "
 									+ rsusertochats.getInt("ChatID"));
 
 					int rscount = 0;
@@ -363,6 +363,7 @@ public class User {
 						while (rschats.next()) {
 							outchat.setCID(rsusertochats.getInt("ChatID"));
 							outchat.setCN(rschats.getString("Chatname"));
+							outchat.setICID(rschats.getInt("IconID"));
 							OU outOwingUser = new OU();
 							outOwingUser
 									.setOUID(rschats.getInt("OwningUserID"));

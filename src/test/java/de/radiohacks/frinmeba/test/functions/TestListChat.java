@@ -102,9 +102,12 @@ public class TestListChat extends JerseyTest {
 		helperDatabase help = new helperDatabase();
 		help.CreateActiveUser(username_org, username, password_org, email_org,
 				help.InsertFixedImage());
-		help.CreateChat(username_org, "TESTCHAT1");
-		help.CreateChat(username_org, "TESTCHAT2");
-		help.CreateChat(username_org, "TESTCHAT3");
+		int c1 = help.CreateChat(username_org, "TESTCHAT1");
+		int c2 = help.CreateChat(username_org, "TESTCHAT2");
+		int c3 = help.CreateChat(username_org, "TESTCHAT3");
+		help.AddUserToChat(help.getUserID(username_org), c1);
+		help.AddUserToChat(help.getUserID(username_org), c2);
+		help.AddUserToChat(help.getUserID(username_org), c3);
 	}
 
 	@Test
@@ -125,6 +128,10 @@ public class TestListChat extends JerseyTest {
 		OLiCh out = target.request().get(OLiCh.class);
 
 		Assert.assertNotNull(out.getC());
+		Assert.assertNotNull(out.getC().get(0).getCN());
+		Assert.assertNotNull(out.getC().get(0).getCID());
+		Assert.assertNotNull(out.getC().get(0).getICID());
+		Assert.assertNotNull(out.getC().get(0).getOU());
 	}
 
 	@Test
