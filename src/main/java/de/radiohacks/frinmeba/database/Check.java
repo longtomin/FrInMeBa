@@ -44,7 +44,7 @@ import de.radiohacks.frinmeba.services.Constants;
 
 public class Check {
 
-	static final Logger logger = Logger.getLogger(Check.class);
+	private static final Logger logger = Logger.getLogger(Check.class);
 
 	private Connection con = null;
 	private String lastError = null;

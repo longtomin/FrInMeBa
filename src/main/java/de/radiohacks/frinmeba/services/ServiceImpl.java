@@ -85,7 +85,7 @@ import de.radiohacks.frinmeba.util.ServiceUtil;
 @Path("/user")
 public class ServiceImpl implements ServiceUtil {
 
-	static final Logger logger = Logger.getLogger(ServiceImpl.class);
+	private static final Logger logger = Logger.getLogger(ServiceImpl.class);
 
 	@Override
 	public OAuth AuthenticateUser(String User, String Password) {

@@ -107,7 +107,7 @@ public class User {
 	private int Id = 0;
 	private Connection con;
 
-	static final Logger logger = Logger.getLogger(User.class);
+	private static final Logger logger = Logger.getLogger(User.class);
 
 	public User(Connection conin) {
 		logger.debug("Start User with Connection");
@@ -1526,7 +1526,7 @@ public class User {
 
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			// e.printStackTrace();
 		} finally {
 			try {
 				if (rsmessageinchat != null) {

@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 
 public class MySqlConnection {
 	
-	static final Logger logger = Logger.getLogger(MySqlConnection.class);
+	private static final Logger logger = Logger.getLogger(MySqlConnection.class);
 
 	private Connection con = null;
 	private static String dbHost = "localhost"; // Hostname
@@ -62,12 +62,12 @@ public class MySqlConnection {
 					+ dbPort + "/" + dbName + "?" + "user=" + dbUser + "&"
 					+ "password=" + dbPass);
 		} catch (ClassNotFoundException e) {
-			System.out.println("Treiber nicht gefunden");
+			logger.error("Treiber nicht gefunden");
 		} catch (SQLException e) {
-			System.out.println("Verbindung nicht moglich");
-			System.out.println("SQLException: " + e.getMessage());
-			System.out.println("SQLState: " + e.getSQLState());
-			System.out.println("VendorError: " + e.getErrorCode());
+			logger.error("Verbindung nicht moglich");
+			logger.error("SQLException: " + e.getMessage());
+			logger.error("SQLState: " + e.getSQLState());
+			logger.error("VendorError: " + e.getErrorCode());
 		}
 		logger.debug("End getMySqlConnection");
 		return con;

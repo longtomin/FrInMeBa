@@ -119,8 +119,8 @@ public interface ServiceUtil {
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/listuser")
-	public OLiUs ListUsers(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
+	public OLiUs ListUsers(@QueryParam(Constants.QPusername) String user,
+			@QueryParam(Constants.QPpassword) String password,
 			@QueryParam(Constants.QPsearch) String search);
 
 	@GET

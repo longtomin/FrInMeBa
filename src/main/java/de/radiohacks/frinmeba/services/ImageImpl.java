@@ -191,8 +191,7 @@ public class ImageImpl implements ImageUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				out.setET(Constants.DB_ERROR);
 			}
 		}
 		return out;
@@ -241,33 +240,24 @@ public class ImageImpl implements ImageUtil {
 										+ Constants.SERVER_IMAGE_FOLDER
 										+ out.getIM());
 						if (!file.exists()) {
-							// LOGGER.error(ErrorCode.IMAGE_NOT_FOUND, imageId);
-							// throw new NotFoundException();
-						}
-						try {
-							/*
-							 * return Response
-							 * .ok(FileUtils.readFileToByteArray(file)) .header(
-							 * "Content-Type, image/jpeg; Content-Disposition" ,
-							 * "attachment; filename=" + out.getImageMessage())
-							 * .build();
-							 */
-							if (con != null) {
-								con.close();
-								con = null;
+							out.setET(Constants.FILE_NOT_FOUND);
+						} else {
+							try {
+								if (con != null) {
+									con.close();
+									con = null;
+								}
+								return Response
+										.ok(FileUtils.readFileToByteArray(file))
+										.header("Content-Disposition",
+												"attachment")
+										.header("filename", out.getIM())
+										.build();
+							} catch (java.io.IOException ex) {
+								out.setET(Constants.FILE_NOT_FOUND);
+							} catch (SQLException e) {
+								out.setET(Constants.DB_ERROR);
 							}
-							return Response
-									.ok(FileUtils.readFileToByteArray(file))
-									.header("Content-Disposition", "attachment")
-									.header("filename", out.getIM()).build();
-						} catch (java.io.IOException ex) {
-							// LOGGER.error(ErrorCode.IMAGE_READ_ERROR,
-							// file.getAbsolutePath(),
-							// ex);
-							// throw new NotFoundException(ex);
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
 					}
 				}
@@ -278,8 +268,7 @@ public class ImageImpl implements ImageUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				out.setET(Constants.DB_ERROR);
 			}
 		}
 
@@ -364,8 +353,7 @@ public class ImageImpl implements ImageUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				out.setET(Constants.DB_ERROR);
 			}
 		}
 		return out;
@@ -387,7 +375,6 @@ public class ImageImpl implements ImageUtil {
 			outpuStream.flush();
 			outpuStream.close();
 		} catch (IOException e) {
-
 			e.printStackTrace();
 		}
 	}
@@ -533,9 +520,7 @@ public class ImageImpl implements ImageUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				out.setET(Constants.DB_ERROR);			}
 		}
 		return out;
 	}
