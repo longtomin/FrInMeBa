@@ -73,61 +73,61 @@ import de.radiohacks.frinmeba.modelshort.OSU;
 import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 
-public interface ServiceUtil {
+public interface IServiceUtil {
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/authenticate")
-	public OAuth AuthenticateUser(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password);
+	public OAuth authenticateUser(
+			@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/signup")
-	public OSiUp SingUpUser(ISiUp in);
+	public OSiUp singUpUser(ISiUp in);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/createchat")
-	public OCrCh CreateChat(ICrCh in);
+	public OCrCh createChat(ICrCh in);
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/deletechat")
-	public ODeCh DeleteChat(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPchatid) int ChatID);
+	public ODeCh deleteChat(@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_CHATID) int chatID);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/addusertochat")
-	public OAdUC AddUserToChat(IAdUC in);
+	public OAdUC addUserToChat(IAdUC in);
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/removeuserfromchat")
-	public OReUC RemoveUserFromChat(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPuserid) int UserID,
-			@QueryParam(Constants.QPchatid) int ChatID);
+	public OReUC removeUserFromChat(
+			@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_USERID) int userID,
+			@QueryParam(Constants.QP_CHATID) int chatID);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/listuser")
-	public OLiUs ListUsers(@QueryParam(Constants.QPusername) String user,
-			@QueryParam(Constants.QPpassword) String password,
-			@QueryParam(Constants.QPsearch) String search);
+	public OLiUs listUsers(@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_SEARCH) String search);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/listchat")
-	public OLiCh ListChats(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password);
+	public OLiCh listChats(@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)
@@ -138,9 +138,9 @@ public interface ServiceUtil {
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/gettextmessage")
-	public OGTeM getTextMessage(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPtextmessageid) int TextMessageID);
+	public OGTeM getTextMessage(@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_TEXTMESSAGEID) int textMessageID);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)
@@ -152,24 +152,24 @@ public interface ServiceUtil {
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/deletemessagefromchat")
 	public ODMFC deleteMessageFromChat(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPmessageid) int MessageID);
+			@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_MESSAGEID) int messageID);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/getmessagefromchat")
 	public OFMFC getMessageFromChat(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPchatid) int ChatID,
-			@QueryParam(Constants.QPtimestamp) int Timestamp);
+			@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_CHATID) int chatID,
+			@QueryParam(Constants.QP_TIMESTAMP) int timestamp);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/checknew")
-	public OCN checkNew(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password);
+	public OCN checkNew(@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password);
 
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
@@ -181,9 +181,9 @@ public interface ServiceUtil {
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/getmessageinformation")
 	public OGMI getMessageInformation(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPmessageid) List<Integer> MessageID);
+			@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_MESSAGEID) List<Integer> messageID);
 
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
@@ -200,19 +200,19 @@ public interface ServiceUtil {
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/syncuser")
-	public OSU syncuser(@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPuserid) List<Integer> UserID);
+	public OSU syncUser(@QueryParam(Constants.QP_USERNAME) String user,
+			@QueryParam(Constants.QP_PASSWORD) String password,
+			@QueryParam(Constants.QP_USERID) List<Integer> userID);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/insertusericon")
-	public OIUIc insertusericon(IIUIc in);
+	public OIUIc insertUserIcon(IIUIc in);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/insertchaticon")
-	public OICIc insertchaticon(IICIc in);
+	public OICIc insertChatIcon(IICIc in);
 }

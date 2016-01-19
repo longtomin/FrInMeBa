@@ -26,6 +26,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the FreeBSD Project.
  */
+
 package de.radiohacks.frinmeba.util;
 
 import java.io.InputStream;
@@ -48,42 +49,42 @@ import de.radiohacks.frinmeba.modelshort.OSIcM;
 import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 
-public interface ImageUtil {
+public interface IImageUtil {
 
-	@POST
-	@Path("/upload")
-	@Produces(MediaType.APPLICATION_XML)
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public OSImM uploadImage(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPacknowledge) String Acknowledge,
-			@FormDataParam("file") InputStream fileInputStream,
-			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
+    @POST
+    @Path("/upload")
+    @Produces(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public OSImM uploadImage(
+            @QueryParam(Constants.QP_USERNAME) String user,
+            @QueryParam(Constants.QP_PASSWORD) String password,
+            @QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
+            @FormDataParam("file") InputStream fileInputStream,
+            @FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
 
-	@GET
-	@Path("/getimagemetadata")
-	@Produces(MediaType.APPLICATION_XML)
-	public OGImMMD getimagemetadata(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam("imageid") int imageid);
+    @GET
+    @Path("/getimagemetadata")
+    @Produces(MediaType.APPLICATION_XML)
+    public OGImMMD getImageMetadata(
+            @QueryParam(Constants.QP_USERNAME) String user,
+            @QueryParam(Constants.QP_PASSWORD) String password,
+            @QueryParam("imageid") int imageid);
 
-	@GET
-	@Path("/download/{username}/{password}/{imageid}")
-	@Produces("image/*")
-	public Response downloadImage(@PathParam(Constants.QPusername) String User,
-			@PathParam(Constants.QPpassword) String Password,
-			@PathParam(Constants.QPimageid) int imageid);
-	
-	@POST
-	@Path("/uploadicon")
-	@Produces(MediaType.APPLICATION_XML)
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public OSIcM uploadIcon(
-			@QueryParam(Constants.QPusername) String User,
-			@QueryParam(Constants.QPpassword) String Password,
-			@QueryParam(Constants.QPacknowledge) String Acknowledge,
-			@FormDataParam("file") InputStream fileInputStream,
-			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
+    @GET
+    @Path("/download/{username}/{password}/{imageid}")
+    @Produces("image/*")
+    public Response downloadImage(@PathParam(Constants.QP_USERNAME) String user,
+            @PathParam(Constants.QP_PASSWORD) String password,
+            @PathParam(Constants.QP_IMAGEID) int imageid);
+    
+    @POST
+    @Path("/uploadicon")
+    @Produces(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public OSIcM uploadIcon(
+            @QueryParam(Constants.QP_USERNAME) String user,
+            @QueryParam(Constants.QP_PASSWORD) String password,
+            @QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
+            @FormDataParam("file") InputStream fileInputStream,
+            @FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
 }

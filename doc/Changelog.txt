@@ -1,0 +1,12 @@
+2016-01-17
+- import from git
+- convert to maven project
+- add encoding UTF-8 in pom
+- set maven cpomiler to 3.3
+- set java version to 1.8 (1.6 is deprecated)
+- add surefire plugin in pom
+- deleted used functions
+- deleted automated comments
+- add logging message on unhandled exeptions
+- add JaCoCo plug in
+- convert local variable name to convention
