@@ -41,6 +41,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import com.google.common.hash.HashCode;
@@ -57,16 +58,18 @@ import de.radiohacks.frinmeba.modelshort.OAuth;
 import de.radiohacks.frinmeba.modelshort.OGViM;
 import de.radiohacks.frinmeba.modelshort.OGViMMD;
 import de.radiohacks.frinmeba.modelshort.OSViM;
-import de.radiohacks.frinmeba.util.VideoUtil;
+import de.radiohacks.frinmeba.util.IVideoUtil;
 
 @Path("/video")
-public class VideoImpl implements VideoUtil {
+public class VideoImpl implements IVideoUtil {
 	/**
 	 * Upload a File
 	 */
+	
+	private static final Logger LOGGER = Logger.getLogger(VideoImpl.class.getName());
 
 	@Override
-	public OSViM uploadVideo(String User, String Password, String Acknowldge,
+	public OSViM uploadVideo(String user, String password, String acknowldge,
 			InputStream fileInputStream,
 			FormDataContentDisposition contentDispositionHeader) {
 
@@ -76,18 +79,18 @@ public class VideoImpl implements VideoUtil {
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Acknowldge)) {
+		if (actcheck.checkValueMust(user)) {
+			if (actcheck.checkValueMust(password)) {
+				if (actcheck.checkValueMust(acknowldge)) {
 
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(password));
+					inauth.setUN(user);
 
 					ISViM in = new ISViM();
-					in.setPW(actuser.base64Decode(Password));
-					in.setUN(actuser.base64Decode(User));
+					in.setPW(actuser.base64Decode(password));
+					in.setUN(actuser.base64Decode(user));
 
 					/* First check if the User is valid */
 					actuser.authenticate(inauth, outauth);
@@ -126,8 +129,7 @@ public class VideoImpl implements VideoUtil {
 										md5 = Files.hash(new File(filePath),
 												Hashing.md5());
 									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+										LOGGER.error(e);
 									}
 									String md5Hex = md5.toString();
 
@@ -138,7 +140,7 @@ public class VideoImpl implements VideoUtil {
 											+ contentDispositionHeader
 													.getFileName());
 									in.setVMD5(md5Hex);
-									if (actuser.base64Decode(Acknowldge)
+									if (actuser.base64Decode(acknowldge)
 											.equalsIgnoreCase(md5Hex)) {
 										actuser.sendVideoMessage(in, out);
 									} else {
@@ -186,8 +188,7 @@ public class VideoImpl implements VideoUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error(e);
 			}
 		}
 		return out;
@@ -198,7 +199,7 @@ public class VideoImpl implements VideoUtil {
 	 */
 
 	@Override
-	public Response downloadVideo(String User, String Password, int videoid) {
+	public Response downloadVideo(String user, String password, int videoid) {
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -206,17 +207,17 @@ public class VideoImpl implements VideoUtil {
 		Check actcheck = new Check(con);
 		OGViM out = new OGViM();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
+		if (actcheck.checkValueMust(user)) {
+			if (actcheck.checkValueMust(password)) {
 
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
-				inauth.setPW(actuser.base64Decode(Password));
-				inauth.setUN(User);
+				inauth.setPW(actuser.base64Decode(password));
+				inauth.setUN(user);
 
 				IGViM in = new IGViM();
-				in.setUN(actuser.base64Decode(User));
-				in.setPW(actuser.base64Decode(Password));
+				in.setUN(actuser.base64Decode(user));
+				in.setPW(actuser.base64Decode(password));
 				in.setVID(videoid);
 
 				actuser.authenticate(inauth, outauth);
@@ -225,7 +226,7 @@ public class VideoImpl implements VideoUtil {
 						Constants.AUTHENTICATE_FALSE)) {
 					out.setET(outauth.getET());
 				} else {
-					if (!actcheck.CheckContenMessageID(videoid,
+					if (!actcheck.checkContenMessageID(videoid,
 							Constants.TYP_VIDEO)) {
 						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
@@ -236,17 +237,9 @@ public class VideoImpl implements VideoUtil {
 										+ Constants.SERVER_VIDEO_FOLDER
 										+ out.getVM());
 						if (!file.exists()) {
-							// LOGGER.error(ErrorCode.IMAGE_NOT_FOUND, imageId);
-							// throw new NotFoundException();
+							LOGGER.error("file not found : " + file.getAbsolutePath());
 						}
 						try {
-							/*
-							 * return Response
-							 * .ok(FileUtils.readFileToByteArray(file)) .header(
-							 * "Content-Type, image/jpeg; Content-Disposition" ,
-							 * "attachment; filename=" + out.getImageMessage())
-							 * .build();
-							 */
 							if (con != null) {
 								con.close();
 								con = null;
@@ -256,13 +249,9 @@ public class VideoImpl implements VideoUtil {
 									.header("Content-Disposition", "attachment")
 									.header("filename", out.getVM()).build();
 						} catch (java.io.IOException ex) {
-							// LOGGER.error(ErrorCode.IMAGE_READ_ERROR,
-							// file.getAbsolutePath(),
-							// ex);
-							// throw new NotFoundException(ex);
+							LOGGER.error(ex);
 						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							LOGGER.error(e);
 						}
 					}
 				}
@@ -273,15 +262,14 @@ public class VideoImpl implements VideoUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error(e);
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public OGViMMD getvideometadata(String User, String Password, int videoid) {
+	public OGViMMD getVideoMetadata(String user, String password, int videoid) {
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -289,17 +277,17 @@ public class VideoImpl implements VideoUtil {
 		Check actcheck = new Check(con);
 		OGViMMD out = new OGViMMD();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
+		if (actcheck.checkValueMust(user)) {
+			if (actcheck.checkValueMust(password)) {
 
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
-				inauth.setPW(actuser.base64Decode(Password));
-				inauth.setUN(User);
+				inauth.setPW(actuser.base64Decode(password));
+				inauth.setUN(user);
 
 				IGViMMD in = new IGViMMD();
-				in.setUN(actuser.base64Decode(User));
-				in.setPW(actuser.base64Decode(Password));
+				in.setUN(actuser.base64Decode(user));
+				in.setPW(actuser.base64Decode(password));
 				in.setVID(videoid);
 
 				actuser.authenticate(inauth, outauth);
@@ -311,12 +299,12 @@ public class VideoImpl implements VideoUtil {
 					out.setET(outauth.getET());
 				} else {
 					IGViM tmpin = new IGViM();
-					tmpin.setUN(User);
-					tmpin.setPW(Password);
+					tmpin.setUN(user);
+					tmpin.setPW(password);
 					tmpin.setVID(videoid);
 					OGViM tmpout = new OGViM();
 
-					if (!actcheck.CheckContenMessageID(videoid,
+					if (!actcheck.checkContenMessageID(videoid,
 							Constants.TYP_VIDEO)) {
 						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
@@ -358,8 +346,7 @@ public class VideoImpl implements VideoUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error(e);
 			}
 		}
 		return out;
@@ -381,8 +368,7 @@ public class VideoImpl implements VideoUtil {
 			outpuStream.flush();
 			outpuStream.close();
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 }

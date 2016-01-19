@@ -72,49 +72,49 @@ public class TestInserMessageIntoChat extends JerseyTest {
 
 	final static String username1_org = "Test1";
 	final static String username1 = Base64.encodeBase64String(username1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password1_org = "Test1";
 	final static String password1 = Base64.encodeBase64String(password1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email1_org = "Test1@frinme.org";
 	final static String email1 = Base64.encodeBase64String(email1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username2_org = "Test2";
 	final static String username2 = Base64.encodeBase64String(username2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password2_org = "Test2";
 	final static String password2 = Base64.encodeBase64String(password2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email2_org = "Test2@frinme.org";
 	final static String email2 = Base64.encodeBase64String(email2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username3_org = "Test3";
 	final static String username3 = Base64.encodeBase64String(username3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password3_org = "Test3";
 	final static String password3 = Base64.encodeBase64String(password3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email3_org = "Test3@frinme.org";
 	final static String email3 = Base64.encodeBase64String(email3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username4_org = "Test4";
 	final static String username4 = Base64.encodeBase64String(username4_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password4_org = "Test4";
 	final static String password4 = Base64.encodeBase64String(password4_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email4_org = "Test4@frinme.org";
 	final static String email4 = Base64.encodeBase64String(email4_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username5_org = "Test5";
 	final static String username5 = Base64.encodeBase64String(username5_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password5_org = "Test5";
 	final static String password5 = Base64.encodeBase64String(password5_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email5_org = "Test5@frinme.org";
 	final static String email5 = Base64.encodeBase64String(email5_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "user/insertmessageintochat";
 
@@ -226,7 +226,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		IIMIC in = new IIMIC();
 		in.setUN(username1);
 		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getET());
 	}
@@ -236,9 +236,9 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		IIMIC in = new IIMIC();
 		in.setUN(username1);
 		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
@@ -249,7 +249,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN("XXX");
 		in.setPW(password1);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(contactmsgid);
 		OIMIC out = callTarget(in);
@@ -262,7 +262,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username1);
 		in.setPW("XXX");
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(contactmsgid);
 		OIMIC out = callTarget(in);
@@ -276,7 +276,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username1);
 		in.setPW(password1);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
@@ -288,7 +288,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username1);
 		in.setPW(password1);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setMID(contactmsgid);
 		OIMIC out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
@@ -300,7 +300,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username1);
 		in.setPW(password1);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(txtmsgid1);
 		OIMIC out = callTarget(in);
@@ -314,7 +314,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username3);
 		in.setPW(password3);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(txtmsgid3);
 		OIMIC out = callTarget(in);
@@ -328,7 +328,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username2);
 		in.setPW(password2);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(txtmsgid2);
 		OIMIC out = callTarget(in);
@@ -342,7 +342,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username2);
 		in.setPW(password2);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_IMAGE.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(imagemsgid);
 		OIMIC out = callTarget(in);
@@ -356,7 +356,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username2);
 		in.setPW(password2);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_VIDEO.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(videomsgid);
 		OIMIC out = callTarget(in);
@@ -370,7 +370,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username2);
 		in.setPW(password2);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_LOCATION
-				.getBytes(Charset.forName(Constants.CharacterSet))));
+				.getBytes(Charset.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(locationmsgid);
 		OIMIC out = callTarget(in);
@@ -384,7 +384,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username2);
 		in.setPW(password2);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_FILE.getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(filemsgid);
 		OIMIC out = callTarget(in);
@@ -398,7 +398,7 @@ public class TestInserMessageIntoChat extends JerseyTest {
 		in.setUN(username1);
 		in.setPW(password1);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
-				.getBytes(Charset.forName(Constants.CharacterSet))));
+				.getBytes(Charset.forName(Constants.CHARACTERSET))));
 		in.setCID(cid);
 		in.setMID(contactmsgid);
 		OIMIC out = callTarget(in);

@@ -43,6 +43,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import com.google.common.hash.HashCode;
@@ -61,16 +62,18 @@ import de.radiohacks.frinmeba.modelshort.OGImM;
 import de.radiohacks.frinmeba.modelshort.OGImMMD;
 import de.radiohacks.frinmeba.modelshort.OSIcM;
 import de.radiohacks.frinmeba.modelshort.OSImM;
-import de.radiohacks.frinmeba.util.ImageUtil;
+import de.radiohacks.frinmeba.util.IImageUtil;
 
 @Path("/image")
-public class ImageImpl implements ImageUtil {
+public class ImageImpl implements IImageUtil {
+	private static final Logger LOGGER = Logger.getLogger(ImageImpl.class.getName());
+	
 	/**
 	 * Upload a File
 	 */
 
 	@Override
-	public OSImM uploadImage(String User, String Password, String Acknowledge,
+	public OSImM uploadImage(String user, String password, String acknowledge,
 			InputStream fileInputStream,
 			FormDataContentDisposition contentDispositionHeader) {
 
@@ -80,18 +83,18 @@ public class ImageImpl implements ImageUtil {
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Acknowledge)) {
+		if (actcheck.checkValueMust(user)) {
+			if (actcheck.checkValueMust(password)) {
+				if (actcheck.checkValueMust(acknowledge)) {
 
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(password));
+					inauth.setUN(user);
 
 					ISImM in = new ISImM();
-					in.setPW(actuser.base64Decode(Password));
-					in.setUN(actuser.base64Decode(User));
+					in.setPW(actuser.base64Decode(password));
+					in.setUN(actuser.base64Decode(user));
 
 					/* First check if the User is valid */
 					actuser.authenticate(inauth, outauth);
@@ -130,8 +133,7 @@ public class ImageImpl implements ImageUtil {
 										md5 = Files.hash(new File(filePath),
 												Hashing.md5());
 									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+										LOGGER.error(e);
 									}
 									String md5Hex = md5.toString();
 
@@ -143,7 +145,7 @@ public class ImageImpl implements ImageUtil {
 													.getFileName());
 									in.setImMD5(md5Hex);
 
-									if (actuser.base64Decode(Acknowledge)
+									if (actuser.base64Decode(acknowledge)
 											.equalsIgnoreCase(md5Hex)) {
 										actuser.sendImageMessage(in, out);
 									} else {
@@ -192,6 +194,7 @@ public class ImageImpl implements ImageUtil {
 				con.close();
 			} catch (SQLException e) {
 				out.setET(Constants.DB_ERROR);
+				LOGGER.error(e);
 			}
 		}
 		return out;
@@ -202,7 +205,7 @@ public class ImageImpl implements ImageUtil {
 	 */
 
 	@Override
-	public Response downloadImage(String User, String Password, int imageid) {
+	public Response downloadImage(String user, String password, int imageid) {
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -210,17 +213,17 @@ public class ImageImpl implements ImageUtil {
 		Check actcheck = new Check(con);
 		OGImM out = new OGImM();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
+		if (actcheck.checkValueMust(user)) {
+			if (actcheck.checkValueMust(password)) {
 
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
-				inauth.setPW(actuser.base64Decode(Password));
-				inauth.setUN(User);
+				inauth.setPW(actuser.base64Decode(password));
+				inauth.setUN(user);
 
 				IGImM in = new IGImM();
-				in.setUN(actuser.base64Decode(User));
-				in.setPW(actuser.base64Decode(Password));
+				in.setUN(actuser.base64Decode(user));
+				in.setPW(actuser.base64Decode(password));
 				in.setIID(imageid);
 
 				actuser.authenticate(inauth, outauth);
@@ -229,7 +232,7 @@ public class ImageImpl implements ImageUtil {
 						Constants.AUTHENTICATE_FALSE)) {
 					out.setET(outauth.getET());
 				} else {
-					if (!actcheck.CheckContenMessageID(imageid,
+					if (!actcheck.checkContenMessageID(imageid,
 							Constants.TYP_IMAGE)) {
 						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
@@ -255,8 +258,10 @@ public class ImageImpl implements ImageUtil {
 										.build();
 							} catch (java.io.IOException ex) {
 								out.setET(Constants.FILE_NOT_FOUND);
+								LOGGER.error(ex);
 							} catch (SQLException e) {
 								out.setET(Constants.DB_ERROR);
+								LOGGER.error(e);
 							}
 						}
 					}
@@ -269,6 +274,7 @@ public class ImageImpl implements ImageUtil {
 				con.close();
 			} catch (SQLException e) {
 				out.setET(Constants.DB_ERROR);
+				LOGGER.error(e);
 			}
 		}
 
@@ -276,7 +282,7 @@ public class ImageImpl implements ImageUtil {
 	}
 
 	@Override
-	public OGImMMD getimagemetadata(String User, String Password, int imageid) {
+	public OGImMMD getImageMetadata(String user, String password, int imageid) {
 
 		MySqlConnection mc = new MySqlConnection();
 		Connection con = mc.getMySqlConnection();
@@ -284,17 +290,17 @@ public class ImageImpl implements ImageUtil {
 		Check actcheck = new Check(con);
 		OGImMMD out = new OGImMMD();
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
+		if (actcheck.checkValueMust(user)) {
+			if (actcheck.checkValueMust(password)) {
 
 				IAuth inauth = new IAuth();
 				OAuth outauth = new OAuth();
-				inauth.setPW(actuser.base64Decode(Password));
-				inauth.setUN(User);
+				inauth.setPW(actuser.base64Decode(password));
+				inauth.setUN(user);
 
 				IGImMMD in = new IGImMMD();
-				in.setUN(actuser.base64Decode(User));
-				in.setPW(actuser.base64Decode(Password));
+				in.setUN(actuser.base64Decode(user));
+				in.setPW(actuser.base64Decode(password));
 				in.setIID(imageid);
 
 				actuser.authenticate(inauth, outauth);
@@ -306,12 +312,12 @@ public class ImageImpl implements ImageUtil {
 					out.setET(outauth.getET());
 				} else {
 					IGImM tmpin = new IGImM();
-					tmpin.setUN(User);
-					tmpin.setPW(Password);
+					tmpin.setUN(user);
+					tmpin.setPW(password);
 					tmpin.setIID(imageid);
 					OGImM tmpout = new OGImM();
 
-					if (!actcheck.CheckContenMessageID(imageid,
+					if (!actcheck.checkContenMessageID(imageid,
 							Constants.TYP_IMAGE)) {
 						out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
 					} else {
@@ -354,6 +360,7 @@ public class ImageImpl implements ImageUtil {
 				con.close();
 			} catch (SQLException e) {
 				out.setET(Constants.DB_ERROR);
+				LOGGER.error(e);
 			}
 		}
 		return out;
@@ -375,12 +382,12 @@ public class ImageImpl implements ImageUtil {
 			outpuStream.flush();
 			outpuStream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 
 	@Override
-	public OSIcM uploadIcon(String User, String Password, String Acknowledge,
+	public OSIcM uploadIcon(String user, String password, String acknowledge,
 			InputStream fileInputStream,
 			FormDataContentDisposition contentDispositionHeader) {
 
@@ -390,18 +397,18 @@ public class ImageImpl implements ImageUtil {
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
-		if (actcheck.checkValueMust(User)) {
-			if (actcheck.checkValueMust(Password)) {
-				if (actcheck.checkValueMust(Acknowledge)) {
+		if (actcheck.checkValueMust(user)) {
+			if (actcheck.checkValueMust(password)) {
+				if (actcheck.checkValueMust(acknowledge)) {
 
 					IAuth inauth = new IAuth();
 					OAuth outauth = new OAuth();
-					inauth.setPW(actuser.base64Decode(Password));
-					inauth.setUN(User);
+					inauth.setPW(actuser.base64Decode(password));
+					inauth.setUN(user);
 
 					ISIcM in = new ISIcM();
-					in.setPW(actuser.base64Decode(Password));
-					in.setUN(actuser.base64Decode(User));
+					in.setPW(actuser.base64Decode(password));
+					in.setUN(actuser.base64Decode(user));
 
 					/* First check if the User is valid */
 					actuser.authenticate(inauth, outauth);
@@ -445,8 +452,7 @@ public class ImageImpl implements ImageUtil {
 										width = img.getWidth();
 										heigth = img.getHeight();
 									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
+										LOGGER.error(e1);
 									}
 
 									if (heigth != width) {
@@ -458,8 +464,7 @@ public class ImageImpl implements ImageUtil {
 													new File(filePath),
 													Hashing.md5());
 										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
+											LOGGER.error(e);
 										}
 										String md5Hex = md5.toString();
 
@@ -471,7 +476,7 @@ public class ImageImpl implements ImageUtil {
 														.getFileName());
 										in.setIcMD5(md5Hex);
 
-										if (actuser.base64Decode(Acknowledge)
+										if (actuser.base64Decode(acknowledge)
 												.equalsIgnoreCase(md5Hex)) {
 											actuser.sendIconMessage(in, out);
 										} else {
@@ -520,7 +525,9 @@ public class ImageImpl implements ImageUtil {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				out.setET(Constants.DB_ERROR);			}
+				out.setET(Constants.DB_ERROR);
+				LOGGER.error(e);
+			}
 		}
 		return out;
 	}

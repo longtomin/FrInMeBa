@@ -71,15 +71,15 @@ public class TestGetImageMetaData extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "image/getimagemetadata";
 
@@ -158,9 +158,9 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
+			target = target(functionurl).queryParam(Constants.QP_USERNAME,
 					username);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
@@ -174,9 +174,9 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
+					.queryParam(Constants.QP_PASSWORD, password);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
 					password);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
@@ -191,9 +191,9 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPimageid,
+			target = target(functionurl).queryParam(Constants.QP_IMAGEID,
 					imageid);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
@@ -208,11 +208,11 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_USERNAME, username);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 
@@ -227,11 +227,11 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(Constants.QPimageid, imageid);
+			target = target(functionurl).queryParam(Constants.QP_USERNAME,
+					username).queryParam(Constants.QP_IMAGEID, imageid);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 
@@ -246,11 +246,11 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPimageid, imageid);
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_IMAGEID, imageid);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 
@@ -265,14 +265,14 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "$%&1233")
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "$%&1233")
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 
@@ -287,14 +287,14 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_PASSWORD, "$%&1233")
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_PASSWORD, "$%&1233")
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 
@@ -309,14 +309,14 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, imageid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 
@@ -334,19 +334,19 @@ public class TestGetImageMetaData extends JerseyTest {
 					.newClient()
 					.target(TestConfig.URL + functionurl)
 					.queryParam(
-							Constants.QPpassword,
+							Constants.QP_PASSWORD,
 							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, imageid);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		} else {
 			target = target(functionurl)
 					.queryParam(
-							Constants.QPpassword,
+							Constants.QP_PASSWORD,
 							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, imageid);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, imageid);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 
@@ -360,14 +360,14 @@ public class TestGetImageMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, 107365);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, 107365);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPimageid, 107365);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_IMAGEID, 107365);
 		}
 		OGImMMD out = target.request().get(OGImMMD.class);
 

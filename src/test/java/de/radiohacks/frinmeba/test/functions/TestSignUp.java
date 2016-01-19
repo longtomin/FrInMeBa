@@ -76,13 +76,13 @@ public class TestSignUp extends JerseyTest {
 
 	final static String username_org = "Thomas Schreiner";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password_org = "d38681074467c0bc147b17a9a12b9efa8cc10bcf545f5b0bccccf5a93c4a2b79";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email_org = "thomas@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {

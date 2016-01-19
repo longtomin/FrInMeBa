@@ -76,15 +76,15 @@ public class TestDeleteChat extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "user/deletechat";
 
@@ -132,9 +132,9 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatUserPasswordChatid() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password)
-				.queryParam(Constants.QPusername, username)
-				.queryParam(Constants.QPchatid, 1);
+				.queryParam(Constants.QP_PASSWORD, password)
+				.queryParam(Constants.QP_USERNAME, username)
+				.queryParam(Constants.QP_CHATID, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
 
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
@@ -143,16 +143,16 @@ public class TestDeleteChat extends JerseyTest {
 		inCreateChat.setUN(username);
 		inCreateChat.setPW(password);
 		inCreateChat.setCN(Base64.encodeBase64String("Testchat"
-				.getBytes(Charset.forName(Constants.CharacterSet))));
+				.getBytes(Charset.forName(Constants.CHARACTERSET))));
 		OCrCh out2 = callCreateChat(inCreateChat);
 
 		Assert.assertEquals("Testchat", out2.getCN());
 
 		WebTarget target2 = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password)
-				.queryParam(Constants.QPusername, username)
-				.queryParam(Constants.QPchatid, out2.getCID());
+				.queryParam(Constants.QP_PASSWORD, password)
+				.queryParam(Constants.QP_USERNAME, username)
+				.queryParam(Constants.QP_CHATID, out2.getCID());
 		ODeCh out3 = target2.request().delete(ODeCh.class);
 
 		Assert.assertEquals(Constants.CHAT_DELETED, out3.getR());
@@ -164,11 +164,11 @@ public class TestDeleteChat extends JerseyTest {
 				.newClient()
 				.target(TestConfig.URL + functionurl)
 				.queryParam(
-						Constants.QPpassword,
+						Constants.QP_PASSWORD,
 						Base64.encodeBase64String("XXX".getBytes(Charset
-								.forName(Constants.CharacterSet))))
-				.queryParam(Constants.QPusername, username)
-				.queryParam(Constants.QPchatid, 1);
+								.forName(Constants.CHARACTERSET))))
+				.queryParam(Constants.QP_USERNAME, username)
+				.queryParam(Constants.QP_CHATID, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
@@ -177,7 +177,7 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatUser() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username);
+				.queryParam(Constants.QP_USERNAME, username);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -186,7 +186,7 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password);
+				.queryParam(Constants.QP_PASSWORD, password);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -195,7 +195,7 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatChatid() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPchatid, 1);
+				.queryParam(Constants.QP_CHATID, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -204,8 +204,8 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatUserPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password)
-				.queryParam(Constants.QPusername, username);
+				.queryParam(Constants.QP_PASSWORD, password)
+				.queryParam(Constants.QP_USERNAME, username);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
@@ -214,7 +214,7 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatUserChatid() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username);
+				.queryParam(Constants.QP_USERNAME, username);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -223,8 +223,8 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatPasswordChatid() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password)
-				.queryParam(Constants.QPchatid, 1);
+				.queryParam(Constants.QP_PASSWORD, password)
+				.queryParam(Constants.QP_CHATID, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -233,9 +233,9 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatEncodingErrorUser() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password)
-				.queryParam(Constants.QPusername, "$%&1234")
-				.queryParam(Constants.QPchatid, 1);
+				.queryParam(Constants.QP_PASSWORD, password)
+				.queryParam(Constants.QP_USERNAME, "$%&1234")
+				.queryParam(Constants.QP_CHATID, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
@@ -244,9 +244,9 @@ public class TestDeleteChat extends JerseyTest {
 	public void testDeleteChatEncodingErrorPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, "$%&1234")
-				.queryParam(Constants.QPusername, username)
-				.queryParam(Constants.QPchatid, 1);
+				.queryParam(Constants.QP_PASSWORD, "$%&1234")
+				.queryParam(Constants.QP_USERNAME, username)
+				.queryParam(Constants.QP_CHATID, 1);
 		ODeCh out = target.request().delete(ODeCh.class);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}

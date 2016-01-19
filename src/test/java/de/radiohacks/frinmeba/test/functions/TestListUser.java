@@ -71,40 +71,40 @@ public class TestListUser extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username1_org = "Test1";
 	final static String username1 = Base64.encodeBase64String(username1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password1_org = "Test1";
 	final static String password1 = Base64.encodeBase64String(password1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email1_org = "Test1@frinme.org";
 	final static String email1 = Base64.encodeBase64String(email1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	// Username welche anzulegen ist
 	final static String username2_org = "User1 mit Nachnamen";
 	final static String username2 = Base64.encodeBase64String(username2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password2_org = "Test2";
 	final static String password2 = Base64.encodeBase64String(password2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email2_org = "User2@frinme.org";
 	final static String email2 = Base64.encodeBase64String(email2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Username welche anzulegen ist
 	final static String username3_org = "Andreas will mitspielen";
 	final static String username3 = Base64.encodeBase64String(username3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password3_org = "Test3";
 	final static String password3 = Base64.encodeBase64String(password3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email3_org = "andreas@frinme.org";
 	final static String email3 = Base64.encodeBase64String(email3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "user/listuser";
 
@@ -149,12 +149,12 @@ public class TestListUser extends JerseyTest {
 		WebTarget target = ClientBuilder
 				.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
 				.queryParam(
-						Constants.QPsearch,
+						Constants.QP_SEARCH,
 						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CharacterSet))));
+								.forName(Constants.CHARACTERSET))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertNotNull(out.getU());
@@ -166,14 +166,14 @@ public class TestListUser extends JerseyTest {
 				.newClient()
 				.target(TestConfig.URL + functionurl)
 				.queryParam(
-						Constants.QPpassword,
+						Constants.QP_PASSWORD,
 						Base64.encodeBase64String("XXX".getBytes(Charset
-								.forName(Constants.CharacterSet))))
-				.queryParam(Constants.QPusername, username1)
+								.forName(Constants.CHARACTERSET))))
+				.queryParam(Constants.QP_USERNAME, username1)
 				.queryParam(
-						Constants.QPsearch,
+						Constants.QP_SEARCH,
 						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CharacterSet))));
+								.forName(Constants.CHARACTERSET))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
@@ -183,7 +183,7 @@ public class TestListUser extends JerseyTest {
 	public void testListUserUser() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username1);
+				.queryParam(Constants.QP_USERNAME, username1);
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -193,7 +193,7 @@ public class TestListUser extends JerseyTest {
 	public void testListUserPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1);
+				.queryParam(Constants.QP_PASSWORD, password1);
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -205,9 +205,9 @@ public class TestListUser extends JerseyTest {
 				.newClient()
 				.target(TestConfig.URL + functionurl)
 				.queryParam(
-						Constants.QPsearch,
+						Constants.QP_SEARCH,
 						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CharacterSet))));
+								.forName(Constants.CHARACTERSET))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -217,8 +217,8 @@ public class TestListUser extends JerseyTest {
 	public void testListUserUserPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1);
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertNotNull(out.getU());
@@ -229,11 +229,11 @@ public class TestListUser extends JerseyTest {
 		WebTarget target = ClientBuilder
 				.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QP_USERNAME, username1)
 				.queryParam(
-						Constants.QPsearch,
+						Constants.QP_SEARCH,
 						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CharacterSet))));
+								.forName(Constants.CHARACTERSET))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -244,11 +244,11 @@ public class TestListUser extends JerseyTest {
 		WebTarget target = ClientBuilder
 				.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
+				.queryParam(Constants.QP_PASSWORD, password1)
 				.queryParam(
-						Constants.QPsearch,
+						Constants.QP_SEARCH,
 						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CharacterSet))));
+								.forName(Constants.CHARACTERSET))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
@@ -259,12 +259,12 @@ public class TestListUser extends JerseyTest {
 		WebTarget target = ClientBuilder
 				.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, "$%&1233")
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, "$%&1233")
 				.queryParam(
-						Constants.QPsearch,
+						Constants.QP_SEARCH,
 						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CharacterSet))));
+								.forName(Constants.CHARACTERSET))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
@@ -275,12 +275,12 @@ public class TestListUser extends JerseyTest {
 		WebTarget target = ClientBuilder
 				.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, "$%&1233")
-				.queryParam(Constants.QPusername, username1)
+				.queryParam(Constants.QP_PASSWORD, "$%&1233")
+				.queryParam(Constants.QP_USERNAME, username1)
 				.queryParam(
-						Constants.QPsearch,
+						Constants.QP_SEARCH,
 						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CharacterSet))));
+								.forName(Constants.CHARACTERSET))));
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
@@ -290,9 +290,9 @@ public class TestListUser extends JerseyTest {
 	public void testListUserEncodingErrorSearch() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPsearch, "$%&1233");
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_SEARCH, "$%&1233");
 		OLiUs out = target.request().get(OLiUs.class);
 
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());

@@ -70,49 +70,49 @@ public class TestSyncUser extends JerseyTest {
 
 	final static String username1_org = "Test1";
 	final static String username1 = Base64.encodeBase64String(username1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password1_org = "Test1";
 	final static String password1 = Base64.encodeBase64String(password1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email1_org = "Test1@frinme.org";
 	final static String email1 = Base64.encodeBase64String(email1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username2_org = "Test2";
 	final static String username2 = Base64.encodeBase64String(username2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password2_org = "Test2";
 	final static String password2 = Base64.encodeBase64String(password2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email2_org = "Test2@frinme.org";
 	final static String email2 = Base64.encodeBase64String(email2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username3_org = "Test3";
 	final static String username3 = Base64.encodeBase64String(username3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password3_org = "Test3";
 	final static String password3 = Base64.encodeBase64String(password3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email3_org = "Test3@frinme.org";
 	final static String email3 = Base64.encodeBase64String(email3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username4_org = "Test4";
 	final static String username4 = Base64.encodeBase64String(username4_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password4_org = "Test4";
 	final static String password4 = Base64.encodeBase64String(password4_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email4_org = "Test4@frinme.org";
 	final static String email4 = Base64.encodeBase64String(email4_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username5_org = "Test5";
 	final static String username5 = Base64.encodeBase64String(username5_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password5_org = "Test5";
 	final static String password5 = Base64.encodeBase64String(password5_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email5_org = "Test5@frinme.org";
 	final static String email5 = Base64.encodeBase64String(email5_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "user/syncuser";
 
@@ -171,7 +171,7 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUser() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username1);
+				.queryParam(Constants.QP_USERNAME, username1);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -180,7 +180,7 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1);
+				.queryParam(Constants.QP_PASSWORD, password1);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -189,8 +189,8 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserTextmessage() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPuserid, uid2);
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_USERID, uid2);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -199,8 +199,8 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserPasswordTextmessage() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPuserid, uid2);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERID, uid2);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -209,8 +209,8 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}
@@ -221,11 +221,11 @@ public class TestSyncUser extends JerseyTest {
 				.newClient()
 				.target(TestConfig.URL + functionurl)
 				.queryParam(
-						Constants.QPpassword,
+						Constants.QP_PASSWORD,
 						Base64.encodeBase64String("XXX".getBytes(Charset
-								.forName(Constants.CharacterSet))))
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPuserid, uid2);
+								.forName(Constants.CHARACTERSET))))
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_USERID, uid2);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
@@ -234,9 +234,9 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserEncodeFailureUser() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, "�$%1234")
-				.queryParam(Constants.QPuserid, uid2);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, "�$%1234")
+				.queryParam(Constants.QP_USERID, uid2);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
@@ -245,9 +245,9 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserEncodeFailurePassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, "�$%1234")
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPuserid, uid2);
+				.queryParam(Constants.QP_PASSWORD, "�$%1234")
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_USERID, uid2);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
@@ -256,9 +256,9 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserPasswordTextmessage1() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPuserid, uid2);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_USERID, uid2);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertNotNull(out.getU().size());
 	}
@@ -267,9 +267,9 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserPasswordTextmessage2() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPuserid, uid2);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_USERID, uid2);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertNotNull(out.getU().size());
 	}
@@ -278,10 +278,10 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserPasswordMultipleUsers() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPuserid, uid2)
-				.queryParam(Constants.QPuserid, uid3);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_USERID, uid2)
+				.queryParam(Constants.QP_USERID, uid3);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertNotNull(out.getU().size());
 	}
@@ -290,10 +290,10 @@ public class TestSyncUser extends JerseyTest {
 	public void testSyncUserUserPasswordMultipleUsersWrongUserID() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password5)
-				.queryParam(Constants.QPusername, username5)
-				.queryParam(Constants.QPuserid, uid3)
-				.queryParam(Constants.QPuserid, 77);
+				.queryParam(Constants.QP_PASSWORD, password5)
+				.queryParam(Constants.QP_USERNAME, username5)
+				.queryParam(Constants.QP_USERID, uid3)
+				.queryParam(Constants.QP_USERID, 77);
 		OSU out = target.request().get(OSU.class);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
 	}

@@ -76,15 +76,15 @@ public class TestClientOneUserNotActive extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -208,12 +208,12 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/authenticate")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
 			target = target("user/authenticate").queryParam(
-					Constants.QPpassword, password).queryParam(
-					Constants.QPusername, username);
+					Constants.QP_PASSWORD, password).queryParam(
+					Constants.QP_USERNAME, username);
 		}
 		return target.request().get(OAuth.class);
 	}
@@ -223,7 +223,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
 				TestConfig.URL + "user/createchat");
 		ICrCh in = new ICrCh();
 		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setPW(password);
 		in.setUN(username);
 		Response response = target.request()
@@ -237,14 +237,14 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/deletechat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_CHATID, 1)
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
 			target = target("user/deletechat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_CHATID, 1)
+					.queryParam(Constants.QP_USERNAME, username);
 		}
 		return target.request().delete(ODeCh.class);
 	}
@@ -268,16 +268,16 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/removeuserfromchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPuserid, 1)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERID, 1)
+					.queryParam(Constants.QP_CHATID, 1)
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
 			target = target("user/removeuserfromchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPuserid, 1)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERID, 1)
+					.queryParam(Constants.QP_CHATID, 1)
+					.queryParam(Constants.QP_USERNAME, username);
 		}
 		return target.request().delete(OReUC.class);
 	}
@@ -288,20 +288,20 @@ public class TestClientOneUserNotActive extends JerseyTest {
 			target = ClientBuilder
 					.newClient()
 					.target(TestConfig.URL + "user/listuser")
-					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QP_PASSWORD, password)
 					.queryParam(
-							Constants.QPsearch,
+							Constants.QP_SEARCH,
 							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
 			target = target("user/listuser")
-					.queryParam(Constants.QPpassword, password)
+					.queryParam(Constants.QP_PASSWORD, password)
 					.queryParam(
-							Constants.QPsearch,
+							Constants.QP_SEARCH,
 							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
 		}
 		return target.request().get(OLiUs.class);
 	}
@@ -311,11 +311,11 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/listchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
-			target = target("user/listchat").queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
+			target = target("user/listchat").queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_USERNAME, username);
 		}
 		return target.request().get(OLiCh.class);
 	}
@@ -327,7 +327,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		in.setPW(password);
 		in.setUN(username);
 		in.setTM(Base64.encodeBase64String("Text Message".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		Response response = target.request()
 				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
 				.invoke();
@@ -339,14 +339,14 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/gettextmessage")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, 1);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_TEXTMESSAGEID, 1);
 		} else {
 			target = target("user/gettextmessage")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPtextmessageid, 1);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_TEXTMESSAGEID, 1);
 		}
 		return target.request().get(OGTeM.class);
 	}
@@ -358,7 +358,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		in.setUN(username);
 		in.setPW(password);
 		in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
-				.getBytes(Charset.forName(Constants.CharacterSet))));
+				.getBytes(Charset.forName(Constants.CHARACTERSET))));
 		in.setCID(1);
 		in.setMID(1);
 
@@ -373,16 +373,16 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/getmessagefromchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPtimestamp, 0);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_CHATID, 1)
+					.queryParam(Constants.QP_TIMESTAMP, 0);
 		} else {
 			target = target("user/getmessagefromchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPchatid, 1)
-					.queryParam(Constants.QPtimestamp, 0);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_CHATID, 1)
+					.queryParam(Constants.QP_TIMESTAMP, 0);
 		}
 		return target.request().get(OFMFC.class);
 	}
@@ -403,14 +403,14 @@ public class TestClientOneUserNotActive extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/deletemessagefromchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPmessageid, 1);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_MESSAGEID, 1);
 		} else {
 			target = target("user/deletemessagefromchat")
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPmessageid, 1);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_MESSAGEID, 1);
 		}
 		return target.request().delete(ODMFC.class);
 	}

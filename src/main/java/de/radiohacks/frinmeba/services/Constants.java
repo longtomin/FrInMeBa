@@ -29,49 +29,50 @@
 package de.radiohacks.frinmeba.services;
 
 public class Constants {
-	public final static String NONE_EXISTING_USER = "NONE_EXISTING_USER";
-	public final static String NONE_EXISTING_CHAT = "NONE_EXISTING_CHAT";
-	public final static String NO_TEXTMESSAGE_GIVEN = "NO_TEXTMESSAGE_GIVEN";
+	
+	public static final String NONE_EXISTING_USER = "NONE_EXISTING_USER";
+	public static final String NONE_EXISTING_CHAT = "NONE_EXISTING_CHAT";
+	public static final String NO_TEXTMESSAGE_GIVEN = "NO_TEXTMESSAGE_GIVEN";
 	public static final String NO_IMAGEMESSAGE_GIVEN = "NO_IMAGEMESSAGE_GIVEN";
-	public final static String NONE_EXISTING_MESSAGE = "NONE_EXISTING_MESSAGE";
-	public final static String INVALID_MESSAGE_TYPE = "INVALID_MESSAGE_TYPE";
-	public final static String INVALID_EMAIL_ADRESS = "INVALID_EMAIL_ADRESS";
-	public final static String MISSING_CHATNAME = "MISSING_CHATNAME";
-	public final static String NONE_EXISTING_CONTENT_MESSAGE = "NONE_EXISTING_CONTENT_MESSAGE";
-	public final static String TYPE_NOT_FOUND = "TYPE_NOT_FOUND";
-	public final static String FILE_NOT_FOUND = "FILE_NOT_FOUND";
-	public final static String NOT_MESSAGE_OWNER = "NOT_MESSAGE_OWNER";
-	public final static String NOT_CHAT_OWNER = "NOT_CHAT_OWNER";
-	public final static String DB_ERROR = "DATABASE_ERROR";
-	public final static String USER_NOT_ACTIVE = "USER_NOT_ACTIVE";
-	public final static String WRONG_PASSWORD = "WRONG_PASSWORD";
-	public final static String NO_USERNAME_OR_PASSWORD = "NO_USERNAME_OR_PASSWORD";
-	public final static String USER_ALREADY_EXISTS = "USER_ALREADY_EXISTS";
-	public final static String NO_ACTIVE_CHATS = "NO_ACTIVE_CHATS";
-	public final static String CHAT_OWNER_NOT_ADDED = "CHAT_OWNER_NOT_ADDED";
-	public final static String USER_ALREADY_IN_CHAT = "USER_ALREADY_IN_CHAT";
-	public final static String ENCODING_ERROR = "ENCODING_ERROR";
-	public final static String NO_CONTENT_GIVEN = "NO_CONTENT_GIVEN";
-	public final static String MESSAGE_NOT_READ = "MESSAGE_NOT_READ";
-	public final static String UPLOAD_FAILED = "UPLOAD_FAILED";
-	public final static String NO_QUADRAT_IMAGE = "NO_QUADRAT_IMAGE";
-	public final static String ICON_ADDED = "ICON_ADDED";
+	public static final String NONE_EXISTING_MESSAGE = "NONE_EXISTING_MESSAGE";
+	public static final String INVALID_MESSAGE_TYPE = "INVALID_MESSAGE_TYPE";
+	public static final String INVALID_EMAIL_ADRESS = "INVALID_EMAIL_ADRESS";
+	public static final String MISSING_CHATNAME = "MISSING_CHATNAME";
+	public static final String NONE_EXISTING_CONTENT_MESSAGE = "NONE_EXISTING_CONTENT_MESSAGE";
+	public static final String TYPE_NOT_FOUND = "TYPE_NOT_FOUND";
+	public static final String FILE_NOT_FOUND = "FILE_NOT_FOUND";
+	public static final String NOT_MESSAGE_OWNER = "NOT_MESSAGE_OWNER";
+	public static final String NOT_CHAT_OWNER = "NOT_CHAT_OWNER";
+	public static final String DB_ERROR = "DATABASE_ERROR";
+	public static final String USER_NOT_ACTIVE = "USER_NOT_ACTIVE";
+	public static final String WRONG_PASSWORD = "WRONG_PASSWORD";
+	public static final String NO_USERNAME_OR_PASSWORD = "NO_USERNAME_OR_PASSWORD";
+	public static final String USER_ALREADY_EXISTS = "USER_ALREADY_EXISTS";
+	public static final String NO_ACTIVE_CHATS = "NO_ACTIVE_CHATS";
+	public static final String CHAT_OWNER_NOT_ADDED = "CHAT_OWNER_NOT_ADDED";
+	public static final String USER_ALREADY_IN_CHAT = "USER_ALREADY_IN_CHAT";
+	public static final String ENCODING_ERROR = "ENCODING_ERROR";
+	public static final String NO_CONTENT_GIVEN = "NO_CONTENT_GIVEN";
+	public static final String MESSAGE_NOT_READ = "MESSAGE_NOT_READ";
+	public static final String UPLOAD_FAILED = "UPLOAD_FAILED";
+	public static final String NO_QUADRAT_IMAGE = "NO_QUADRAT_IMAGE";
+	public static final String ICON_ADDED = "ICON_ADDED";
 
-	public final static String USER_ADDED = "USER_ADDED";
-	public final static String SIGNUP_SUCCESSFUL = "SIGNUP_SUCCESSFUL";
-	public final static String CHAT_DELETED = "CHAT_DELETED";
+	public static final String USER_ADDED = "USER_ADDED";
+	public static final String SIGNUP_SUCCESSFUL = "SIGNUP_SUCCESSFUL";
+	public static final String CHAT_DELETED = "CHAT_DELETED";
 
-	public final static String AUTHENTICATE_TRUE = "TRUE";
-	public final static String AUTHENTICATE_FALSE = "FALSE";
-	public final static String ACKNOWLEDGE_TRUE = "TRUE";
-	public final static String ACKNOWLEDGE_FALSE = "FALSE";
+	public static final String AUTHENTICATE_TRUE = "TRUE";
+	public static final String AUTHENTICATE_FALSE = "FALSE";
+	public static final String ACKNOWLEDGE_TRUE = "TRUE";
+	public static final String ACKNOWLEDGE_FALSE = "FALSE";
 
-	public final static String TYP_TEXT = "TEXT";
-	public final static String TYP_IMAGE = "IMAGE";
-	public final static String TYP_LOCATION = "LOCATION";
-	public final static String TYP_CONTACT = "CONTACT";
-	public final static String TYP_FILE = "FILE";
-	public final static String TYP_VIDEO = "VIDEO";
+	public static final String TYP_TEXT = "TEXT";
+	public static final String TYP_IMAGE = "IMAGE";
+	public static final String TYP_LOCATION = "LOCATION";
+	public static final String TYP_CONTACT = "CONTACT";
+	public static final String TYP_FILE = "FILE";
+	public static final String TYP_VIDEO = "VIDEO";
 
 	/* Where should the content go to on the Server */
 	public static final String SERVER_UPLOAD_LOCATION_FOLDER = "/opt/frinme-data/";
@@ -80,30 +81,35 @@ public class Constants {
 	public static final String SERVER_FILE_FOLDER = "files/";
 
 	/* Constants for the query Parameter names */
-	public static final String QPusername = "username";
-	public static final String QPpassword = "password";
-	public static final String QPemail = "email";
-	public static final String QPchatname = "chatname";
-	public static final String QPchatid = "chatid";
-	public static final String QPuserid = "userid";
-	public static final String QPsearch = "search";
-	public static final String QPtextmessage = "textmessage";
-	public static final String QPtextmessageid = "textmessageid";
-	public static final String QPmessageid = "messageid";
-	public static final String QPmessagetype = "messagetype";
-	public static final String QPtimestamp = "timestamp";
-	public static final String QPimageid = "imageid";
-	public static final String QPvideoid = "videoid";
-	public static final String QPacknowledge = "acknowledge";
+	public static final String QP_USERNAME = "username";
+	public static final String QP_PASSWORD = "password";
+	public static final String QP_EMAIL = "email";
+	public static final String QP_CHATNAME = "chatname";
+	public static final String QP_CHATID = "chatid";
+	public static final String QP_USERID = "userid";
+	public static final String QP_SEARCH = "search";
+	public static final String QP_TEXTMESSAGE = "textmessage";
+	public static final String QP_TEXTMESSAGEID = "textmessageid";
+	public static final String QP_MESSAGEID = "messageid";
+	public static final String QP_MESSAGETYPE = "messagetype";
+	public static final String QP_TIMESTAMP = "timestamp";
+	public static final String QP_IMAGEID = "imageid";
+	public static final String QP_VIDEOID = "videoid";
+	public static final String QP_ACKNOWLEDGE = "acknowledge";
 
 	/*
 	 * Global Characterset for Base64 en- and decode
 	 */
-	public static final String CharacterSet = "UTF-8";
+	public static final String CHARACTERSET = "UTF-8";
 
 	/*
 	 * Length of fields
 	 */
-	public static final int Chatname_length = 50;
-	public static final int Username_length = 45;
+	public static final int CHATNAME_LENGTH = 50;
+	public static final int USERNAME_LENGTH = 45;
+	
+	private Constants () {
+		super();
+	}
+	
 }

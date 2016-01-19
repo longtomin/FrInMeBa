@@ -71,22 +71,22 @@ public class TestSetShowTimeStamp extends JerseyTest {
 
 	final static String username1_org = "Test1";
 	final static String username1 = Base64.encodeBase64String(username1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password1_org = "Test1";
 	final static String password1 = Base64.encodeBase64String(password1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email1_org = "Test1@frinme.org";
 	final static String email1 = Base64.encodeBase64String(email1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username2_org = "Test2";
 	final static String username2 = Base64.encodeBase64String(username2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password2_org = "Test2";
 	final static String password2 = Base64.encodeBase64String(password2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email2_org = "Test2@frinme.org";
 	final static String email2 = Base64.encodeBase64String(email2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String functionurl = "user/setshowtimestamp";
 
 	static int cid;
@@ -202,7 +202,7 @@ public class TestSetShowTimeStamp extends JerseyTest {
 		ISShT in = new ISShT();
 		in.setUN(username1);
 		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		OSShT out = callTarget(in);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}

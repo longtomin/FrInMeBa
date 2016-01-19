@@ -72,22 +72,22 @@ public class TestSendTextMessage extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "user/sendtextmessage";
 
 	// Text Message
 	final static String textmessage_org = "Das+ist+ein+Test!";
 	final static String textmessage = Base64.encodeBase64String(textmessage_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -177,7 +177,7 @@ public class TestSendTextMessage extends JerseyTest {
 	public void testSendTextMessageUserWrongPasswordMessage() {
 		ISTeM in = new ISTeM();
 		in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setUN(username);
 		in.setTM(textmessage);
 		OSTeM out = callTarget(in);
@@ -189,7 +189,7 @@ public class TestSendTextMessage extends JerseyTest {
 		ISTeM in = new ISTeM();
 		in.setPW(password);
 		in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setTM(textmessage);
 		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
@@ -199,9 +199,9 @@ public class TestSendTextMessage extends JerseyTest {
 	public void testSendTextMessageWrongUserWrongPasswordMessage() {
 		ISTeM in = new ISTeM();
 		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setTM(textmessage);
 		OSTeM out = callTarget(in);
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());

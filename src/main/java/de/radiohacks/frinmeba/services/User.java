@@ -104,33 +104,33 @@ import de.radiohacks.frinmeba.modelshort.U;
 
 public class User {
 
-	private int Id = 0;
+	private int id = 0;
 	private Connection con;
 
-	private static final Logger logger = Logger.getLogger(User.class);
+	private static final Logger LOGGER = Logger.getLogger(User.class);
 
 	public User(Connection conin) {
-		logger.debug("Start User with Connection");
+		LOGGER.debug("Start User with Connection");
 		this.con = conin;
-		logger.debug("End User with Connection");
+		LOGGER.debug("End User with Connection");
 	}
 
 	public int getID() {
-		return Id;
+		return id;
 	}
 
 	public String base64Encode(String token) {
 		byte[] encodedBytes = Base64.encodeBase64(token.getBytes());
-		return new String(encodedBytes, Charset.forName(Constants.CharacterSet));
+		return new String(encodedBytes, Charset.forName(Constants.CHARACTERSET));
 	}
 
 	public String base64Decode(String token) {
 		byte[] decodedBytes = Base64.decodeBase64(token.getBytes());
-		return new String(decodedBytes, Charset.forName(Constants.CharacterSet));
+		return new String(decodedBytes, Charset.forName(Constants.CHARACTERSET));
 	}
 
 	public void authenticate(IAuth in, OAuth out) {
-		logger.debug("Start authenticate with In = " + in.toString());
+		LOGGER.debug("Start authenticate with In = " + in.toString());
 
 		out.setA(Constants.AUTHENTICATE_FALSE);
 
@@ -173,7 +173,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -183,15 +183,15 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
 
-		logger.debug("End authenticate with Out = " + out.toString());
+		LOGGER.debug("End authenticate with Out = " + out.toString());
 	}
 
 	public void fillUserinfo(String username) {
-		logger.debug("Start fillUserinfo with no Parameters");
+		LOGGER.debug("Start fillUserinfo with no Parameters");
 		ResultSet resultSet = null;
 		Statement statement = null;
 
@@ -202,10 +202,10 @@ public class User {
 							+ username + "'");
 
 			if (resultSet.next()) {
-				this.Id = resultSet.getInt("ID");
+				this.id = resultSet.getInt("ID");
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -215,14 +215,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End fillUserinfo with no return value");
+		LOGGER.debug("End fillUserinfo with no return value");
 	}
 
 	public void signUp(ISiUp in, OSiUp out) {
-		logger.debug("Start signUp with In = " + in.toString());
+		LOGGER.debug("Start signUp with In = " + in.toString());
 
 		int key = -1;
 		ResultSet rsfind = null;
@@ -268,7 +268,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsfind != null) {
@@ -281,14 +281,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End signUp with Out = " + out.toString());
+		LOGGER.debug("End signUp with Out = " + out.toString());
 	}
 
 	public void listUser(ILiUs in, OLiUs out) {
-		logger.debug("Start listUser with In = " + in.toString());
+		LOGGER.debug("Start listUser with In = " + in.toString());
 		fillUserinfo(in.getUN());
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -305,7 +305,7 @@ public class User {
 			}
 
 			while (resultSet.next()) {
-				if (this.Id != resultSet.getInt("Id")) {
+				if (this.id != resultSet.getInt("Id")) {
 					U u = new U();
 					u.setUN(resultSet.getString("Username"));
 					u.setE(resultSet.getString("Email"));
@@ -317,7 +317,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -327,14 +327,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End listUser with Out = " + out.toString());
+		LOGGER.debug("End listUser with Out = " + out.toString());
 	}
 
 	public void listChat(ILiCh in, OLiCh out) {
-		logger.debug("Start listChat with In = " + in.toString());
+		LOGGER.debug("Start listChat with In = " + in.toString());
 		fillUserinfo(in.getUN());
 		ResultSet rsusertochats = null;
 		Statement stusertochats = null;
@@ -347,7 +347,7 @@ public class User {
 			stusertochats = con.createStatement();
 			rsusertochats = stusertochats
 					.executeQuery("select ChatID from UserToChats where UserID= "
-							+ this.Id);
+							+ this.id);
 
 			if (rsusertochats != null) {
 				while (rsusertochats.next()) {
@@ -391,7 +391,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsusertochats != null) {
@@ -413,14 +413,14 @@ public class User {
 					stusers.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End listChat with Out = " + out.toString());
+		LOGGER.debug("End listChat with Out = " + out.toString());
 	}
 
 	public void createChat(ICrCh in, OCrCh out) {
-		logger.debug("Start createChat with In = " + in.toString());
+		LOGGER.debug("Start createChat with In = " + in.toString());
 		int key = -1;
 		ResultSet resultSet = null;
 		Statement stchat = null;
@@ -436,7 +436,7 @@ public class User {
 			/* First we create a chat room */
 			stchat.executeUpdate(
 					"insert into Chats(Chatname, OwningUserId) values ('"
-							+ in.getCN() + "', '" + this.Id + "')",
+							+ in.getCN() + "', '" + this.id + "')",
 					Statement.RETURN_GENERATED_KEYS);
 			resultSet = stchat.getGeneratedKeys();
 			if (resultSet != null && resultSet.next()) {
@@ -448,10 +448,10 @@ public class User {
 			/* Now we have to add the Owning user to his own chat room */
 			stuser = con.createStatement();
 			stuser.executeUpdate("insert into UserToChats(UserID, ChatID) values ('"
-					+ this.Id + "', '" + key + "')");
+					+ this.id + "', '" + key + "')");
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -464,21 +464,21 @@ public class User {
 					stuser.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End createChat with Out = " + out.toString());
+		LOGGER.debug("End createChat with Out = " + out.toString());
 	}
 
 	// Done In & Out
 	public void addUserToChat(IAdUC in, OAdUC out) {
-		logger.debug("Start addUserToChat with In = " + in.toString());
+		LOGGER.debug("Start addUserToChat with In = " + in.toString());
 		fillUserinfo(in.getUN());
 		ResultSet resultSet = null;
 		ResultSet resultSet2 = null;
 		Statement statement = null;
 
-		if (this.Id == in.getUID()) {
+		if (this.id == in.getUID()) {
 			out.setET(Constants.CHAT_OWNER_NOT_ADDED);
 		} else {
 			try {
@@ -490,7 +490,7 @@ public class User {
 								+ in.getCID() + "'");
 
 				if (resultSet.next()) {
-					if (this.Id == resultSet.getInt("OwningUserID")) {
+					if (this.id == resultSet.getInt("OwningUserID")) {
 						/* The Owning User is adding the new User to the Chat */
 						/* Check first if user is already in the Chat */
 						resultSet2 = statement
@@ -538,7 +538,7 @@ public class User {
 				}
 			} catch (SQLException e) {
 				out.setET(Constants.DB_ERROR);
-				e.printStackTrace();
+				LOGGER.error(e);
 			} finally {
 				try {
 					if (resultSet != null) {
@@ -551,15 +551,15 @@ public class User {
 						statement.close();
 					}
 				} catch (SQLException e) {
-					// Do nothing we are closing
+					LOGGER.error(e);
 				}
 			}
 		}
-		logger.debug("End addUserToChat with Out = " + out.toString());
+		LOGGER.debug("End addUserToChat with Out = " + out.toString());
 	}
 
 	public void sendTextMessage(ISTeM in, OSTeM out) {
-		logger.debug("Start sendTextMessage with In = " + in.toString());
+		LOGGER.debug("Start sendTextMessage with In = " + in.toString());
 		int key = -1;
 
 		ResultSet resultSet = null;
@@ -579,7 +579,7 @@ public class User {
 			out.setTID(key);
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -589,14 +589,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End sendTextMessage with Out = " + out.toString());
+		LOGGER.debug("End sendTextMessage with Out = " + out.toString());
 	}
 
 	public void sendImageMessage(ISImM in, OSImM out) {
-		logger.debug("Start sendImageMessage with In = " + in.toString());
+		LOGGER.debug("Start sendImageMessage with In = " + in.toString());
 		int key = -1;
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -616,7 +616,7 @@ public class User {
 			out.setImID(key);
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -626,14 +626,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End sendImageMessage with Out = " + out.toString());
+		LOGGER.debug("End sendImageMessage with Out = " + out.toString());
 	}
 
 	public void sendVideoMessage(ISViM in, OSViM out) {
-		logger.debug("Start sendVideoMessage with In = " + in.toString());
+		LOGGER.debug("Start sendVideoMessage with In = " + in.toString());
 		int key = -1;
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -653,7 +653,7 @@ public class User {
 			out.setVID(key);
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -663,14 +663,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End sendVideoMessage with Out = " + out.toString());
+		LOGGER.debug("End sendVideoMessage with Out = " + out.toString());
 	}
 
 	public void removeUserFromChat(IReUC in, OReUC out) {
-		logger.debug("Start removeUserFromChat with In = " + in.toString());
+		LOGGER.debug("Start removeUserFromChat with In = " + in.toString());
 
 		ResultSet resultSetU2Cid = null;
 		Statement statementU2Cid = null;
@@ -718,7 +718,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSetU2Cid != null) {
@@ -732,15 +732,15 @@ public class User {
 				}
 
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End removeUserFromChat with Out = " + out.toString());
+		LOGGER.debug("End removeUserFromChat with Out = " + out.toString());
 	}
 
 	@SuppressWarnings("resource")
 	public void insertMessageIntoChat(IIMIC in, OIMIC out) {
-		logger.debug("Start insertMessageIntoChat with In = " + in.toString());
+		LOGGER.debug("Start insertMessageIntoChat with In = " + in.toString());
 		fillUserinfo(in.getUN());
 		int key = -1;
 		ResultSet resultSet = null;
@@ -748,7 +748,7 @@ public class User {
 		ResultSet resultSet2 = null;
 		Statement statement2 = null;
 		List<Integer> generatedRows = new ArrayList<Integer>(1);
-		int OriginMsgID = 0;
+		int originMsgID = 0;
 
 		try {
 			statement = con.createStatement();
@@ -769,7 +769,7 @@ public class User {
 						statement2
 								.executeUpdate(
 										"insert into Messages(OwningUserID, MessageTyp, SendTimestamp, UsertoChatID, TextMsgID) values ('"
-												+ this.Id
+												+ this.id
 												+ "', '"
 												+ Constants.TYP_TEXT
 												+ "', "
@@ -782,8 +782,8 @@ public class User {
 						resultSet2 = statement2.getGeneratedKeys();
 						if (resultSet2 != null && resultSet2.next()) {
 							key = resultSet2.getInt(1);
-							if (this.Id == resultSet.getInt("UserID")) {
-								OriginMsgID = key;
+							if (this.id == resultSet.getInt("UserID")) {
+								originMsgID = key;
 								generatedRows.add(key);
 							} else {
 								generatedRows.add(key);
@@ -795,7 +795,7 @@ public class User {
 						statement2
 								.executeUpdate(
 										"insert into Messages(OwningUserID, MessageTyp, SendTimestamp, UsertoChatID, ImageMsgID) values ('"
-												+ this.Id
+												+ this.id
 												+ "', '"
 												+ Constants.TYP_IMAGE
 												+ "', "
@@ -808,8 +808,8 @@ public class User {
 						resultSet2 = statement2.getGeneratedKeys();
 						if (resultSet2 != null && resultSet2.next()) {
 							key = resultSet2.getInt(1);
-							if (this.Id == resultSet.getInt("UserID")) {
-								OriginMsgID = key;
+							if (this.id == resultSet.getInt("UserID")) {
+								originMsgID = key;
 								generatedRows.add(key);
 							} else {
 								generatedRows.add(key);
@@ -821,7 +821,7 @@ public class User {
 						statement2
 								.executeUpdate(
 										"insert into Messages(OwningUserID, MessageTyp, SendTimestamp, UsertoChatID, ContactMsgID) values ('"
-												+ this.Id
+												+ this.id
 												+ "', '"
 												+ Constants.TYP_CONTACT
 												+ "', "
@@ -834,8 +834,8 @@ public class User {
 						resultSet2 = statement2.getGeneratedKeys();
 						if (resultSet2 != null && resultSet2.next()) {
 							key = resultSet2.getInt(1);
-							if (this.Id == resultSet.getInt("UserID")) {
-								OriginMsgID = key;
+							if (this.id == resultSet.getInt("UserID")) {
+								originMsgID = key;
 								generatedRows.add(key);
 							} else {
 								generatedRows.add(key);
@@ -847,7 +847,7 @@ public class User {
 						statement2
 								.executeUpdate(
 										"insert into Messages(OwningUserID, MessageTyp, SendTimestamp, UsertoChatID, LocationMsgID) values ('"
-												+ this.Id
+												+ this.id
 												+ "', '"
 												+ Constants.TYP_LOCATION
 												+ "', "
@@ -860,8 +860,8 @@ public class User {
 						resultSet2 = statement2.getGeneratedKeys();
 						if (resultSet2 != null && resultSet2.next()) {
 							key = resultSet2.getInt(1);
-							if (this.Id == resultSet.getInt("UserID")) {
-								OriginMsgID = key;
+							if (this.id == resultSet.getInt("UserID")) {
+								originMsgID = key;
 								generatedRows.add(key);
 							} else {
 								generatedRows.add(key);
@@ -873,7 +873,7 @@ public class User {
 						statement2
 								.executeUpdate(
 										"insert into Messages(OwningUserID, MessageTyp, SendTimestamp, UsertoChatID, FileMsgID) values ('"
-												+ this.Id
+												+ this.id
 												+ "', '"
 												+ Constants.TYP_FILE
 												+ "', "
@@ -886,8 +886,8 @@ public class User {
 						resultSet2 = statement2.getGeneratedKeys();
 						if (resultSet2 != null && resultSet2.next()) {
 							key = resultSet2.getInt(1);
-							if (this.Id == resultSet.getInt("UserID")) {
-								OriginMsgID = key;
+							if (this.id == resultSet.getInt("UserID")) {
+								originMsgID = key;
 								generatedRows.add(key);
 							} else {
 								generatedRows.add(key);
@@ -899,7 +899,7 @@ public class User {
 						statement2
 								.executeUpdate(
 										"insert into Messages(OwningUserID, MessageTyp, SendTimestamp, UsertoChatID, VideoMsgID) values ('"
-												+ this.Id
+												+ this.id
 												+ "', '"
 												+ Constants.TYP_VIDEO
 												+ "', "
@@ -912,8 +912,8 @@ public class User {
 						resultSet2 = statement2.getGeneratedKeys();
 						if (resultSet2 != null && resultSet2.next()) {
 							key = resultSet2.getInt(1);
-							if (this.Id == resultSet.getInt("UserID")) {
-								OriginMsgID = key;
+							if (this.id == resultSet.getInt("UserID")) {
+								originMsgID = key;
 								generatedRows.add(key);
 							} else {
 								generatedRows.add(key);
@@ -925,7 +925,7 @@ public class User {
 					 * Message inserted for Restore but Readtimestamp set to
 					 * SendTimestamp
 					 */
-					if (tmpi == this.Id) {
+					if (tmpi == this.id) {
 
 						String updateReadMessage = "UPDATE Messages SET ReadTimestamp = ? where ID = ?";
 						PreparedStatement prepReadSt = con
@@ -943,15 +943,15 @@ public class User {
 				}
 				if (typefound == true) {
 					out.setSdT(currentTime);
-					out.setMID(OriginMsgID);
+					out.setMID(originMsgID);
 					// Now set the originMsgID to group all Messages for the
 					// showTimestamp
 					String updateOriginMsgID = "UPDATE Messages SET OriginMsgID = ? where ID = ?";
-					for (Integer id : generatedRows) {
+					for (Integer id1 : generatedRows) {
 						PreparedStatement prepOriginSt = con
 								.prepareStatement(updateOriginMsgID);
-						prepOriginSt.setLong(1, OriginMsgID);
-						prepOriginSt.setInt(2, id);
+						prepOriginSt.setLong(1, originMsgID);
+						prepOriginSt.setInt(2, id1);
 						prepOriginSt.executeUpdate();
 					}
 
@@ -961,7 +961,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -977,14 +977,14 @@ public class User {
 					statement2.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End insertMessageIntoChat with Out = " + out.toString());
+		LOGGER.debug("End insertMessageIntoChat with Out = " + out.toString());
 	}
 
 	public void getMessagesFromChat(IFMFC in, OFMFC out) {
-		logger.debug("Start getMessagesFromChat with In = " + in.toString());
+		LOGGER.debug("Start getMessagesFromChat with In = " + in.toString());
 		fillUserinfo(in.getUN());
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -1005,7 +1005,7 @@ public class User {
 			/* First we search all UsersToChat IDs with this.id and given Chatid */
 			resultSet = statement
 					.executeQuery("select id from UserToChats where ChatID = '"
-							+ in.getCID() + "' and UserID = '" + this.Id + "'");
+							+ in.getCID() + "' and UserID = '" + this.id + "'");
 
 			if (resultSet != null) {
 				while (resultSet.next()) {
@@ -1019,7 +1019,7 @@ public class User {
 						query += "select * from Messages where UsertoChatID = "
 								+ resultSet.getInt("ID")
 								+ " and (SendTimestamp > "
-								+ String.valueOf(tmptimestamp)
+								+ tmptimestamp
 								+ " or ReadTimeStamp = 0)";
 					}
 
@@ -1092,7 +1092,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -1132,14 +1132,14 @@ public class User {
 					rsshow.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End getMessagesFromChat with out = " + out.toString());
+		LOGGER.debug("End getMessagesFromChat with out = " + out.toString());
 	}
 
 	public void getTextMessages(IGTeM in, OGTeM out) {
-		logger.debug("Start getTextMessages with In = " + in.toString());
+		LOGGER.debug("Start getTextMessages with In = " + in.toString());
 		ResultSet resultSet = null;
 		Statement statement = null;
 
@@ -1159,7 +1159,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -1169,14 +1169,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End getTextMessages with Out = " + out.toString());
+		LOGGER.debug("End getTextMessages with Out = " + out.toString());
 	}
 
 	public void getImageMessages(IGImM in, OGImM out) {
-		logger.debug("Start getImageMessages with In = " + in.toString());
+		LOGGER.debug("Start getImageMessages with In = " + in.toString());
 		ResultSet resultSet = null;
 		Statement statement = null;
 
@@ -1197,7 +1197,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -1207,14 +1207,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End getImageMessages with Out = " + out.toString());
+		LOGGER.debug("End getImageMessages with Out = " + out.toString());
 	}
 
 	public void getVideoMessages(IGViM in, OGViM out) {
-		logger.debug("Start getImageMessages with In = " + in.toString());
+		LOGGER.debug("Start getImageMessages with In = " + in.toString());
 		ResultSet resultSet = null;
 		Statement statement = null;
 
@@ -1235,7 +1235,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -1245,14 +1245,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End getVideoMessages with Out = " + out.toString());
+		LOGGER.debug("End getVideoMessages with Out = " + out.toString());
 	}
 
 	public void checkNew(ICN in, OCN out) {
-		logger.debug("Start checkNew with In = " + in.toString());
+		LOGGER.debug("Start checkNew with In = " + in.toString());
 
 		ResultSet rsCheckNewChat = null;
 		Statement stCheckNewChat = null;
@@ -1273,7 +1273,7 @@ public class User {
 					.executeQuery("SELECT c.Chatname, c.ID, u.Username, c.IconID, u.ID FROM "
 							+ "Chats c, Users u WHERE c.OwningUserID = u.ID and c.id IN "
 							+ "(SELECT ChatID FROM UserToChats WHERE UserID = "
-							+ this.Id + " and ReadTimestamp = 0)");
+							+ this.id + " and ReadTimestamp = 0)");
 			if (rsCheckNewChat != null) {
 				while (rsCheckNewChat.next()) {
 					// We have a userToChatID now identifiy the Chat
@@ -1297,7 +1297,7 @@ public class User {
 			stCheckNewChatUpdate = con.createStatement();
 			rsCheckNewChatUpdate = stCheckNewChatUpdate
 					.executeQuery("SELECT * FROM UserToChats WHERE UserID = "
-							+ this.Id + " and ReadTimestamp = 0");
+							+ this.id + " and ReadTimestamp = 0");
 			if (rsCheckNewChatUpdate != null) {
 				while (rsCheckNewChatUpdate.next()) {
 
@@ -1314,7 +1314,7 @@ public class User {
 			// First we check for unreaded chats
 			rsCheckNewMessages = stCheckNewMessages
 					.executeQuery("SELECT count(*), UserToChatID FROM Messages WHERE ReadTimestamp = 0 AND UsertoChatID IN (SELECT ID FROM UserToChats WHERE UserID = "
-							+ this.Id + ") group by UserToChatID");
+							+ this.id + ") group by UserToChatID");
 			if (rsCheckNewMessages != null) {
 				while (rsCheckNewMessages.next()) {
 					// We have a userToChatID now identifiy the Chat
@@ -1344,7 +1344,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsCheckNewChat != null) {
@@ -1366,29 +1366,29 @@ public class User {
 					stCheckNewMessagesChat.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End checkNew with Out = " + out.toString());
+		LOGGER.debug("End checkNew with Out = " + out.toString());
 	}
 
 	public void setShowTimeStamp(ISShT in, OSShT out) {
-		logger.debug("Start setShowTimeStamp with In = " + in.toString());
+		LOGGER.debug("Start setShowTimeStamp with In = " + in.toString());
 
 		long currentTime = System.currentTimeMillis() / 1000L;
 
-		String ShowUpdate = "UPDATE Messages SET ShowTimestamp = ? where ID = ";
+		String showUpdate = "UPDATE Messages SET ShowTimestamp = ? where ID = ";
 
 		for (int i = 0; i < in.getMID().size(); i++) {
 			if (i == in.getMID().size() - 1) {
-				ShowUpdate += in.getMID().get(i);
+				showUpdate += in.getMID().get(i);
 			} else {
-				ShowUpdate += in.getMID().get(i) + " OR ID = ";
+				showUpdate += in.getMID().get(i) + " OR ID = ";
 			}
 		}
 
 		try {
-			PreparedStatement prepSt = con.prepareStatement(ShowUpdate);
+			PreparedStatement prepSt = con.prepareStatement(showUpdate);
 			prepSt.setLong(1, currentTime);
 			prepSt.executeUpdate();
 			for (int j = 0; j < in.getMID().size(); j++) {
@@ -1398,15 +1398,14 @@ public class User {
 				out.getShT().add(s);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			out.setET(Constants.DB_ERROR);
+			LOGGER.error(e);
 		}
-		logger.debug("End setShowTimeStamp with Out = " + out.toString());
+		LOGGER.debug("End setShowTimeStamp with Out = " + out.toString());
 	}
 
 	public void deleteMessageFromChat(IDMFC in, ODMFC out) {
-		logger.debug("Start deleteMessageFromChat with In = " + in.toString());
+		LOGGER.debug("Start deleteMessageFromChat with In = " + in.toString());
 		ResultSet rsmessageinchat = null;
 		Statement stmessageinchat = null;
 		Statement streused = null;
@@ -1422,11 +1421,11 @@ public class User {
 				while (rsmessageinchat.next()) {
 					/* We have found the Message */
 
-					String MsgType = rsmessageinchat.getString("MessageTyp");
-					deletemsg(con, in.getMID());
+					String msgType = rsmessageinchat.getString("MessageTyp");
+					deleteMsg(con, in.getMID());
 					out.setMID(in.getMID());
 
-					if (MsgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
+					if (msgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
 						streused = con.createStatement();
 						int delid = rsmessageinchat.getInt("TextMsgID");
 						rsreused = streused
@@ -1436,12 +1435,12 @@ public class User {
 							while (rsreused.next()) {
 								if (rsreused.getInt(1) == 0) {
 									/* Not used anymore = delete content */
-									deletecontent(con, Constants.TYP_TEXT,
+									deleteContent(con, Constants.TYP_TEXT,
 											delid);
 								}
 							}
 						}
-					} else if (MsgType.equalsIgnoreCase(Constants.TYP_IMAGE)) {
+					} else if (msgType.equalsIgnoreCase(Constants.TYP_IMAGE)) {
 						streused = con.createStatement();
 						int delid = rsmessageinchat.getInt("ImageMsgID");
 						rsreused = streused
@@ -1451,13 +1450,13 @@ public class User {
 							while (rsreused.next()) {
 								if (rsreused.getInt(1) == 0) {
 									/* Not used anymore = delete content */
-									deletecontent(con, Constants.TYP_IMAGE,
+									deleteContent(con, Constants.TYP_IMAGE,
 											delid);
 								}
 							}
 						}
 
-					} else if (MsgType.equalsIgnoreCase(Constants.TYP_VIDEO)) {
+					} else if (msgType.equalsIgnoreCase(Constants.TYP_VIDEO)) {
 						streused = con.createStatement();
 						int delid = rsmessageinchat.getInt("VideoMsgID");
 						rsreused = streused
@@ -1467,13 +1466,13 @@ public class User {
 							while (rsreused.next()) {
 								if (rsreused.getInt(1) == 0) {
 									/* Not used anymore = delete content */
-									deletecontent(con, Constants.TYP_VIDEO,
+									deleteContent(con, Constants.TYP_VIDEO,
 											delid);
 								}
 							}
 						}
 
-					} else if (MsgType.equalsIgnoreCase(Constants.TYP_FILE)) {
+					} else if (msgType.equalsIgnoreCase(Constants.TYP_FILE)) {
 						streused = con.createStatement();
 						int delid = rsmessageinchat.getInt("FileMsgID");
 						rsreused = streused
@@ -1483,13 +1482,13 @@ public class User {
 							while (rsreused.next()) {
 								if (rsreused.getInt(1) == 0) {
 									/* Not used anymore = delete content */
-									deletecontent(con, Constants.TYP_FILE,
+									deleteContent(con, Constants.TYP_FILE,
 											delid);
 								}
 							}
 						}
 
-					} else if (MsgType.equalsIgnoreCase(Constants.TYP_LOCATION)) {
+					} else if (msgType.equalsIgnoreCase(Constants.TYP_LOCATION)) {
 						streused = con.createStatement();
 						int delid = rsmessageinchat.getInt("LocationMsgID");
 						rsreused = streused
@@ -1499,13 +1498,13 @@ public class User {
 							while (rsreused.next()) {
 								if (rsreused.getInt(1) == 0) {
 									/* Not used anymore = delete content */
-									deletecontent(con, Constants.TYP_LOCATION,
+									deleteContent(con, Constants.TYP_LOCATION,
 											delid);
 								}
 							}
 						}
 
-					} else if (MsgType.equalsIgnoreCase(Constants.TYP_CONTACT)) {
+					} else if (msgType.equalsIgnoreCase(Constants.TYP_CONTACT)) {
 						streused = con.createStatement();
 						int delid = rsmessageinchat.getInt("ContactMsgID");
 						rsreused = streused
@@ -1515,7 +1514,7 @@ public class User {
 							while (rsreused.next()) {
 								if (rsreused.getInt(1) == 0) {
 									/* Not used anymore = delete content */
-									deletecontent(con, Constants.TYP_CONTACT,
+									deleteContent(con, Constants.TYP_CONTACT,
 											delid);
 								}
 							}
@@ -1526,7 +1525,7 @@ public class User {
 
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			// e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsmessageinchat != null) {
@@ -1542,35 +1541,33 @@ public class User {
 					streused.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End deleteMessageFromChat with Out = " + out.toString());
+		LOGGER.debug("End deleteMessageFromChat with Out = " + out.toString());
 	}
 
-	private int deletemsg(Connection con, int id) throws SQLException {
+	private int deleteMsg(Connection con, int id) throws SQLException {
 
-		String SQL = "DELETE FROM Messages WHERE ID = ? ";
+		String sql = "DELETE FROM Messages WHERE ID = ? ";
 		PreparedStatement pstmt = null;
 
-		pstmt = con.prepareStatement(SQL);
+		pstmt = con.prepareStatement(sql);
 		pstmt.setInt(1, id);
-		int retdel = pstmt.executeUpdate();
-
-		return retdel;
+		return pstmt.executeUpdate();
 	}
 
-	private boolean deletecontent(Connection con, String msgType, int id)
+	private boolean deleteContent(Connection con, String msgType, int id)
 			throws SQLException {
 
 		boolean ret = false;
-		String SQL = null;
+		String sql = null;
 		PreparedStatement pstmt = null;
 		Statement st1 = con.createStatement();
 		ResultSet rs1 = null;
 
 		if (msgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
-			SQL = "DELETE FROM Text WHERE ID = ? ";
+			sql = "DELETE FROM Text WHERE ID = ? ";
 		} else if (msgType.equalsIgnoreCase(Constants.TYP_IMAGE)) {
 			rs1 = st1.executeQuery("Select * from Image where ID = " + id);
 			if (rs1 != null && rs1.next()) {
@@ -1581,7 +1578,7 @@ public class User {
 					file.delete();
 				}
 			}
-			SQL = "DELETE FROM Image WHERE ID = ? ";
+			sql = "DELETE FROM Image WHERE ID = ? ";
 		} else if (msgType.equalsIgnoreCase(Constants.TYP_VIDEO)) {
 			rs1 = st1.executeQuery("Select * from Video where ID = " + id);
 			if (rs1 != null && rs1.next()) {
@@ -1592,9 +1589,9 @@ public class User {
 					file.delete();
 				}
 			}
-			SQL = "DELETE FROM Video WHERE ID = ? ";
+			sql = "DELETE FROM Video WHERE ID = ? ";
 		} else if (msgType.equalsIgnoreCase(Constants.TYP_LOCATION)) {
-			SQL = "DELETE FROM Location WHERE ID = ? ";
+			sql = "DELETE FROM Location WHERE ID = ? ";
 		} else if (msgType.equalsIgnoreCase(Constants.TYP_FILE)) {
 			rs1 = st1.executeQuery("Select * from File where ID = " + id);
 			if (rs1 != null && rs1.next()) {
@@ -1605,12 +1602,12 @@ public class User {
 					file.delete();
 				}
 			}
-			SQL = "DELETE FROM Files WHERE ID = ? ";
+			sql = "DELETE FROM Files WHERE ID = ? ";
 		} else if (msgType.equalsIgnoreCase(Constants.TYP_CONTACT)) {
-			SQL = "DELETE FROM Contact WHERE ID = ? ";
+			sql = "DELETE FROM Contact WHERE ID = ? ";
 		}
 
-		pstmt = con.prepareStatement(SQL);
+		pstmt = con.prepareStatement(sql);
 		pstmt.setInt(1, id);
 		pstmt.executeUpdate();
 
@@ -1626,7 +1623,7 @@ public class User {
 
 	public void acknowledgeMessageDownload(IAckMD in, OAckMD out) {
 
-		logger.debug("Start acknowledgeMessageDownload with In = "
+		LOGGER.debug("Start acknowledgeMessageDownload with In = "
 				+ in.toString());
 		ResultSet rsmessageinchat = null;
 		Statement stmessageinchat = null;
@@ -1646,19 +1643,19 @@ public class User {
 				while (rsmessageinchat.next()) {
 					/* We have found the Message, now check the Owner */
 
-					String MsgType = rsmessageinchat.getString("MessageTyp");
+					String msgType = rsmessageinchat.getString("MessageTyp");
 
-					if (MsgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
+					if (msgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
 						stcontent = con.createStatement();
 						rscontent = stcontent
 								.executeQuery("select * from Text where ID = "
 										+ rsmessageinchat.getInt("TextMsgID"));
 						if (rscontent != null) {
 							while (rscontent.next()) {
-								String Msg = base64Decode(rscontent
+								String msg = base64Decode(rscontent
 										.getString("Text"));
 
-								int hashCode = Msg.hashCode();
+								int hashCode = msg.hashCode();
 
 								if (hashCode == Integer.valueOf(in.getACK())) {
 									out.setACK(Constants.ACKNOWLEDGE_TRUE);
@@ -1667,7 +1664,7 @@ public class User {
 							}
 						}
 
-					} else if (MsgType.equalsIgnoreCase(Constants.TYP_IMAGE)) {
+					} else if (msgType.equalsIgnoreCase(Constants.TYP_IMAGE)) {
 						stcontent = con.createStatement();
 						rscontent = stcontent
 								.executeQuery("select * from Image where ID = "
@@ -1681,7 +1678,7 @@ public class User {
 								}
 							}
 						}
-					} else if (MsgType.equalsIgnoreCase(Constants.TYP_VIDEO)) {
+					} else if (msgType.equalsIgnoreCase(Constants.TYP_VIDEO)) {
 						stcontent = con.createStatement();
 						rscontent = stcontent
 								.executeQuery("select * from Video where ID = "
@@ -1702,10 +1699,10 @@ public class User {
 					// the Database.
 					if (out.getACK().equalsIgnoreCase(
 							Constants.ACKNOWLEDGE_TRUE)) {
-						String SQLUpdateRead = "UPDATE Messages SET ReadTimestamp = ? WHERE ID = ?";
+						String sqlUpdateRead = "UPDATE Messages SET ReadTimestamp = ? WHERE ID = ?";
 						PreparedStatement pstmt = null;
 
-						pstmt = con.prepareStatement(SQLUpdateRead);
+						pstmt = con.prepareStatement(sqlUpdateRead);
 						pstmt.setLong(1,
 								rsmessageinchat.getLong("TempReadTimestamp"));
 						pstmt.setInt(2, in.getMID());
@@ -1715,7 +1712,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsmessageinchat != null) {
@@ -1731,14 +1728,14 @@ public class User {
 					stcontent.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
 	}
 
 	public void acknowledgeChatDownload(IAckCD in, OAckCD out) {
 
-		logger.debug("Start acknowledgeMessageDownload with In = "
+		LOGGER.debug("Start acknowledgeMessageDownload with In = "
 				+ in.toString());
 		ResultSet rsuserinchat = null;
 		Statement stuserinchat = null;
@@ -1753,7 +1750,7 @@ public class User {
 
 			rsuserinchat = stuserinchat
 					.executeQuery("select * from UserToChats where ChatID = "
-							+ in.getCID() + " and UserID = " + this.Id);
+							+ in.getCID() + " and UserID = " + this.id);
 			if (rsuserinchat != null) {
 				while (rsuserinchat.next()) {
 					/* We have found the Message, now check the Owner */
@@ -1764,9 +1761,9 @@ public class User {
 									+ in.getCID());
 					if (rscontent != null) {
 						while (rscontent.next()) {
-							String ChatName = rscontent.getString("Chatname");
+							String chatName = rscontent.getString("Chatname");
 
-							int hashCode = ChatName.hashCode();
+							int hashCode = chatName.hashCode();
 
 							if (hashCode == Integer.valueOf(in.getACK())) {
 								out.setACK(Constants.ACKNOWLEDGE_TRUE);
@@ -1778,10 +1775,10 @@ public class User {
 					// the Database.
 					if (out.getACK().equalsIgnoreCase(
 							Constants.ACKNOWLEDGE_TRUE)) {
-						String SQLUpdateRead = "UPDATE UserToChats SET ReadTimestamp = ? WHERE ID = ?";
+						String sqlUpdateRead = "UPDATE UserToChats SET ReadTimestamp = ? WHERE ID = ?";
 						PreparedStatement pstmt = null;
 
-						pstmt = con.prepareStatement(SQLUpdateRead);
+						pstmt = con.prepareStatement(sqlUpdateRead);
 						pstmt.setLong(1,
 								rsuserinchat.getLong("TempReadTimestamp"));
 						pstmt.setInt(2, rsuserinchat.getInt("ID"));
@@ -1791,7 +1788,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsuserinchat != null) {
@@ -1807,13 +1804,13 @@ public class User {
 					stcontent.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
 	}
 
 	public void getMessageInformation(IGMI in, OGMI out) {
-		logger.debug("Start getMessageInformation with In = " + in.toString());
+		LOGGER.debug("Start getMessageInformation with In = " + in.toString());
 		ResultSet rsoriginmsgid = null;
 		Statement storiginmsgid = null;
 		Statement stdetailinfo = null;
@@ -1822,30 +1819,30 @@ public class User {
 		try {
 			storiginmsgid = con.createStatement();
 
-			String MessageIDQuery = "SELECT * FROM Messages WHERE ID = ";
+			String messageIDQuery = "SELECT * FROM Messages WHERE ID = ";
 
 			for (int i = 0; i < in.getMID().size(); i++) {
 				if (i == in.getMID().size() - 1) {
-					MessageIDQuery += in.getMID().get(i);
+					messageIDQuery += in.getMID().get(i);
 				} else {
-					MessageIDQuery += in.getMID().get(i) + " OR ID = ";
+					messageIDQuery += in.getMID().get(i) + " OR ID = ";
 				}
 			}
 			boolean abort = false;
-			rsoriginmsgid = storiginmsgid.executeQuery(MessageIDQuery);
+			rsoriginmsgid = storiginmsgid.executeQuery(messageIDQuery);
 			if (rsoriginmsgid != null) {
 				while (rsoriginmsgid.next()) {
 					/* We have found the Message, now check the Owner */
-					String SQLUserID = "Select UserID FROM UserToChats WHERE ID = ? ";
+					String sqlUserID = "Select UserID FROM UserToChats WHERE ID = ? ";
 					PreparedStatement pstmtOwner = null;
 
-					pstmtOwner = con.prepareStatement(SQLUserID);
+					pstmtOwner = con.prepareStatement(sqlUserID);
 					pstmtOwner.setInt(1, rsoriginmsgid.getInt("UsertoChatID"));
 					ResultSet rsOwner = pstmtOwner.executeQuery();
 					if (rsOwner != null) {
 						while (rsOwner.next()) {
 							fillUserinfo(in.getUN());
-							if (this.Id == rsOwner.getInt("UserID")) {
+							if (this.id == rsOwner.getInt("UserID")) {
 								MIB msgout = new MIB();
 								msgout.setMID(rsoriginmsgid.getInt("ID"));
 								msgout.setSD(rsoriginmsgid
@@ -1880,7 +1877,7 @@ public class User {
 										PreparedStatement pstmtUID = null;
 
 										pstmtUID = con
-												.prepareStatement(SQLUserID);
+												.prepareStatement(sqlUserID);
 										pstmtUID.setInt(1, rsdetailinfo
 												.getInt("UsertoChatID"));
 										ResultSet rsUID = pstmtUID
@@ -1891,8 +1888,6 @@ public class User {
 														.getInt("UserID"));
 											}
 										}
-
-										// msginfo.setUN(rsUID.getString("Username"));
 										msginfo.setRD(rsdetailinfo
 												.getLong("ReadTimestamp"));
 										msginfo.setSH(rsdetailinfo
@@ -1908,8 +1903,9 @@ public class User {
 							}
 						}
 					}
-					if (abort)
+					if (abort) {
 						break;
+					}
 				}
 			}
 			if (abort) {
@@ -1917,7 +1913,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsoriginmsgid != null) {
@@ -1933,13 +1929,13 @@ public class User {
 					rsdetailinfo.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
 	}
 
 	public void deleteChat(IDeCh in, ODeCh out) {
-		logger.debug("Start deleteChat with In = " + in.toString());
+		LOGGER.debug("Start deleteChat with In = " + in.toString());
 		ResultSet rsmessageinchat = null;
 		Statement stmessageinchat = null;
 
@@ -1958,25 +1954,25 @@ public class User {
 				}
 			}
 			// Now we delete the assignments of the users to the chat
-			String SQLUserToChat = "DELETE FROM UserToChats WHERE ChatID = ? ";
+			String sqlUserToChat = "DELETE FROM UserToChats WHERE ChatID = ? ";
 			PreparedStatement pstmtU2C = null;
 
-			pstmtU2C = con.prepareStatement(SQLUserToChat);
+			pstmtU2C = con.prepareStatement(sqlUserToChat);
 			pstmtU2C.setInt(1, in.getCID());
 			pstmtU2C.executeUpdate();
 
 			// At least we delete the chat.
-			String SQLChat = "DELETE FROM Chats WHERE ID = ? ";
+			String sqlChat = "DELETE FROM Chats WHERE ID = ? ";
 			PreparedStatement pstmtChat = null;
 
-			pstmtChat = con.prepareStatement(SQLChat);
+			pstmtChat = con.prepareStatement(sqlChat);
 			pstmtChat.setInt(1, in.getCID());
 			pstmtChat.executeUpdate();
 			out.setR(Constants.CHAT_DELETED);
 
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsmessageinchat != null) {
@@ -1986,29 +1982,29 @@ public class User {
 					stmessageinchat.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
 	}
 
-	public void syncuser(ISU in, OSU out) {
-		logger.debug("Start syncuser with In = " + in.toString());
+	public void syncUser(ISU in, OSU out) {
+		LOGGER.debug("Start syncuser with In = " + in.toString());
 		ResultSet rsuser = null;
 		Statement stuser = null;
 
 		try {
 			stuser = con.createStatement();
 
-			String UserIDQuery = "SELECT * FROM Users WHERE ID = ";
+			String userIDQuery = "SELECT * FROM Users WHERE ID = ";
 
 			for (int i = 0; i < in.getUID().size(); i++) {
 				if (i == in.getUID().size() - 1) {
-					UserIDQuery += in.getUID().get(i);
+					userIDQuery += in.getUID().get(i);
 				} else {
-					UserIDQuery += in.getUID().get(i) + " OR ID = ";
+					userIDQuery += in.getUID().get(i) + " OR ID = ";
 				}
 			}
-			rsuser = stuser.executeQuery(UserIDQuery);
+			rsuser = stuser.executeQuery(userIDQuery);
 			if (rsuser != null) {
 				while (rsuser.next()) {
 					U uinfo = new U();
@@ -2022,7 +2018,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (rsuser != null) {
@@ -2032,13 +2028,13 @@ public class User {
 					stuser.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
 	}
 
 	public void sendIconMessage(ISIcM in, OSIcM out) {
-		logger.debug("Start sendIconMessage with In = " + in.toString());
+		LOGGER.debug("Start sendIconMessage with In = " + in.toString());
 		int key = -1;
 		ResultSet resultSet = null;
 		Statement statement = null;
@@ -2058,7 +2054,7 @@ public class User {
 			out.setIcID(key);
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -2068,14 +2064,14 @@ public class User {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End sendIconMessage with Out = " + out.toString());
+		LOGGER.debug("End sendIconMessage with Out = " + out.toString());
 	}
 
 	public void insertChatIcon(IICIc in, OICIc out) {
-		logger.debug("Start insertChatIcon with In = " + in.toString());
+		LOGGER.debug("Start insertChatIcon with In = " + in.toString());
 		Statement statement = null;
 		ResultSet resultSet = null;
 
@@ -2088,7 +2084,7 @@ public class User {
 							+ in.getCID() + "'");
 
 			if (resultSet.next()) {
-				if (this.Id == resultSet.getInt("OwningUserID")) {
+				if (this.id == resultSet.getInt("OwningUserID")) {
 					statement.executeUpdate("UPDATE Chats SET IconID = "
 							+ in.getIcID() + " WHERE ID = " + in.getCID());
 					// Now we set the Timestamps to zero so that every client is
@@ -2104,7 +2100,7 @@ public class User {
 			}
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (statement != null) {
@@ -2114,14 +2110,14 @@ public class User {
 					resultSet.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End insertChatIcon with Out = " + out.toString());
+		LOGGER.debug("End insertChatIcon with Out = " + out.toString());
 	}
 
 	public void insertUserIcon(IIUIc in, OIUIc out) {
-		logger.debug("Start insertUserIcon with In = " + in.toString());
+		LOGGER.debug("Start insertUserIcon with In = " + in.toString());
 		Statement statement = null;
 
 		try {
@@ -2130,20 +2126,20 @@ public class User {
 			// TODO first check if Message already exists, idempotent?
 			/* First we create a chat room */
 			statement.executeUpdate("UPDATE Users SET IconID = " + in.getIcID()
-					+ " WHERE ID = " + this.Id);
+					+ " WHERE ID = " + this.id);
 			out.setR(Constants.ICON_ADDED);
 		} catch (SQLException e) {
 			out.setET(Constants.DB_ERROR);
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (statement != null) {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
-		logger.debug("End insertUserIcon with Out = " + out.toString());
+		LOGGER.debug("End insertUserIcon with Out = " + out.toString());
 	}
 }

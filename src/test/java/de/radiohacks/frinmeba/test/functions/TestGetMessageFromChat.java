@@ -72,31 +72,31 @@ public class TestGetMessageFromChat extends JerseyTest {
 
 	final static String username1_org = "Test1";
 	final static String username1 = Base64.encodeBase64String(username1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password1_org = "Test1";
 	final static String password1 = Base64.encodeBase64String(password1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email1_org = "Test1@frinme.org";
 	final static String email1 = Base64.encodeBase64String(email1_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username2_org = "Test2";
 	final static String username2 = Base64.encodeBase64String(username2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password2_org = "Test2";
 	final static String password2 = Base64.encodeBase64String(password2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email2_org = "Test2@frinme.org";
 	final static String email2 = Base64.encodeBase64String(email2_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String username3_org = "Test3";
 	final static String username3 = Base64.encodeBase64String(username3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String password3_org = "Test3";
 	final static String password3 = Base64.encodeBase64String(password3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String email3_org = "Test3@frinme.org";
 	final static String email3 = Base64.encodeBase64String(email3_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "user/getmessagefromchat";
 
@@ -192,7 +192,7 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUser() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPusername, username1);
+				.queryParam(Constants.QP_USERNAME, username1);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -201,7 +201,7 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1);
+				.queryParam(Constants.QP_PASSWORD, password1);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
@@ -210,8 +210,8 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUserPassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
@@ -222,10 +222,10 @@ public class TestGetMessageFromChat extends JerseyTest {
 				.newClient()
 				.target(TestConfig.URL + functionurl)
 				.queryParam(
-						Constants.QPpassword,
+						Constants.QP_PASSWORD,
 						Base64.encodeBase64String("XXX".getBytes(Charset
-								.forName(Constants.CharacterSet))))
-				.queryParam(Constants.QPusername, username1);
+								.forName(Constants.CHARACTERSET))))
+				.queryParam(Constants.QP_USERNAME, username1);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
 	}
@@ -234,8 +234,8 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUserEncodeFailureUser() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, "XXX");
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, "XXX");
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
@@ -244,8 +244,8 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUserEncodeFailurePassword() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, "XXX");
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, "XXX");
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
 	}
@@ -254,9 +254,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUserPasswordChatID() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPchatid, cid1to2);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_CHATID, cid1to2);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertNotNull(out.getM());
 	}
@@ -265,9 +265,9 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUserPasswordTimestamp() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPtimestamp, 0);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_TIMESTAMP, 0);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
@@ -276,10 +276,10 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUserPasswordChatIDTimestampToBig() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password2)
-				.queryParam(Constants.QPusername, username2)
-				.queryParam(Constants.QPtimestamp, 200)
-				.queryParam(Constants.QPchatid, cid1to2);
+				.queryParam(Constants.QP_PASSWORD, password2)
+				.queryParam(Constants.QP_USERNAME, username2)
+				.queryParam(Constants.QP_TIMESTAMP, 200)
+				.queryParam(Constants.QP_CHATID, cid1to2);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertEquals(3, out.getM().size());
 	}
@@ -288,10 +288,10 @@ public class TestGetMessageFromChat extends JerseyTest {
 	public void testGetMessageFromChatUserPasswordChatIDTimestampNewMessages() {
 		WebTarget target = ClientBuilder.newClient()
 				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QPpassword, password1)
-				.queryParam(Constants.QPusername, username1)
-				.queryParam(Constants.QPtimestamp, 0)
-				.queryParam(Constants.QPchatid, cid3to12);
+				.queryParam(Constants.QP_PASSWORD, password1)
+				.queryParam(Constants.QP_USERNAME, username1)
+				.queryParam(Constants.QP_TIMESTAMP, 0)
+				.queryParam(Constants.QP_CHATID, cid3to12);
 		OFMFC out = target.request().get(OFMFC.class);
 		Assert.assertNotNull(out.getM().size());
 		Assert.assertEquals(3, out.getM().size());

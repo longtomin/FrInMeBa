@@ -86,19 +86,19 @@ public class TestUploadVideo extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Acknowledge zur
 	final static String acknowledge_org = "ba0623b8c7a7520092ee1ff71da0bbea";
 	final static String acknowledge = Base64.encodeBase64String(acknowledge_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "video/upload";
 
@@ -166,10 +166,10 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl).queryParam(
-					Constants.QPusername, username);
+					Constants.QP_USERNAME, username);
 			;
 		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
+			target = target(functionurl).queryParam(Constants.QP_USERNAME,
 					username);
 			;
 		}
@@ -197,9 +197,9 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl).queryParam(
-					Constants.QPpassword, password);
+					Constants.QP_PASSWORD, password);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
 					password);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
@@ -226,12 +226,12 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
 			;
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_USERNAME, username);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -256,12 +256,12 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPacknowledge, acknowledge)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge)
+					.queryParam(Constants.QP_USERNAME, username);
 			;
 		} else {
-			target = target(functionurl).queryParam(Constants.QPacknowledge,
-					acknowledge).queryParam(Constants.QPusername, username);
+			target = target(functionurl).queryParam(Constants.QP_ACKNOWLEDGE,
+					acknowledge).queryParam(Constants.QP_USERNAME, username);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -286,12 +286,12 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPacknowledge, acknowledge);
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -319,15 +319,15 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -352,12 +352,12 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
 			;
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_USERNAME, username);
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -384,20 +384,20 @@ public class TestUploadVideo extends JerseyTest {
 			target = client
 					.target(TestConfig.URL + functionurl)
 					.queryParam(
-							Constants.QPpassword,
+							Constants.QP_PASSWORD,
 							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		} else {
 			target = target(functionurl)
 					.queryParam(
-							Constants.QPpassword,
+							Constants.QP_PASSWORD,
 							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
@@ -424,15 +424,15 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "XXX")
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "XXX")
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "XXX")
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "XXX")
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
@@ -459,15 +459,15 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, "XXX")
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "XXX")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, "XXX")
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
@@ -494,15 +494,15 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge_org);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
 			;
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge_org);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
 			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
@@ -529,15 +529,15 @@ public class TestUploadVideo extends JerseyTest {
 					.register(MultiPartFeature.class).build();
 
 			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPacknowledge, acknowledge);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
 			;
 		}
 		final FormDataMultiPart mp = new FormDataMultiPart();

@@ -37,7 +37,7 @@
 package de.radiohacks.frinmeba.modellong;
 
 import java.io.UnsupportedEncodingException;
-
+import org.apache.log4j.Logger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.codec.binary.Base64;
 
 import de.radiohacks.frinmeba.services.Constants;
+
 
 
 /**
@@ -78,7 +79,8 @@ import de.radiohacks.frinmeba.services.Constants;
 })
 @XmlRootElement(name = "OutFetchTextMessage")
 public class OutFetchTextMessage {
-
+	private static final Logger LOGGER = Logger.getLogger(OutFetchTextMessage.class.getName());
+	
     @XmlElement(name = "TextMessage")
     protected String textMessage;
     @XmlElement(name = "Errortext")
@@ -108,10 +110,9 @@ public class OutFetchTextMessage {
     	byte[] inarray = Base64.decodeBase64(value);
 		String x = null;
 		try {
-			x = new String(inarray, Constants.CharacterSet);
+			x = new String(inarray, Constants.CHARACTERSET);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		this.textMessage = x;
     }

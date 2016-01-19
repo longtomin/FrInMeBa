@@ -57,7 +57,6 @@ public class helperDatabase {
 			pre.executeUpdate();
 			con.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -85,7 +84,6 @@ public class helperDatabase {
 					+ currentTime + "', '1', " + IconID + ")");
 			con.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -106,7 +104,6 @@ public class helperDatabase {
 			}
 			res.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return userid;
@@ -128,7 +125,6 @@ public class helperDatabase {
 			}
 			res.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return chatid;
@@ -151,7 +147,6 @@ public class helperDatabase {
 			}
 			res.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return chatid;
@@ -181,7 +176,6 @@ public class helperDatabase {
 
 			con.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return chatid;
@@ -249,7 +243,6 @@ public class helperDatabase {
 
 			con.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return key;
@@ -275,7 +268,6 @@ public class helperDatabase {
 
 			con.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return key;
@@ -442,7 +434,6 @@ public class helperDatabase {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return key;
@@ -468,17 +459,14 @@ public class helperDatabase {
 				os.write(buffer, 0, length);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
 				is.close();
 				os.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

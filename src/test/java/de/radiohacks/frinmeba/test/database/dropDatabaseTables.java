@@ -67,7 +67,6 @@ public class dropDatabaseTables {
 			st.execute(DropVideo);
 			con.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

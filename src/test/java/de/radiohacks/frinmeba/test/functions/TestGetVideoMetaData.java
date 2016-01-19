@@ -72,15 +72,15 @@ public class TestGetVideoMetaData extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "video/getvideometadata";
 	final static String md5sum = "2ee0c92eaa157fda2daafb1a564973a1";
@@ -158,9 +158,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
+			target = target(functionurl).queryParam(Constants.QP_USERNAME,
 					username);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
@@ -174,9 +174,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password);
+					.queryParam(Constants.QP_PASSWORD, password);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
 					password);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
@@ -191,9 +191,9 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPvideoid,
+			target = target(functionurl).queryParam(Constants.QP_VIDEOID,
 					videoid);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
@@ -208,11 +208,11 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPusername, username);
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_USERNAME, username);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
@@ -227,11 +227,11 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPusername,
-					username).queryParam(Constants.QPvideoid, videoid);
+			target = target(functionurl).queryParam(Constants.QP_USERNAME,
+					username).queryParam(Constants.QP_VIDEOID, videoid);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
@@ -246,11 +246,11 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		} else {
-			target = target(functionurl).queryParam(Constants.QPpassword,
-					password).queryParam(Constants.QPvideoid, videoid);
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+					password).queryParam(Constants.QP_VIDEOID, videoid);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
@@ -265,14 +265,14 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "$%&1233")
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, "$%&1233")
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "$%&1233")
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
@@ -287,14 +287,14 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_PASSWORD, "$%&1233")
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, "$%&1233")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_PASSWORD, "$%&1233")
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
@@ -309,14 +309,14 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, videoid);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
@@ -334,19 +334,19 @@ public class TestGetVideoMetaData extends JerseyTest {
 					.newClient()
 					.target(TestConfig.URL + functionurl)
 					.queryParam(
-							Constants.QPpassword,
+							Constants.QP_PASSWORD,
 							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, videoid);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		} else {
 			target = target(functionurl)
 					.queryParam(
-							Constants.QPpassword,
+							Constants.QP_PASSWORD,
 							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CharacterSet))))
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, videoid);
+									.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, videoid);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
@@ -360,14 +360,14 @@ public class TestGetVideoMetaData extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, 107365);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, 107365);
 		} else {
 			target = target(functionurl)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPvideoid, 107365);
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_VIDEOID, 107365);
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 

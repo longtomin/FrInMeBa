@@ -44,6 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import de.radiohacks.frinmeba.services.Constants;
 
@@ -76,7 +77,8 @@ import de.radiohacks.frinmeba.services.Constants;
 @XmlType(name = "", propOrder = { "tm", "et" })
 @XmlRootElement(name = "OGTeM")
 public class OGTeM {
-
+	private static final Logger LOGGER = Logger.getLogger(OGTeM.class.getName());
+	
 	@XmlElement(name = "TM")
 	protected String tm;
 	@XmlElement(name = "ET")
@@ -103,10 +105,9 @@ public class OGTeM {
 		byte[] inarray = Base64.decodeBase64(value);
 		String x = null;
 		try {
-			x = new String(inarray, Constants.CharacterSet);
+			x = new String(inarray, Constants.CHARACTERSET);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		this.tm = x;
 	}

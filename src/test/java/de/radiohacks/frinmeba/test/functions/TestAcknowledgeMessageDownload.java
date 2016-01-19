@@ -90,31 +90,31 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "user/acknowledgemessagedownload";
 
 	final static String textmsg_org = "Test Nachnricht fuer Acknowledge";
 	final static String textmsg = Base64.encodeBase64String(textmsg_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String md5sumimg_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
 	final static String md5sumimg = Base64.encodeBase64String(md5sumimg_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String md5sumvid_org = "ba0623b8c7a7520092ee1ff71da0bbea";
 	final static String md5sumvid = Base64.encodeBase64String(md5sumvid_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	final static String md5sumtxt_org = "[B@2e41b2e9";
 	final static String md5sumtxt = Base64.encodeBase64String(md5sumtxt_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -295,7 +295,7 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 		IAckMD in = new IAckMD();
 		in.setUN(username);
 		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		OAckMD out = callTarget(in);
 		// WebTarget target;
 		// if (TestConfig.remote) {
@@ -324,7 +324,7 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 		IAckMD in = new IAckMD();
 		in.setUN(username);
 		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CharacterSet))));
+				.forName(Constants.CHARACTERSET))));
 		in.setACK(md5sumimg);
 		OAckMD out = callTarget(in);
 		// WebTarget target;
@@ -403,9 +403,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 	public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeImage() {
 
 		int msgimgid = uploadImageContent("image/upload?"
-				+ Constants.QPusername + "=" + username + "&"
-				+ Constants.QPpassword + "=" + password + "&"
-				+ Constants.QPacknowledge + "=" + md5sumimg);
+				+ Constants.QP_USERNAME + "=" + username + "&"
+				+ Constants.QP_PASSWORD + "=" + password + "&"
+				+ Constants.QP_ACKNOWLEDGE + "=" + md5sumimg);
 
 		helperDatabase help = new helperDatabase();
 		help.CreateChat(username_org, "Test Chat");
@@ -419,11 +419,10 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 			md5 = Files.hash(new File(this.getClass().getResource("/test.jpg")
 					.getFile()), Hashing.md5());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String md5sumimg = new String(Base64.encodeBase64(md5.toString()
-				.getBytes()), Charset.forName(Constants.CharacterSet));
+				.getBytes()), Charset.forName(Constants.CHARACTERSET));
 
 		IAckMD in = new IAckMD();
 		in.setUN(username);
@@ -455,9 +454,9 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 	public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeVideo() {
 
 		int msgvidid = uploadVideoContent("video/upload?"
-				+ Constants.QPusername + "=" + username + "&"
-				+ Constants.QPpassword + "=" + password + "&"
-				+ Constants.QPacknowledge + "=" + md5sumvid);
+				+ Constants.QP_USERNAME + "=" + username + "&"
+				+ Constants.QP_PASSWORD + "=" + password + "&"
+				+ Constants.QP_ACKNOWLEDGE + "=" + md5sumvid);
 
 		helperDatabase help = new helperDatabase();
 		help.CreateChat(username_org, "Test Chat");
@@ -471,11 +470,10 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 			md5 = Files.hash(new File(this.getClass().getResource("/test.mp4")
 					.getFile()), Hashing.md5());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String md5sumimg = new String(Base64.encodeBase64(md5.toString()
-				.getBytes()), Charset.forName(Constants.CharacterSet));
+				.getBytes()), Charset.forName(Constants.CHARACTERSET));
 
 		IAckMD in = new IAckMD();
 		in.setUN(username);
@@ -518,7 +516,7 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 		int hashCode = textmsg_org.hashCode();
 		String sha1b64 = new String(Base64.encodeBase64(String
 				.valueOf(hashCode).getBytes()),
-				Charset.forName(Constants.CharacterSet));
+				Charset.forName(Constants.CHARACTERSET));
 
 		IAckMD in = new IAckMD();
 		in.setUN(username);

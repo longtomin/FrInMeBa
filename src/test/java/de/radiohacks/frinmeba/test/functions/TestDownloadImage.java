@@ -71,15 +71,15 @@ public class TestDownloadImage extends JerseyTest {
 	// Username welche anzulegen ist
 	final static String username_org = "Test1";
 	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
 	final static String password_org = "Test1";
 	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
 	final static String email_org = "Test1@frinme.org";
 	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CharacterSet)));
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 	final static String functionurl = "image/download";
 
@@ -340,13 +340,13 @@ public class TestDownloadImage extends JerseyTest {
 					.target(TestConfig.URL + functionurl)
 					.path(username)
 					.path(Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet))))
+							.forName(Constants.CHARACTERSET))))
 					.path(String.valueOf(imageid));
 		} else {
 			target = target(functionurl)
 					.path(username)
 					.path(Base64.encodeBase64String("XXX".getBytes(Charset
-							.forName(Constants.CharacterSet))))
+							.forName(Constants.CHARACTERSET))))
 					.path(String.valueOf(imageid));
 		}
 		Response rsp = target.request("image/jpeg").accept("image/jpeg").head();

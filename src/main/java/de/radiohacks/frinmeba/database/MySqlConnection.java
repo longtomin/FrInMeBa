@@ -36,22 +36,17 @@ import org.apache.log4j.Logger;
 
 public class MySqlConnection {
 	
-	private static final Logger logger = Logger.getLogger(MySqlConnection.class);
+	private static final Logger LOGGER = Logger.getLogger(MySqlConnection.class.getName());
 
 	private Connection con = null;
 	private static String dbHost = "localhost"; // Hostname
-	private static String dbPort = "3306"; // Port -- Standard: 3306
+	private static String dbPort = "3306"; 		// Port -- Standard: 3306
 	private static String dbName = "frinme_db"; // Datenbankname
 	private static String dbUser = "frinme_db"; // Datenbankuser
 	private static String dbPass = "frinme_db"; // Datenbankpasswort
-	//private static String dbPass = "LfvnvdKKhuX3DbXa"; // Datenbankpasswort
-
-//	private static String dbName = "aim"; // Datenbankname
-//	private static String dbUser = "aim"; // Datenbankuser
-//	private static String dbPass = "aim"; // Datenbankpasswort
 
 	public Connection getMySqlConnection() {
-		logger.debug("Start getMySqlConnection");
+		LOGGER.debug("Start getMySqlConnection");
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver"); // Datenbanktreiber für JDBC
@@ -62,14 +57,16 @@ public class MySqlConnection {
 					+ dbPort + "/" + dbName + "?" + "user=" + dbUser + "&"
 					+ "password=" + dbPass);
 		} catch (ClassNotFoundException e) {
-			logger.error("Treiber nicht gefunden");
+			LOGGER.error("Treiber nicht gefunden");
+			LOGGER.error(e);
 		} catch (SQLException e) {
-			logger.error("Verbindung nicht moglich");
-			logger.error("SQLException: " + e.getMessage());
-			logger.error("SQLState: " + e.getSQLState());
-			logger.error("VendorError: " + e.getErrorCode());
+			LOGGER.error("Verbindung nicht moglich");
+			LOGGER.error("SQLException: " + e.getMessage());
+			LOGGER.error("SQLState: " + e.getSQLState());
+			LOGGER.error("VendorError: " + e.getErrorCode());
+			LOGGER.error(e);
 		}
-		logger.debug("End getMySqlConnection");
+		LOGGER.debug("End getMySqlConnection");
 		return con;
 	}
 }

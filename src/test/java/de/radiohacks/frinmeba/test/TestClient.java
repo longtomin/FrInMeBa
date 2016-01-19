@@ -46,9 +46,9 @@ import org.junit.BeforeClass;
 import de.radiohacks.frinmeba.modelshort.OAdUC;
 import de.radiohacks.frinmeba.modelshort.OAuth;
 import de.radiohacks.frinmeba.modelshort.OCrCh;
-import de.radiohacks.frinmeba.modelshort.OLiCh;
-import de.radiohacks.frinmeba.modelshort.OLiUs;
-import de.radiohacks.frinmeba.modelshort.OSTeM;
+// import de.radiohacks.frinmeba.modelshort.OLiCh;
+// import de.radiohacks.frinmeba.modelshort.OLiUs;
+// import de.radiohacks.frinmeba.modelshort.OSTeM;
 import de.radiohacks.frinmeba.modelshort.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
@@ -238,7 +238,9 @@ public class TestClient extends JerseyTest {
 						d.ChatID);
 				if (out != null) {
 					if (out.getET() == null || out.getET().isEmpty()) {
-						String x = out.getR();
+						// variable x not used
+						// String x = out.getR();
+						out.getR();
 					}
 				}
 			}
@@ -251,12 +253,12 @@ public class TestClient extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/authenticate")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_PASSWORD, password);
 		} else {
 			target = target("user/authenticate").queryParam(
-					Constants.QPusername, username).queryParam(
-					Constants.QPpassword, password);
+					Constants.QP_USERNAME, username).queryParam(
+					Constants.QP_PASSWORD, password);
 		}
 		return target.request().get(OAuth.class);
 	}
@@ -267,14 +269,14 @@ public class TestClient extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/signup")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPemail, email);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_EMAIL, email);
 		} else {
 			target = target("user/signup")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPemail, email);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_EMAIL, email);
 		}
 		return target.request().get(OSiUp.class);
 	}
@@ -285,18 +287,21 @@ public class TestClient extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/createchat")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatname, chatname);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_CHATNAME, chatname);
 		} else {
 			target = target("user/createchat")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatname, chatname);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_CHATNAME, chatname);
 		}
 		return target.request().get(OCrCh.class);
 	}
 
+	/* **********************************************************************
+	 * function not used
+	 * **********************************************************************
 	private OLiUs ListUser(String username, String password, String search) {
 
 		WebTarget target;
@@ -315,8 +320,12 @@ public class TestClient extends JerseyTest {
 		}
 		return target.request().get(OLiUs.class);
 	}
-
-	private OLiCh ListChat(String username, String password) {
+    ************************************************************************ */
+	
+	/* **********************************************************************
+	 * function not used
+	 * **********************************************************************
+	 	private OLiCh ListChat(String username, String password) {
 		WebTarget target;
 		if (TestConfig.remote) {
 
@@ -331,6 +340,7 @@ public class TestClient extends JerseyTest {
 		return target.request().get(OLiCh.class);
 
 	}
+	************************************************************************ */
 
 	private OAdUC AddUserToChat(String username, String password, int userid,
 			int chatid) {
@@ -338,20 +348,23 @@ public class TestClient extends JerseyTest {
 		if (TestConfig.remote) {
 			target = ClientBuilder.newClient()
 					.target(TestConfig.URL + "user/addusertochat")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_CHATID, chatid)
+					.queryParam(Constants.QP_USERID, userid);
 		} else {
 			target = target("user/addusertochat")
-					.queryParam(Constants.QPusername, username)
-					.queryParam(Constants.QPpassword, password)
-					.queryParam(Constants.QPchatid, chatid)
-					.queryParam(Constants.QPuserid, userid);
+					.queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_CHATID, chatid)
+					.queryParam(Constants.QP_USERID, userid);
 		}
 		return target.request().get(OAdUC.class);
 	}
 
+	/* **********************************************************************
+	 * function not used
+	 * **********************************************************************
 	private OSTeM SendTextMessage(String username, String password,
 			String TextMessage) {
 		WebTarget target;
@@ -370,6 +383,7 @@ public class TestClient extends JerseyTest {
 		}
 		return target.request().get(OSTeM.class);
 	}
+	************************************************************************ */
 
 	private class DataAddUserToChat {
 		String OwnUser;
