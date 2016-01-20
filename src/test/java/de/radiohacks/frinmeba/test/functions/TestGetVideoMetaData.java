@@ -319,7 +319,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat("testGetVideoMetaDataUserPasswordVideoID", out.getVS(), is(not(nullValue())));
+		assertThat(out.getVS(), is(not(nullValue())));
 		deleteVideo(videoid);
 	}
 
