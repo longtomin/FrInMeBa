@@ -96,7 +96,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
 				.build();
 	}
-
+	
 	@BeforeClass
 	public static void prepareDB() {
 		dropDatabaseTables drop = new dropDatabaseTables();
