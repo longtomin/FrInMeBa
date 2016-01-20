@@ -41,9 +41,12 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import org.junit.Assert;
-import org.junit.BeforeClass;
+
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
+
+import org.junit.BeforeClass;
 
 import de.radiohacks.frinmeba.modelshort.OGViMMD;
 import de.radiohacks.frinmeba.services.Constants;
@@ -70,20 +73,17 @@ public class TestGetVideoMetaData extends JerseyTest {
 	 */
 
 	// Username welche anzulegen ist
-	final static String username_org = "Test1";
-	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private final static String username_org = "Test1";
+	private final static String username = 
+			Base64.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Passwort zum User
-	final static String password_org = "Test1";
-	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private final static String password_org = "Test1";
+	private final static String password = 
+			Base64.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 	// Email Adresse zum User
-	final static String email_org = "Test1@frinme.org";
-	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private final static String email_org = "Test1@frinme.org";
 
-	final static String functionurl = "video/getvideometadata";
-	final static String md5sum = "2ee0c92eaa157fda2daafb1a564973a1";
+	private final static String functionurl = "video/getvideometadata";
 
 	@Override
 	protected TestContainerFactory getTestContainerFactory() {
@@ -108,7 +108,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 				help.InsertFixedImage());
 	}
 
-	public int insertVideo() {
+	private int insertVideo() {
 		// Insert new Image in DB an Filesystem
 		helperDatabase helper = new helperDatabase();
 		/*
@@ -125,7 +125,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		return helper.InsertFixedVideo();
 	}
 
-	public void deleteVideo(int in) {
+	private void deleteVideo(int in) {
 		helperDatabase helper = new helperDatabase();
 		/*
 		 * If the File was inserted and created by the the then use this
@@ -149,7 +149,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 		deleteVideo(videoid);
 	}
 
@@ -216,8 +216,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-				out.getET());
+		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
 	}
 
 	@Test
@@ -235,7 +234,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 		deleteVideo(videoid);
 	}
 
@@ -254,7 +253,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 		deleteVideo(videoid);
 	}
 
@@ -276,7 +275,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
 		deleteVideo(videoid);
 	}
 
@@ -298,7 +297,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
 		deleteVideo(videoid);
 	}
 
@@ -320,8 +319,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertNotNull(out.getVS());
-		// Assert.assertEquals(md5sum, out.getVideoMD5Hash());
+		assertThat("testGetVideoMetaDataUserPasswordVideoID", out.getVS(), is(not(nullValue())));
 		deleteVideo(videoid);
 	}
 
@@ -350,7 +348,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
 		deleteVideo(videoid);
 	}
 
@@ -371,8 +369,7 @@ public class TestGetVideoMetaData extends JerseyTest {
 		}
 		OGViMMD out = target.request().get(OGViMMD.class);
 
-		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-				out.getET());
+		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
 	}
 
 }
