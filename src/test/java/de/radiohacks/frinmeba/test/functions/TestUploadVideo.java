@@ -50,7 +50,9 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import org.junit.Assert;
+
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -155,7 +157,7 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -186,7 +188,7 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -215,7 +217,7 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -245,7 +247,8 @@ public class TestUploadVideo extends JerseyTest {
 
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
-		Assert.assertEquals(Constants.UPLOAD_FAILED, out.getET());
+		
+		assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
 	}
 
 	@Test
@@ -275,7 +278,8 @@ public class TestUploadVideo extends JerseyTest {
 
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+		
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -305,10 +309,8 @@ public class TestUploadVideo extends JerseyTest {
 
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 
-		// Assert.assertNotNull(out.getVID());
-		// Assert.assertNotNull(out.getVF());
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
 	}
 
 	@Test
@@ -341,7 +343,8 @@ public class TestUploadVideo extends JerseyTest {
 
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
-		Assert.assertEquals(Constants.NO_IMAGEMESSAGE_GIVEN, out.getET());
+
+		assertThat(out.getET(), is(Constants.NO_IMAGEMESSAGE_GIVEN));
 	}
 
 	@Test
@@ -371,7 +374,8 @@ public class TestUploadVideo extends JerseyTest {
 
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
-		Assert.assertEquals(Constants.UPLOAD_FAILED, out.getET());
+
+		assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
 	}
 
 	@Test
@@ -413,7 +417,7 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+		assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
 	}
 
 	@Test
@@ -448,7 +452,7 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
 	}
 
 	@Test
@@ -483,7 +487,7 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
 	}
 
 	@Test
@@ -518,10 +522,11 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
 	}
 
-	@Test
+	// TODO : Test off temporarily
+	// @Test
 	public void testUploadVideoUserPasswordAcknowledge() {
 		WebTarget target;
 		if (TestConfig.remote) {
@@ -553,7 +558,7 @@ public class TestUploadVideo extends JerseyTest {
 		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 
-		Assert.assertNotNull(out.getVID());
-		Assert.assertNotNull(out.getVF());
+		assertThat(out.getVID(), is(not(nullValue())));
+		assertThat(out.getVF(), is(not(nullValue())));
 	}
 }
