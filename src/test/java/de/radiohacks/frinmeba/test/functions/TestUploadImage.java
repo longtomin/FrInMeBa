@@ -506,7 +506,7 @@ public class TestUploadImage extends JerseyTest {
 		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
 	}
 
-	// TODO: Test failed
+	// TODO: Test failed - review needed
 	// @Test
 	public void testUploadImageUserPasswordAcknowledge() {
 		WebTarget target;
