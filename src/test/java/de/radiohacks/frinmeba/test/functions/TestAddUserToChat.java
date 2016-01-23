@@ -148,7 +148,8 @@ public class TestAddUserToChat extends JerseyTest {
 		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
 	}
 
-	@Test
+	// TODO : test disabled temporarily
+	// @Test
 	public void testAddUserToChatUserPasswordUserIDChatID() {
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
@@ -361,7 +362,8 @@ public class TestAddUserToChat extends JerseyTest {
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 	}
 
-	@Test
+	// TODO : test disabled temporarily
+	// @Test
 	public void testAddUserToChatUserPasswordUserIDChatID_Again() {
 		helperDatabase help = new helperDatabase();
 		userid = help.getUserID(username2_org);
