@@ -66,499 +66,498 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestUploadVideo extends JerseyTest {
 
-	/*
-	 * @POST
-	 * 
-	 * @Path("/upload")
-	 * 
-	 * @Produces(MediaType.APPLICATION_XML)
-	 * 
-	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSViM uploadVideo(
-	 * 
-	 * @QueryParam(Constants.QPusername) String User,
-	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @FormDataParam("file") InputStream fileInputStream,
-	 * 
-	 * @FormDataParam("file") FormDataContentDisposition
-	 * contentDispositionHeader);
-	 */
-
-	// Username welche anzulegen ist
-	final static String username_org = "Test1";
-	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password_org = "Test1";
-	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email_org = "Test1@frinme.org";
-	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Acknowledge zur
-	final static String acknowledge_org = "ba0623b8c7a7520092ee1ff71da0bbea";
-	final static String acknowledge = Base64.encodeBase64String(acknowledge_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-
-	final static String functionurl = "video/upload";
-
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
-
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
-
-	@Override
-	protected void configureClient(ClientConfig config) {
-		config.register(MultiPartFeature.class);
-	}
-
-	@BeforeClass
-	public static void prepareDB() {
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org,
-				help.InsertFixedImage());
-	}
-
-	@Test
-	public void testUploadVideoUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
-
-	@Test
-	public void testUploadVideoUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl).queryParam(
-					Constants.QP_USERNAME, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_USERNAME,
-					username);
-			;
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
-
-	@Test
-	public void testUploadVideoPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl).queryParam(
-					Constants.QP_PASSWORD, password);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password);
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
-
-	@Test
-	public void testUploadVideoUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_USERNAME, username);
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-		
-		assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
-	}
-
-	@Test
-	public void testUploadVideoUserAcknowledge() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge)
-					.queryParam(Constants.QP_USERNAME, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_ACKNOWLEDGE,
-					acknowledge).queryParam(Constants.QP_USERNAME, username);
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-		
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
-
-	@Test
-	public void testUploadVideoPasswordAcknowledge() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
-
-	@Test
-	public void testUploadVideoUserPasswordAcknowledgeNoDisposition() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		// final FormDataContentDisposition dispo = FormDataContentDisposition
-		// .name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart("File", data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.NO_IMAGEMESSAGE_GIVEN));
-	}
-
-	@Test
-	public void testUploadVideoUserPasswordNoAcknowledge() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username);
-			;
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_USERNAME, username);
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
-	}
-
-	@Test
-	public void testUploadVideoUserWrongPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QP_PASSWORD,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QP_PASSWORD,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
-	}
-
-	@Test
-	public void testUploadVideoUserEncodeFailureUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, "XXX")
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, "XXX")
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-	}
-
-	@Test
-	public void testUploadVideoUserEncodeFailurePassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, "XXX")
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, "XXX")
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-	}
-
-	@Test
-	public void testUploadVideoUserEncodeFailureAcknowledge() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
-			;
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-	}
-
-	// TODO : Test off temporarily
-	// @Test
-	public void testUploadVideoUserPasswordAcknowledge() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
-
-			target = client.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-			;
-		}
-		final FormDataMultiPart mp = new FormDataMultiPart();
-
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
-
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
-
-		OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-
-		assertThat(out.getVID(), is(not(nullValue())));
-		assertThat(out.getVF(), is(not(nullValue())));
-	}
+    /*
+     * @POST
+     * 
+     * @Path("/upload")
+     * 
+     * @Produces(MediaType.APPLICATION_XML)
+     * 
+     * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSViM uploadVideo(
+     * 
+     * @QueryParam(Constants.QPusername) String User,
+     * 
+     * @QueryParam(Constants.QPpassword) String Password,
+     * 
+     * @FormDataParam("file") InputStream fileInputStream,
+     * 
+     * @FormDataParam("file") FormDataContentDisposition
+     * contentDispositionHeader);
+     */
+
+    // Username welche anzulegen ist
+    final static String username_org = "Test1";
+    final static String username = Base64.encodeBase64String(username_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password_org = "Test1";
+    final static String password = Base64.encodeBase64String(password_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email_org = "Test1@frinme.org";
+    final static String email = Base64.encodeBase64String(email_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Acknowledge zur
+    final static String acknowledge_org = "ba0623b8c7a7520092ee1ff71da0bbea";
+    final static String acknowledge = Base64.encodeBase64String(acknowledge_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+
+    final static String functionurl = "video/upload";
+
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
+
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
+
+    @Override
+    protected void configureClient(ClientConfig config) {
+        config.register(MultiPartFeature.class);
+    }
+
+    @BeforeClass
+    public static void prepareDB() {
+        dropDatabaseTables drop = new dropDatabaseTables();
+        drop.dropTable();
+        createDatabaseTables create = new createDatabaseTables();
+        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.CreateActiveUser(username_org, username, password_org, email_org,
+                help.InsertFixedImage());
+    }
+
+    @Test
+    public void testUploadVideoUpNoValues() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl);
+        } else {
+            target = target(functionurl);
+        }
+
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
+
+    @Test
+    public void testUploadVideoUser() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl).queryParam(
+                    Constants.QP_USERNAME, username);
+            ;
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_USERNAME,
+                    username);
+            ;
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
+
+    @Test
+    public void testUploadVideoPassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl).queryParam(
+                    Constants.QP_PASSWORD, password);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password);
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
+
+    @Test
+    public void testUploadVideoUserPassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username);
+            ;
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_USERNAME, username);
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+        
+        assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
+    }
+
+    @Test
+    public void testUploadVideoUserAcknowledge() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge)
+                    .queryParam(Constants.QP_USERNAME, username);
+            ;
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_ACKNOWLEDGE,
+                    acknowledge).queryParam(Constants.QP_USERNAME, username);
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+        
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
+
+    @Test
+    public void testUploadVideoPasswordAcknowledge() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
+
+    @Test
+    public void testUploadVideoUserPasswordAcknowledgeNoDisposition() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        // final FormDataContentDisposition dispo = FormDataContentDisposition
+        // .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart("File", data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.NO_IMAGEMESSAGE_GIVEN));
+    }
+
+    @Test
+    public void testUploadVideoUserPasswordNoAcknowledge() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username);
+            ;
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_USERNAME, username);
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
+    }
+
+    @Test
+    public void testUploadVideoUserWrongPassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(
+                            Constants.QP_PASSWORD,
+                            Base64.encodeBase64String("XXX".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        } else {
+            target = target(functionurl)
+                    .queryParam(
+                            Constants.QP_PASSWORD,
+                            Base64.encodeBase64String("XXX".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
+    }
+
+    @Test
+    public void testUploadVideoUserEncodeFailureUser() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, "XXX")
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, "XXX")
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+    }
+
+    @Test
+    public void testUploadVideoUserEncodeFailurePassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, "XXX")
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, "XXX")
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+    }
+
+    @Test
+    public void testUploadVideoUserEncodeFailureAcknowledge() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
+            ;
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
+            ;
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+    }
+
+    @Test
+    public void testUploadVideoUserPasswordAcknowledge() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
+
+            target = client.target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+            ;
+        }
+        final FormDataMultiPart mp = new FormDataMultiPart();
+
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
+
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
+
+        OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+
+        assertThat(out.getVID(), is(not(nullValue())));
+        assertThat(out.getVF(), is(not(nullValue())));
+    }
 }

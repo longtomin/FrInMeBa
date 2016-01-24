@@ -78,474 +78,472 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestAcknowledgeMessageDownload extends JerseyTest {
 
-	/*
-	 * @POST
-	 * 
-	 * @Produces(MediaType.APPLICATION_XML)
-	 * 
-	 * @Consumes(MediaType.APPLICATION_XML)
-	 * 
-	 * @Path("/acknowledgemessagedownload") public OAckMD
-	 * acknowledgeMessageDownload(IAckMD in);
-	 */
+    /*
+     * @POST
+     * 
+     * @Produces(MediaType.APPLICATION_XML)
+     * 
+     * @Consumes(MediaType.APPLICATION_XML)
+     * 
+     * @Path("/acknowledgemessagedownload") public OAckMD
+     * acknowledgeMessageDownload(IAckMD in);
+     */
 
-	// Username welche anzulegen ist
-	final static String username_org = "Test1";
-	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password_org = "Test1";
-	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email_org = "Test1@frinme.org";
-	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Username welche anzulegen ist
+    final static String username_org = "Test1";
+    final static String username = Base64.encodeBase64String(username_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password_org = "Test1";
+    final static String password = Base64.encodeBase64String(password_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email_org = "Test1@frinme.org";
+    final static String email = Base64.encodeBase64String(email_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-	final static String functionurl = "user/acknowledgemessagedownload";
+    final static String functionurl = "user/acknowledgemessagedownload";
 
-	final static String textmsg_org = "Test Nachnricht fuer Acknowledge";
-	final static String textmsg = Base64.encodeBase64String(textmsg_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String textmsg_org = "Test Nachnricht fuer Acknowledge";
+    final static String textmsg = Base64.encodeBase64String(textmsg_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-	final static String md5sumimg_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
-	final static String md5sumimg = Base64.encodeBase64String(md5sumimg_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	final static String md5sumvid_org = "ba0623b8c7a7520092ee1ff71da0bbea";
-	final static String md5sumvid = Base64.encodeBase64String(md5sumvid_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	final static String md5sumtxt_org = "[B@2e41b2e9";
-	final static String md5sumtxt = Base64.encodeBase64String(md5sumtxt_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String md5sumimg_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+    final static String md5sumimg = Base64.encodeBase64String(md5sumimg_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String md5sumvid_org = "ba0623b8c7a7520092ee1ff71da0bbea";
+    final static String md5sumvid = Base64.encodeBase64String(md5sumvid_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String md5sumtxt_org = "[B@2e41b2e9";
+    final static String md5sumtxt = Base64.encodeBase64String(md5sumtxt_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
 
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
 
-	@Override
-	protected void configureClient(ClientConfig config) {
-		config.register(MultiPartFeature.class);
-	}
+    @Override
+    protected void configureClient(ClientConfig config) {
+        config.register(MultiPartFeature.class);
+    }
 
-	@BeforeClass
-	public static void prepareDB() {
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
-	}
+    @BeforeClass
+    public static void prepareDB() {
+        dropDatabaseTables drop = new dropDatabaseTables();
+        drop.dropTable();
+        createDatabaseTables create = new createDatabaseTables();
+        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
+    }
 
-	private OAckMD callTarget(IAckMD in) {
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + functionurl);
-		Response response = target.request()
-				.buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		return response.readEntity(OAckMD.class);
-	}
+    private OAckMD callTarget(IAckMD in) {
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + functionurl);
+        Response response = target.request()
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        return response.readEntity(OAckMD.class);
+    }
 
-	private int uploadImageContent(String url) {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
+    private int uploadImageContent(String url) {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
 
-			target = client.target(TestConfig.URL + url);
-		} else {
-			target = target(url);
-		}
+            target = client.target(TestConfig.URL + url);
+        } else {
+            target = target(url);
+        }
 
-		final FormDataMultiPart mp = new FormDataMultiPart();
+        final FormDataMultiPart mp = new FormDataMultiPart();
 
-		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.jpg").size(1).build();
+        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.jpg").size(1).build();
 
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
 
-		OSImM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSImM.class);
-		return x.getImID();
-	}
+        OSImM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSImM.class);
+        return x.getImID();
+    }
 
-	private int uploadVideoContent(String url) {
-		WebTarget target;
-		if (TestConfig.remote) {
-			Client client = ClientBuilder.newBuilder()
-					.register(MultiPartFeature.class).build();
+    private int uploadVideoContent(String url) {
+        WebTarget target;
+        if (TestConfig.remote) {
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class).build();
 
-			target = client.target(TestConfig.URL + url);
-		} else {
-			target = target(url);
-		}
+            target = client.target(TestConfig.URL + url);
+        } else {
+            target = target(url);
+        }
 
-		final FormDataMultiPart mp = new FormDataMultiPart();
+        final FormDataMultiPart mp = new FormDataMultiPart();
 
-		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
-		final FormDataContentDisposition dispo = FormDataContentDisposition
-				.name("file").fileName("test.mp4").size(1).build();
+        InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+        final FormDataContentDisposition dispo = FormDataContentDisposition
+                .name("file").fileName("test.mp4").size(1).build();
 
-		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-				MediaType.APPLICATION_OCTET_STREAM_TYPE);
-		mp.bodyPart(fdp2);
+        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        mp.bodyPart(fdp2);
 
-		OSViM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
-				OSViM.class);
-		return x.getVID();
-	}
+        OSViM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
+                OSViM.class);
+        return x.getVID();
+    }
 
-	private int uploadTextContent() {
-		ISTeM in = new ISTeM();
-		in.setUN(username);
-		in.setPW(password);
-		in.setTM(textmsg);
+    private int uploadTextContent() {
+        ISTeM in = new ISTeM();
+        in.setUN(username);
+        in.setPW(password);
+        in.setTM(textmsg);
 
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + "user/sendtextmessage");
-		Response response = target.request()
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		OSTeM x = response.readEntity(OSTeM.class);
-		return x.getTID();
-	}
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + "user/sendtextmessage");
+        Response response = target.request()
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        OSTeM x = response.readEntity(OSTeM.class);
+        return x.getTID();
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUpNoValues() {
-		IAckMD in = new IAckMD();
-		OAckMD out = callTarget(in);
-		
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+    @Test
+    public void testAcknowledgeMessageDownloadUpNoValues() {
+        IAckMD in = new IAckMD();
+        OAckMD out = callTarget(in);
+        
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUser() {
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		OAckMD out = callTarget(in);
+    @Test
+    public void testAcknowledgeMessageDownloadUser() {
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        OAckMD out = callTarget(in);
 
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPusername, username);
-		// ;
-		// } else {
-		// target = target(functionurl).queryParam(Constants.QPusername,
-		// username);
-		// ;
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPusername, username);
+        // ;
+        // } else {
+        // target = target(functionurl).queryParam(Constants.QPusername,
+        // username);
+        // ;
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadPassword() {
-		IAckMD in = new IAckMD();
-		in.setPW(password);
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPpassword, password);
-		// ;
-		// } else {
-		// target = target(functionurl).queryParam(Constants.QPpassword,
-		// password);
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+    @Test
+    public void testAcknowledgeMessageDownloadPassword() {
+        IAckMD in = new IAckMD();
+        in.setPW(password);
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPpassword, password);
+        // ;
+        // } else {
+        // target = target(functionurl).queryParam(Constants.QPpassword,
+        // password);
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUserPassword() {
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		in.setPW(password);
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, username);
-		// ;
-		// } else {
-		// target = target(functionurl).queryParam(Constants.QPpassword,
-		// password).queryParam(Constants.QPusername, username);
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+    @Test
+    public void testAcknowledgeMessageDownloadUserPassword() {
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        in.setPW(password);
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, username);
+        // ;
+        // } else {
+        // target = target(functionurl).queryParam(Constants.QPpassword,
+        // password).queryParam(Constants.QPusername, username);
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_CONTENT_GIVEN));
-	}
+        assertThat(out.getET(), is(Constants.NO_CONTENT_GIVEN));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUserPasswordNoAcknowledge() {
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CHARACTERSET))));
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder
-		// .newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(
-		// Constants.QPpassword,
-		// Base64.encodeBase64String("XXX".getBytes(Charset
-		// .forName(Constants.CharacterSet))))
-		// .queryParam(Constants.QPusername, username);
-		// } else {
-		// target = target(functionurl).queryParam(
-		// Constants.QPpassword,
-		// Base64.encodeBase64String("XXX".getBytes(Charset
-		// .forName(Constants.CharacterSet)))).queryParam(
-		// Constants.QPusername, username);
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+    @Test
+    public void testAcknowledgeMessageDownloadUserPasswordNoAcknowledge() {
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+                .forName(Constants.CHARACTERSET))));
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder
+        // .newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(
+        // Constants.QPpassword,
+        // Base64.encodeBase64String("XXX".getBytes(Charset
+        // .forName(Constants.CharacterSet))))
+        // .queryParam(Constants.QPusername, username);
+        // } else {
+        // target = target(functionurl).queryParam(
+        // Constants.QPpassword,
+        // Base64.encodeBase64String("XXX".getBytes(Charset
+        // .forName(Constants.CharacterSet)))).queryParam(
+        // Constants.QPusername, username);
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_CONTENT_GIVEN));
-	}
+        assertThat(out.getET(), is(Constants.NO_CONTENT_GIVEN));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUserWrongPassword() {
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-				.forName(Constants.CHARACTERSET))));
-		in.setACK(md5sumimg);
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder
-		// .newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(
-		// Constants.QPpassword,
-		// Base64.encodeBase64String("XXX".getBytes(Charset
-		// .forName(Constants.CharacterSet))))
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPacknowledge, password);
-		// } else {
-		// target = target(functionurl)
-		// .queryParam(
-		// Constants.QPpassword,
-		// Base64.encodeBase64String("XXX".getBytes(Charset
-		// .forName(Constants.CharacterSet))))
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPacknowledge, password);
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+    @Test
+    public void testAcknowledgeMessageDownloadUserWrongPassword() {
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
+                .forName(Constants.CHARACTERSET))));
+        in.setACK(md5sumimg);
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder
+        // .newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(
+        // Constants.QPpassword,
+        // Base64.encodeBase64String("XXX".getBytes(Charset
+        // .forName(Constants.CharacterSet))))
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPacknowledge, password);
+        // } else {
+        // target = target(functionurl)
+        // .queryParam(
+        // Constants.QPpassword,
+        // Base64.encodeBase64String("XXX".getBytes(Charset
+        // .forName(Constants.CharacterSet))))
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPacknowledge, password);
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUserEncodeFailureUser() {
-		IAckMD in = new IAckMD();
-		in.setUN("XXX");
-		in.setPW(password);
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, "XXX");
-		// ;
-		// } else {
-		// target = target(functionurl).queryParam(Constants.QPpassword,
-		// password).queryParam(Constants.QPusername, "XXX");
-		// ;
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+    @Test
+    public void testAcknowledgeMessageDownloadUserEncodeFailureUser() {
+        IAckMD in = new IAckMD();
+        in.setUN("XXX");
+        in.setPW(password);
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, "XXX");
+        // ;
+        // } else {
+        // target = target(functionurl).queryParam(Constants.QPpassword,
+        // password).queryParam(Constants.QPusername, "XXX");
+        // ;
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-	}
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUserEncodeFailurePassword() {
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		in.setPW("XXX");
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPpassword, "XXX")
-		// .queryParam(Constants.QPusername, username);
-		// ;
-		// } else {
-		// target = target(functionurl)
-		// .queryParam(Constants.QPpassword, "XXX").queryParam(
-		// Constants.QPusername, username);
-		// ;
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+    @Test
+    public void testAcknowledgeMessageDownloadUserEncodeFailurePassword() {
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        in.setPW("XXX");
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPpassword, "XXX")
+        // .queryParam(Constants.QPusername, username);
+        // ;
+        // } else {
+        // target = target(functionurl)
+        // .queryParam(Constants.QPpassword, "XXX").queryParam(
+        // Constants.QPusername, username);
+        // ;
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-	}
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+    }
 
-	// TODO : Test off temporarily
-	// @Test
-	public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeImage() {
+    @Test
+    public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeImage() {
 
-		int msgimgid = uploadImageContent("image/upload?"
-				+ Constants.QP_USERNAME + "=" + username + "&"
-				+ Constants.QP_PASSWORD + "=" + password + "&"
-				+ Constants.QP_ACKNOWLEDGE + "=" + md5sumimg);
+        int msgimgid = uploadImageContent("image/upload?"
+                + Constants.QP_USERNAME + "=" + username + "&"
+                + Constants.QP_PASSWORD + "=" + password + "&"
+                + Constants.QP_ACKNOWLEDGE + "=" + md5sumimg);
 
-		helperDatabase help = new helperDatabase();
-		help.CreateChat(username_org, "Test Chat");
-		int u2c = help.AddUserToChat(help.getUserID(username_org),
-				help.getChatID("Test Chat"));
-		int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-				Constants.TYP_IMAGE, msgimgid, 0, true);
+        helperDatabase help = new helperDatabase();
+        help.CreateChat(username_org, "Test Chat");
+        int u2c = help.AddUserToChat(help.getUserID(username_org),
+                help.getChatID("Test Chat"));
+        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
+                Constants.TYP_IMAGE, msgimgid, 0, true);
 
-		HashCode md5 = null;
-		try {
-			md5 = Files.hash(new File(this.getClass().getResource("/test.jpg")
-					.getFile()), Hashing.md5());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String md5sumimg = new String(Base64.encodeBase64(md5.toString()
-				.getBytes()), Charset.forName(Constants.CHARACTERSET));
+        HashCode md5 = null;
+        try {
+            md5 = Files.hash(new File(this.getClass().getResource("/test.jpg")
+                    .getFile()), Hashing.md5());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String md5sumimg = new String(Base64.encodeBase64(md5.toString()
+                .getBytes()), Charset.forName(Constants.CHARACTERSET));
 
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		in.setPW(password);
-		in.setMID(msgid);
-		in.setACK(md5sumimg);
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPmessageid, msgid)
-		// .queryParam(Constants.QPacknowledge, md5sumimg);
-		// } else {
-		// target = target(functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPmessageid, msgid)
-		// .queryParam(Constants.QPacknowledge, md5sumimg);
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        in.setPW(password);
+        in.setMID(msgid);
+        in.setACK(md5sumimg);
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPmessageid, msgid)
+        // .queryParam(Constants.QPacknowledge, md5sumimg);
+        // } else {
+        // target = target(functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPmessageid, msgid)
+        // .queryParam(Constants.QPacknowledge, md5sumimg);
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getACK(), is(Constants.ACKNOWLEDGE_TRUE));
-	}
+        assertThat(out.getACK(), is(Constants.ACKNOWLEDGE_TRUE));
+    }
 
-	// TODO : Test off temporarily
-	// @Test
-	public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeVideo() {
+    @Test
+    public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeVideo() {
 
-		int msgvidid = uploadVideoContent("video/upload?"
-				+ Constants.QP_USERNAME + "=" + username + "&"
-				+ Constants.QP_PASSWORD + "=" + password + "&"
-				+ Constants.QP_ACKNOWLEDGE + "=" + md5sumvid);
+        int msgvidid = uploadVideoContent("video/upload?"
+                + Constants.QP_USERNAME + "=" + username + "&"
+                + Constants.QP_PASSWORD + "=" + password + "&"
+                + Constants.QP_ACKNOWLEDGE + "=" + md5sumvid);
 
-		helperDatabase help = new helperDatabase();
-		help.CreateChat(username_org, "Test Chat");
-		int u2c = help.AddUserToChat(help.getUserID(username_org),
-				help.getChatID("Test Chat"));
-		int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-				Constants.TYP_VIDEO, msgvidid, 0, true);
+        helperDatabase help = new helperDatabase();
+        help.CreateChat(username_org, "Test Chat");
+        int u2c = help.AddUserToChat(help.getUserID(username_org),
+                help.getChatID("Test Chat"));
+        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
+                Constants.TYP_VIDEO, msgvidid, 0, true);
 
-		HashCode md5 = null;
-		try {
-			md5 = Files.hash(new File(this.getClass().getResource("/test.mp4")
-					.getFile()), Hashing.md5());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String md5sumimg = new String(Base64.encodeBase64(md5.toString()
-				.getBytes()), Charset.forName(Constants.CHARACTERSET));
+        HashCode md5 = null;
+        try {
+            md5 = Files.hash(new File(this.getClass().getResource("/test.mp4")
+                    .getFile()), Hashing.md5());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String md5sumimg = new String(Base64.encodeBase64(md5.toString()
+                .getBytes()), Charset.forName(Constants.CHARACTERSET));
 
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		in.setPW(password);
-		in.setMID(msgid);
-		in.setACK(md5sumimg);
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPmessageid, msgid)
-		// .queryParam(Constants.QPacknowledge, md5sumimg);
-		// } else {
-		// target = target(functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPmessageid, msgid)
-		// .queryParam(Constants.QPacknowledge, md5sumimg);
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        in.setPW(password);
+        in.setMID(msgid);
+        in.setACK(md5sumimg);
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPmessageid, msgid)
+        // .queryParam(Constants.QPacknowledge, md5sumimg);
+        // } else {
+        // target = target(functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPmessageid, msgid)
+        // .queryParam(Constants.QPacknowledge, md5sumimg);
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getACK(), is(Constants.ACKNOWLEDGE_TRUE));
-	}
+        assertThat(out.getACK(), is(Constants.ACKNOWLEDGE_TRUE));
+    }
 
-	@Test
-	public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeText() {
+    @Test
+    public void testAcknowledgeMessageDownloadUserPasswordAcknowledgeText() {
 
-		int msgimgid = uploadTextContent();
+        int msgimgid = uploadTextContent();
 
-		helperDatabase help = new helperDatabase();
-		help.CreateChat(username_org, "Test Chat");
-		int u2c = help.AddUserToChat(help.getUserID(username_org),
-				help.getChatID("Test Chat"));
-		int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-				Constants.TYP_TEXT, msgimgid, 0, true);
+        helperDatabase help = new helperDatabase();
+        help.CreateChat(username_org, "Test Chat");
+        int u2c = help.AddUserToChat(help.getUserID(username_org),
+                help.getChatID("Test Chat"));
+        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
+                Constants.TYP_TEXT, msgimgid, 0, true);
 
-		int hashCode = textmsg_org.hashCode();
-		String sha1b64 = new String(Base64.encodeBase64(String
-				.valueOf(hashCode).getBytes()),
-				Charset.forName(Constants.CHARACTERSET));
+        int hashCode = textmsg_org.hashCode();
+        String sha1b64 = new String(Base64.encodeBase64(String
+                .valueOf(hashCode).getBytes()),
+                Charset.forName(Constants.CHARACTERSET));
 
-		IAckMD in = new IAckMD();
-		in.setUN(username);
-		in.setPW(password);
-		in.setMID(msgid);
-		in.setACK(sha1b64);
-		OAckMD out = callTarget(in);
-		// WebTarget target;
-		// if (TestConfig.remote) {
-		// target = ClientBuilder.newClient()
-		// .target(TestConfig.URL + functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPmessageid, msgid)
-		// .queryParam(Constants.QPacknowledge, sha1b64);
-		// } else {
-		// target = target(functionurl)
-		// .queryParam(Constants.QPpassword, password)
-		// .queryParam(Constants.QPusername, username)
-		// .queryParam(Constants.QPmessageid, msgid)
-		// .queryParam(Constants.QPacknowledge, sha1b64);
-		// }
-		// OAckMD out = target.request().get(OAckMD.class);
+        IAckMD in = new IAckMD();
+        in.setUN(username);
+        in.setPW(password);
+        in.setMID(msgid);
+        in.setACK(sha1b64);
+        OAckMD out = callTarget(in);
+        // WebTarget target;
+        // if (TestConfig.remote) {
+        // target = ClientBuilder.newClient()
+        // .target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPmessageid, msgid)
+        // .queryParam(Constants.QPacknowledge, sha1b64);
+        // } else {
+        // target = target(functionurl)
+        // .queryParam(Constants.QPpassword, password)
+        // .queryParam(Constants.QPusername, username)
+        // .queryParam(Constants.QPmessageid, msgid)
+        // .queryParam(Constants.QPacknowledge, sha1b64);
+        // }
+        // OAckMD out = target.request().get(OAckMD.class);
 
-		assertThat(out.getACK(), is(Constants.ACKNOWLEDGE_TRUE));
-	}
+        assertThat(out.getACK(), is(Constants.ACKNOWLEDGE_TRUE));
+    }
 }

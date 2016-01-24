@@ -58,319 +58,329 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestGetVideoMetaData extends JerseyTest {
 
-	/*
-	 * @GET
-	 * 
-	 * @Path("/getvideometadata")
-	 * 
-	 * @Produces(MediaType.APPLICATION_XML) public OGViMMD getvideometadata(
-	 * 
-	 * @QueryParam(Constants.QPusername) String User,
-	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPvideoid) int videoid);
-	 */
+    /*
+     * @GET
+     * 
+     * @Path("/getvideometadata")
+     * 
+     * @Produces(MediaType.APPLICATION_XML) public OGViMMD getvideometadata(
+     * 
+     * @QueryParam(Constants.QPusername) String User,
+     * 
+     * @QueryParam(Constants.QPpassword) String Password,
+     * 
+     * @QueryParam(Constants.QPvideoid) int videoid);
+     */
 
-	// Username welche anzulegen ist
-	private final static String username_org = "Test1";
-	private final static String username = 
-			Base64.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	private final static String password_org = "Test1";
-	private final static String password = 
-			Base64.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	private final static String email_org = "Test1@frinme.org";
+    // Username welche anzulegen ist
+    private final static String username_org = "Test1";
+    private final static String username = 
+            Base64.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    private final static String password_org = "Test1";
+    private final static String password = 
+            Base64.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    private final static String email_org = "Test1@frinme.org";
 
-	private final static String functionurl = "video/getvideometadata";
+    private final static String functionurl = "video/getvideometadata";
 
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
 
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
-	
-	@BeforeClass
-	public static void prepareDB() {
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org,
-				help.InsertFixedImage());
-	}
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
+    
+    @BeforeClass
+    public static void prepareDB() {
+        dropDatabaseTables drop = new dropDatabaseTables();
+        drop.dropTable();
+        createDatabaseTables create = new createDatabaseTables();
+        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.CreateActiveUser(username_org, username, password_org, email_org,
+                help.InsertFixedImage());
+    }
 
-	private int insertVideo() {
-		// Insert new Image in DB an Filesystem
-		helperDatabase helper = new helperDatabase();
-		/*
-		 * Works only if a local server is used; URL url =
-		 * this.getClass().getResource("/test.jpg"); File in = new
-		 * File(url.getFile()); return helper.InsertAndSaveImage(in);
-		 */
+    private int insertVideo() {
+        // Insert new Image in DB an Filesystem
+        helperDatabase helper = new helperDatabase();
+        /*
+         * Works only if a local server is used; URL url =
+         * this.getClass().getResource("/test.jpg"); File in = new
+         * File(url.getFile()); return helper.InsertAndSaveImage(in);
+         */
 
-		/*
-		 * Else use a static unixtime which is 1010101010 and a static filename
-		 * which is test.jpg insert it into the db, the copy must be done
-		 * outside.
-		 */
-		return helper.InsertFixedVideo();
-	}
+        /*
+         * Else use a static unixtime which is 1010101010 and a static filename
+         * which is test.jpg insert it into the db, the copy must be done
+         * outside.
+         */
+        return helper.InsertFixedVideo();
+    }
 
-	private void deleteVideo(int in) {
-		helperDatabase helper = new helperDatabase();
-		/*
-		 * If the File was inserted and created by the the then use this
-		 */
-		// helper.deleteAndDropImage(in);
-		/*
-		 * Otherwise just delete the DB Entry and let the file delete be done
-		 * outside.
-		 */
-		helper.deleteFixedVideo(in);
-	}
+    private void deleteVideo(int in) {
+        helperDatabase helper = new helperDatabase();
+        /*
+         * If the File was inserted and created by the the then use this
+         */
+        // helper.deleteAndDropImage(in);
+        /*
+         * Otherwise just delete the DB Entry and let the file delete be done
+         * outside.
+         */
+        helper.deleteFixedVideo(in);
+    }
 
-	@Test
-	public void testGetVideoMetaDataUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataUpNoValues() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient().target(
+                    TestConfig.URL + functionurl);
+        } else {
+            target = target(functionurl);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testGetVideoMetaDataUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_USERNAME,
-					username);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataUser() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_USERNAME,
+                    username);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testGetVideoMetaDataPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataPassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testGetVideoMetaDataVideoID() {
-		int videoid = insertVideo();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_VIDEOID,
-					videoid);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataVideoID() {
+        int videoid = insertVideo();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_VIDEOID,
+                    videoid);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-		deleteVideo(videoid);
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+        deleteVideo(videoid);
+    }
 
-	@Test
-	public void testGetVideoMetaDataUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_USERNAME, username);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataUserPassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_USERNAME, username);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
-	}
+        assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
+    }
 
-	@Test
-	public void testGetVideoMetaDataUserVideoID() {
-		int videoid = insertVideo();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_USERNAME,
-					username).queryParam(Constants.QP_VIDEOID, videoid);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataUserVideoID() {
+        int videoid = insertVideo();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_USERNAME,
+                    username).queryParam(Constants.QP_VIDEOID, videoid);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-		deleteVideo(videoid);
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+        deleteVideo(videoid);
+    }
 
-	@Test
-	public void testGetVideoMetaDataPasswordvideoid() {
-		int videoid = insertVideo();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_VIDEOID, videoid);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataPasswordvideoid() {
+        int videoid = insertVideo();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_VIDEOID, videoid);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-		deleteVideo(videoid);
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+        deleteVideo(videoid);
+    }
 
-	@Test
-	public void testGetVideoMetaDataEncodingErrorUser() {
-		int videoid = insertVideo();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, "$%&1233")
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, "$%&1233")
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataEncodingErrorUser() {
+        int videoid = insertVideo();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, "$%&1233")
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, "$%&1233")
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-		deleteVideo(videoid);
-	}
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+        deleteVideo(videoid);
+    }
 
-	@Test
-	public void testGetVideoMetaDataEncodingErrorPassword() {
-		int videoid = insertVideo();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, "$%&1233")
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, "$%&1233")
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataEncodingErrorPassword() {
+        int videoid = insertVideo();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, "$%&1233")
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, "$%&1233")
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-		deleteVideo(videoid);
-	}
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+        deleteVideo(videoid);
+    }
 
-	// TODO : Deactivate temporarily
-	// @Test
-	public void testGetVideoMetaDataUserPasswordVideoID() {
-		int videoid = insertVideo();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataUserPasswordVideoID() {
+        int videoid = insertVideo();
+        System.out.println("videoid ==> " + videoid);
+        WebTarget target;
+        System.out.println("TestConfig - remote ==> " + TestConfig.remote);
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        }
+        System.out.println("target ==> " + target);
+        System.out.println("request ==> " + target.request());
+        System.out.println("==> " + target.request().get());
+        System.out.println("==> " + target.request().get(OGViMMD.class));
+        OGViMMD out = target.request().get(OGViMMD.class);
+        System.out.println("OUT ==> " + out);
+        System.out.println("getET == > " + out.getET());
+        System.out.println("getVM == > " + out.getVM());
+        System.out.println("getVMD5 == > " + out.getVMD5());
+        System.out.println("getVS == > " + out.getVS());
 
-		assertThat(out.getVS(), is(not(nullValue())));
-		deleteVideo(videoid);
-	}
+        assertThat(out.getVS(), is(not(nullValue())));
+        deleteVideo(videoid);
+    }
 
-	@Test
-	public void testGetVideoMetaDataUserWrongPasswordVideoID() {
-		int videoid = insertVideo();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QP_PASSWORD,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QP_PASSWORD,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, videoid);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataUserWrongPasswordVideoID() {
+        int videoid = insertVideo();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder
+                    .newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(
+                            Constants.QP_PASSWORD,
+                            Base64.encodeBase64String("XXX".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(
+                            Constants.QP_PASSWORD,
+                            Base64.encodeBase64String("XXX".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, videoid);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
-		deleteVideo(videoid);
-	}
+        assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
+        deleteVideo(videoid);
+    }
 
-	@Test
-	public void testGetVideoMetaDataUserPasswordWrongVideoID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, 107365);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_VIDEOID, 107365);
-		}
-		OGViMMD out = target.request().get(OGViMMD.class);
+    @Test
+    public void testGetVideoMetaDataUserPasswordWrongVideoID() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, 107365);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_VIDEOID, 107365);
+        }
+        OGViMMD out = target.request().get(OGViMMD.class);
 
-		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
-	}
+        assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
+    }
 
 }

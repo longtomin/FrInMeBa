@@ -310,8 +310,7 @@ public class TestDownloadVideo extends JerseyTest {
 		}
 		deleteVideo(videoid);
 	}
-	// TODO : Test off temporarily
-	// @Test
+	@Test
 	public void testDownloadVideoUserPasswordImageID() {
 		int videoid = insertVideo();
 		WebTarget target;

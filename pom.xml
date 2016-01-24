@@ -37,13 +37,17 @@ either expressed or implied, of the FreeBSD Project.
     <url>http://maven.apache.org</url>
     <properties>
         <jersey-version>2.22.1</jersey-version>
-        <jdk.version>1.7</jdk.version>
+        <jdk.version>1.8</jdk.version>
         <mycila.version>2.8</mycila.version>
         
         <log4j.configuration>log4j.properties</log4j.configuration>
         
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <sonar.login>frinme</sonar.login>
+        <sonar.password>FrInMe</sonar.password>
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -117,7 +121,7 @@ either expressed or implied, of the FreeBSD Project.
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.2.3</version>
+            <version>2.7.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -149,7 +153,7 @@ either expressed or implied, of the FreeBSD Project.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.3</version>
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
