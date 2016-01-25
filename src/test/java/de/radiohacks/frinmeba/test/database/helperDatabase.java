@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,12 +43,29 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.codec.binary.Base64;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+
 import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.modelshort.OSImM;
+import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.test.TestConfig;
 
 public class helperDatabase {
 
 	final static String activate = "UPDATE Users SET ACTIVE = 1 where ID = ?";
+	final static String videouploadurl = "video/upload";
+	final static String imageuploadurl = "image/upload";
 
 	public void ActivateUser(int id) {
 		try {
@@ -678,5 +696,60 @@ public class helperDatabase {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public OSViM insertVideoContent(String u, String p) {
+
+	    final String acknowledge_org = "ba0623b8c7a7520092ee1ff71da0bbea";
+	    final String acknowledge = Base64.encodeBase64String(acknowledge_org
+	            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+
+		WebTarget target;
+		Client client = ClientBuilder.newBuilder()
+				.register(MultiPartFeature.class).build();
+
+		target = client.target(TestConfig.URL + videouploadurl)
+				.queryParam(Constants.QP_PASSWORD, p)
+				.queryParam(Constants.QP_USERNAME, u)
+				.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("test.mp4").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		return target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSViM.class);
+	}
+	
+	public OSImM insertImageContent(String u, String p) {
+	    final String acknowledge_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+	    final String acknowledge = Base64.encodeBase64String(acknowledge_org
+	            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+
+		WebTarget target;
+		Client client = ClientBuilder.newBuilder()
+				.register(MultiPartFeature.class).build();
+
+		target = client.target(TestConfig.URL + videouploadurl)
+				.queryParam(Constants.QP_PASSWORD, p)
+				.queryParam(Constants.QP_USERNAME, u)
+				.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition
+				.name("file").fileName("test.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		return target.request().post(Entity.entity(mp, mp.getMediaType()),
+				OSImM.class);
 	}
 }

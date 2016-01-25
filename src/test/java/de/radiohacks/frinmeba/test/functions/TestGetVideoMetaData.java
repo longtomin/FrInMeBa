@@ -28,6 +28,11 @@
  */
 package de.radiohacks.frinmeba.test.functions;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -41,14 +46,11 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.junit.BeforeClass;
-
 import de.radiohacks.frinmeba.modelshort.OGViMMD;
+import de.radiohacks.frinmeba.modelshort.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -303,7 +305,11 @@ public class TestGetVideoMetaData extends JerseyTest {
 
     @Test
     public void testGetVideoMetaDataUserPasswordVideoID() {
-        int videoid = insertVideo();
+    	
+    	helperDatabase help = new helperDatabase();
+    	OSViM O1 = help.insertVideoContent(username, password);
+    	int videoid = O1.getVID();
+        //int videoid = insertVideo();
         System.out.println("videoid ==> " + videoid);
         WebTarget target;
         System.out.println("TestConfig - remote ==> " + TestConfig.remote);
