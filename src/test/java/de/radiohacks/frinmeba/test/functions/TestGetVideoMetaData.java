@@ -124,7 +124,14 @@ public class TestGetVideoMetaData extends JerseyTest {
          * which is test.jpg insert it into the db, the copy must be done
          * outside.
          */
-        return helper.InsertFixedVideo();
+        // return helper.InsertFixedVideo();
+        OSViM o = helper.insertVideoContent(username, password);
+		if ((o.getET() == null || o.getET().isEmpty()) && o.getVID() > 0) {
+			return o.getVID();
+		} else {
+			return 0;
+		}
+        
     }
 
     private void deleteVideo(int in) {

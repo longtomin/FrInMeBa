@@ -735,7 +735,7 @@ public class helperDatabase {
 		Client client = ClientBuilder.newBuilder()
 				.register(MultiPartFeature.class).build();
 
-		target = client.target(TestConfig.URL + videouploadurl)
+		target = client.target(TestConfig.URL + imageuploadurl)
 				.queryParam(Constants.QP_PASSWORD, p)
 				.queryParam(Constants.QP_USERNAME, u)
 				.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
