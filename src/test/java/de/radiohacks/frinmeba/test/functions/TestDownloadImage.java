@@ -28,6 +28,9 @@
  */
 package de.radiohacks.frinmeba.test.functions;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -42,11 +45,10 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -121,7 +123,9 @@ public class TestDownloadImage extends JerseyTest {
          * which is test.jpg insert it into the db, the copy must be done
          * outside.
          */
-        return helper.InsertFixedImage();
+        // return helper.InsertFixedImage();
+        OSImM o = helper.insertImageContent(username, password);
+        return o.getImID();
     }
 
     public void deleteImage(int in) {
