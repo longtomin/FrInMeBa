@@ -50,11 +50,13 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
+import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MySqlConnection;
 import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.modelshort.OSViM;
@@ -62,6 +64,8 @@ import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.test.TestConfig;
 
 public class helperDatabase {
+
+	private static final Logger LOGGER = Logger.getLogger(Check.class);
 
 	final static String activate = "UPDATE Users SET ACTIVE = 1 where ID = ?";
 	final static String videouploadurl = "video/upload";
@@ -75,7 +79,7 @@ public class helperDatabase {
 			pre.executeUpdate();
 			con.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 
@@ -102,7 +106,7 @@ public class helperDatabase {
 					+ currentTime + "', '1', " + IconID + ")");
 			con.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 
@@ -122,7 +126,7 @@ public class helperDatabase {
 			}
 			res.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return userid;
 	}
@@ -143,7 +147,7 @@ public class helperDatabase {
 			}
 			res.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return chatid;
 	}
@@ -165,7 +169,7 @@ public class helperDatabase {
 			}
 			res.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return chatid;
 	}
@@ -194,7 +198,7 @@ public class helperDatabase {
 
 			con.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return chatid;
 	}
@@ -261,7 +265,7 @@ public class helperDatabase {
 
 			con.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return key;
 	}
@@ -286,7 +290,7 @@ public class helperDatabase {
 
 			con.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return key;
 	}
@@ -452,7 +456,7 @@ public class helperDatabase {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 		return key;
 	}
@@ -477,15 +481,15 @@ public class helperDatabase {
 				os.write(buffer, 0, length);
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				is.close();
 				os.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error(e);
 			}
 		}
 
@@ -506,7 +510,7 @@ public class helperDatabase {
 				key = resultSet.getInt(1);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -516,7 +520,7 @@ public class helperDatabase {
 					statement.close();
 				}
 			} catch (SQLException e) {
-				// Do nothing we are closing
+				LOGGER.error(e);
 			}
 		}
 		return key;
@@ -542,7 +546,7 @@ public class helperDatabase {
 				key = resultSet.getInt(1);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -578,7 +582,7 @@ public class helperDatabase {
 				key = resultSet.getInt(1);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -627,7 +631,7 @@ public class helperDatabase {
 			pstmt.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		} finally {
 			try {
 				if (resultSet != null) {
@@ -655,7 +659,7 @@ public class helperDatabase {
 			pstmt.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 
@@ -672,7 +676,7 @@ public class helperDatabase {
 			pstmt.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 
@@ -694,15 +698,15 @@ public class helperDatabase {
 			pstmt.setInt(2, MsgID);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 
 	public OSViM insertVideoContent(String u, String p) {
 
-	    final String acknowledge_org = "ba0623b8c7a7520092ee1ff71da0bbea";
-	    final String acknowledge = Base64.encodeBase64String(acknowledge_org
-	            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+		final String acknowledge_org = "ba0623b8c7a7520092ee1ff71da0bbea";
+		final String acknowledge = Base64.encodeBase64String(acknowledge_org
+				.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 		WebTarget target;
 		Client client = ClientBuilder.newBuilder()
@@ -725,11 +729,11 @@ public class helperDatabase {
 		return target.request().post(Entity.entity(mp, mp.getMediaType()),
 				OSViM.class);
 	}
-	
+
 	public OSImM insertImageContent(String u, String p) {
-	    final String acknowledge_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
-	    final String acknowledge = Base64.encodeBase64String(acknowledge_org
-	            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+		final String acknowledge_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+		final String acknowledge = Base64.encodeBase64String(acknowledge_org
+				.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 		WebTarget target;
 		Client client = ClientBuilder.newBuilder()
