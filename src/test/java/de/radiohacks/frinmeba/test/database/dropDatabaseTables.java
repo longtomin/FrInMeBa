@@ -34,45 +34,45 @@ import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
-import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MySqlConnection;
 
 public class dropDatabaseTables {
-    
-    private static final Logger LOGGER = Logger.getLogger(Check.class);
-    
-    private final static String DropMessages = "DROP TABLE IF EXISTS `Messages`";
-    private final static String DropText = "DROP TABLE IF EXISTS `Text`";
-    private final static String DropUserToChats = "DROP TABLE IF EXISTS `UserToChats`";
-    private final static String DropChats = "DROP TABLE IF EXISTS `Chats`";
-    private final static String DropContact = "DROP TABLE IF EXISTS `Contact`";
-    private final static String DropFile = "DROP TABLE IF EXISTS `File`";
-    private final static String DropImage = "DROP TABLE IF EXISTS `Image`";
-    private final static String DropLocation = "DROP TABLE IF EXISTS `Location`";
-    private final static String DropUsers = "DROP TABLE IF EXISTS `Users`";
-    private final static String DropVideo = "DROP TABLE IF EXISTS `Video`";
-    
-    public dropDatabaseTables() {
-    };
-    
-    public void dropTable() {
-        Statement st;
-        try {
-            Connection con = new MySqlConnection().getMySqlConnection();
-            st = con.createStatement();
-            st.execute(DropMessages);
-            st.execute(DropText);
-            st.execute(DropUserToChats);
-            st.execute(DropChats);
-            st.execute(DropUsers);
-            st.execute(DropContact);
-            st.execute(DropFile);
-            st.execute(DropImage);
-            st.execute(DropLocation);
-            st.execute(DropVideo);
-            con.close();
-        } catch (SQLException e) {
-            LOGGER.error(e);
-        }
-    }
+
+	private static final Logger LOGGER = Logger
+			.getLogger(dropDatabaseTables.class);
+
+	private final static String DropMessages = "DROP TABLE IF EXISTS `Messages`";
+	private final static String DropText = "DROP TABLE IF EXISTS `Text`";
+	private final static String DropUserToChats = "DROP TABLE IF EXISTS `UserToChats`";
+	private final static String DropChats = "DROP TABLE IF EXISTS `Chats`";
+	private final static String DropContact = "DROP TABLE IF EXISTS `Contact`";
+	private final static String DropFile = "DROP TABLE IF EXISTS `File`";
+	private final static String DropImage = "DROP TABLE IF EXISTS `Image`";
+	private final static String DropLocation = "DROP TABLE IF EXISTS `Location`";
+	private final static String DropUsers = "DROP TABLE IF EXISTS `Users`";
+	private final static String DropVideo = "DROP TABLE IF EXISTS `Video`";
+
+	public dropDatabaseTables() {
+	};
+
+	public void dropTable() {
+		Statement st;
+		try {
+			Connection con = new MySqlConnection().getMySqlConnection();
+			st = con.createStatement();
+			st.execute(DropMessages);
+			st.execute(DropText);
+			st.execute(DropUserToChats);
+			st.execute(DropChats);
+			st.execute(DropUsers);
+			st.execute(DropContact);
+			st.execute(DropFile);
+			st.execute(DropImage);
+			st.execute(DropLocation);
+			st.execute(DropVideo);
+			con.close();
+		} catch (SQLException e) {
+			LOGGER.error(e);
+		}
+	}
 }

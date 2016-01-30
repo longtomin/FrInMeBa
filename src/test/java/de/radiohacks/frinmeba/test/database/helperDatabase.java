@@ -56,7 +56,6 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
-import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MySqlConnection;
 import de.radiohacks.frinmeba.modelshort.OSImM;
 import de.radiohacks.frinmeba.modelshort.OSViM;
@@ -65,7 +64,7 @@ import de.radiohacks.frinmeba.test.TestConfig;
 
 public class helperDatabase {
 
-	private static final Logger LOGGER = Logger.getLogger(Check.class);
+	private static final Logger LOGGER = Logger.getLogger(helperDatabase.class);
 
 	final static String activate = "UPDATE Users SET ACTIVE = 1 where ID = ?";
 	final static String videouploadurl = "video/upload";
