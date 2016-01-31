@@ -1,5 +1,5 @@
 /**
- * Copyright � 2015, Thomas Schreiner, thomas1.schreiner@googlemail.com
+ * Copyright @ 2015, Thomas Schreiner, thomas1.schreiner@googlemail.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,8 +111,7 @@ public class VideoImpl implements IVideoUtil {
                                     String filetime = Objects.toString(
                                             currentTime, null);
 
-                                    String filePath = Constants.SERVER_UPLOAD_LOCATION_FOLDER
-                                            + Constants.SERVER_VIDEO_FOLDER
+                                    String filePath = (new Constants()).getUploadFolderVideo() + File.separatorChar
                                             + filetime
                                             + contentDispositionHeader
                                                     .getFileName();
@@ -233,8 +232,7 @@ public class VideoImpl implements IVideoUtil {
                         actuser.getVideoMessages(in, out);
 
                         final File file = new File(
-                                Constants.SERVER_UPLOAD_LOCATION_FOLDER
-                                        + Constants.SERVER_VIDEO_FOLDER
+                                (new Constants()).getUploadFolderVideo() + File.separatorChar
                                         + out.getVM());
                         if (!file.exists()) {
                             LOGGER.error("file not found : " + file.getAbsolutePath());
@@ -311,9 +309,7 @@ public class VideoImpl implements IVideoUtil {
                         actuser.getVideoMessages(tmpin, tmpout);
 
                         final File file = new File(
-                                Constants.SERVER_UPLOAD_LOCATION_FOLDER
-                                        + Constants.SERVER_VIDEO_FOLDER
-                                        + tmpout.getVM());
+                                (new Constants()).getUploadFolderVideo() + tmpout.getVM());
                         if (file.exists()) {
                             out.setVM(tmpout.getVM());
                             out.setVMD5(tmpout.getVMD5());
