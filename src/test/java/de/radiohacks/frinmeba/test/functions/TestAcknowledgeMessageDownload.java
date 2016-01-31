@@ -155,6 +155,7 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     }
 
     private int uploadImageContent(String url) {
+    	//TODO HCM
         WebTarget target;
         if (TestConfig.remote) {
             Client client = ClientBuilder.newBuilder()
@@ -164,19 +165,27 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
         } else {
             target = target(url);
         }
+        System.err.println("==> " + target);
 
         final FormDataMultiPart mp = new FormDataMultiPart();
+        System.err.println("==> " + mp);
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+        System.err.println("==> " + data);
         final FormDataContentDisposition dispo = FormDataContentDisposition
                 .name("file").fileName("test.jpg").size(1).build();
-
+        System.err.println("==> " + dispo);
+        
         final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
                 MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        System.err.println("==> " + fdp2);
         mp.bodyPart(fdp2);
+        System.err.println(mp);
 
         OSImM x = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSImM.class);
+        System.err.println("==> " + x);
+        System.err.println("==> " + x.getImID());
         return x.getImID();
     }
 
