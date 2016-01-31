@@ -122,7 +122,7 @@ public class Constants {
     
     private String mkDefaultFolder(String subdir) {
         String uploadFolder = null;
-        uploadFolder = System.getenv("HOME") + File.separatorChar + "frinme_data";
+        uploadFolder = System.getProperty("user.home") + File.separatorChar + "frinme_data";
         if(!subdir.isEmpty()) {
             uploadFolder = uploadFolder + File.separatorChar + subdir;
         }
