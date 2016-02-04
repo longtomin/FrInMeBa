@@ -35,38 +35,32 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 public class MySqlConnection {
-	
-	private static final Logger LOGGER = Logger.getLogger(MySqlConnection.class.getName());
+    
+    private static final Logger LOGGER = Logger.getLogger(MySqlConnection.class.getName());
 
-	private Connection con = null;
-	private static String dbHost = "localhost"; // Hostname
-	private static String dbPort = "3306"; 		// Port -- Standard: 3306
-	private static String dbName = "frinme_db"; // Datenbankname
-	private static String dbUser = "frinme_db"; // Datenbankuser
-	private static String dbPass = "frinme_db"; // Datenbankpasswort
+    private Connection con = null;
+    private static String dbHost = "localhost"; // Hostname
+    private static String dbPort = "3306";         // Port -- Standard: 3306
+    private static String dbName = "frinme_db"; // Datenbankname
+    private static String dbUser = "frinme_db"; // Datenbankuser
+    private static String dbPass = "frinme_db"; // Datenbankpasswort
 
-	public Connection getMySqlConnection() {
-		LOGGER.debug("Start getMySqlConnection");
-		
-		try {
-			Class.forName("com.mysql.jdbc.Driver"); // Datenbanktreiber für JDBC
-													// Schnittstellen laden.
+    public Connection getMySqlConnection() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver"); // Datenbanktreiber für JDBC
+                                                    // Schnittstellen laden.
 
-			// Verbindung zur JDBC-Datenbank herstellen.
-			con = DriverManager.getConnection("jdbc:mysql://" + dbHost + ":"
-					+ dbPort + "/" + dbName + "?" + "user=" + dbUser + "&"
-					+ "password=" + dbPass);
-		} catch (ClassNotFoundException e) {
-			LOGGER.error("Treiber nicht gefunden");
-			LOGGER.error(e);
-		} catch (SQLException e) {
-			LOGGER.error("Verbindung nicht moglich");
-			LOGGER.error("SQLException: " + e.getMessage());
-			LOGGER.error("SQLState: " + e.getSQLState());
-			LOGGER.error("VendorError: " + e.getErrorCode());
-			LOGGER.error(e);
-		}
-		LOGGER.debug("End getMySqlConnection");
-		return con;
-	}
+            // Verbindung zur JDBC-Datenbank herstellen.
+            con = DriverManager.getConnection("jdbc:mysql://" + dbHost + ":"
+                    + dbPort + "/" + dbName + "?" + "user=" + dbUser + "&"
+                    + "password=" + dbPass);
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Treiber nicht gefunden");
+            LOGGER.error(e);
+        } catch (SQLException e) {
+            LOGGER.error("can not connect database");
+            LOGGER.error(e);
+        }
+        return con;
+    }
 }

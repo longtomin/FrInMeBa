@@ -29,12 +29,14 @@ public class MyConnection implements Serializable {
         try(InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
             p.load(resourceStream);
         } catch (IOException e) {
+        	LOGGER.error("can not read ressourcen properties file");
             LOGGER.error(e);
         }
 
         try {
             Class.forName(p.getProperty("driver"));
         } catch (ClassNotFoundException e) {
+        	LOGGER.error("can not find driver " + p.getProperty("driver"));
             LOGGER.error(e);
         }
 
@@ -44,6 +46,7 @@ public class MyConnection implements Serializable {
                     p.getProperty("username"),
                     p.getProperty("password"));
         } catch (SQLException e) {
+        	LOGGER.error("can not connect database : " + p.getProperty("url"));
             LOGGER.error(e);
         }
 
@@ -56,6 +59,7 @@ public class MyConnection implements Serializable {
                 con.close();
             }
         } catch (SQLException e) {
+        	LOGGER.error("can close connection");
             LOGGER.error(e);
         }
     }

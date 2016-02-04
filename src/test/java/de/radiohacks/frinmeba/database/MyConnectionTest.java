@@ -3,7 +3,6 @@ package de.radiohacks.frinmeba.database;
 import static org.junit.Assert.*;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -14,18 +13,18 @@ public class MyConnectionTest {
     @Test
     public void testMyConnection() {
         MyConnection o = new MyConnection();
-        assertNotNull(o);
+        assertNotNull("can not create object MyConnect", o);
     }
 
     @Test
     public void testConnection() {
         MyConnection o = new MyConnection();
-        assertNotNull(o);
+        assertNotNull("can not create object MyConnect", o);
         Connection con = o.getConnection();
-        assertNotNull(con);
+        assertNotNull("can not create object Connection", con);
         
         try {
-            assertThat(con.isValid(10), is(true));
+            assertThat("connection is not valid", con.isValid(10), is(true));
         } catch (SQLException e) {
             e.printStackTrace();
         }
