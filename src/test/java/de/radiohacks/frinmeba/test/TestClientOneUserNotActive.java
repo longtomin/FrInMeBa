@@ -117,7 +117,6 @@ public class TestClientOneUserNotActive extends JerseyTest {
     // richtigen Reihenfilge ausführen. Nachdem der Signup durch ist, ist die
     // Reihenfolge egal da immer USER_NOT_ACTIVE zurück kommt
     @Test
-    @Ignore("temporarily suspended")
     public void TestOneUserNegativeTests() {
         OSiUp out1 = TestSignUpNoValues();
         Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out1.getET());
