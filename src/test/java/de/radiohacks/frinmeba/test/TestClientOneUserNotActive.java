@@ -28,6 +28,9 @@
  */
 package de.radiohacks.frinmeba.test;
 
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -45,11 +48,9 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.database.MySqlConnection;
 import de.radiohacks.frinmeba.modelshort.IAdUC;
 import de.radiohacks.frinmeba.modelshort.ICrCh;
 import de.radiohacks.frinmeba.modelshort.IIMIC;
@@ -122,43 +123,43 @@ public class TestClientOneUserNotActive extends JerseyTest {
     @Test
     public void TestOneUserNegativeTests() {
         OSiUp out1 = TestSignUpNoValues();
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out1.getET());
+        assertThat("Test out1 - NO_USERNAME_OR_PASSWORD", out1.getET(),is(Constants.NO_USERNAME_OR_PASSWORD));
         OSiUp out2 = TestSignUpWithEmail();
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out2.getET());
+        assertThat("Test out2 - NO_USER_OR_PASSWORD",  out2.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
         OSiUp out3 = TestSignUpWithEmailPassword();
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out3.getET());
+        assertThat("Test out3 - NO_USERNAME_OR_PASSWORD", out3.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
         OSiUp out4 = TestSignUpWithEmailUser();
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out4.getET());
+        assertThat("Test out4 - NO_USERNAME_OR_PASSWORD", out4.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
         OSiUp out5 = TestSignUpWithEmailUserPassword();
-        Assert.assertEquals("SUCCESSFUL", out5.getSU());
+        assertThat("Test out5 - SUCCESSFUL", out5.getSU(), is("SUCCESSFUL"));
         OSiUp out5a = TestSignUpWithEmailUserPassword();
-        Assert.assertEquals(Constants.USER_ALREADY_EXISTS, out5a.getET());
+        assertThat("Test out5a - USER_ALREADY_EXISTS", out5a, is(Constants.USER_ALREADY_EXISTS));
         OAuth out6 = TestAuthenticateNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out6.getET());
+        assertThat("Test out6 - USER_NOT_ACTIVE", out6.getET(), is(Constants.USER_NOT_ACTIVE));
         OCrCh out7 = TestCreateChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out7.getET());
+        assertThat("Test out7 - USER_NOT_ACTIVE", out7.getET(), is(Constants.USER_NOT_ACTIVE));
         ODeCh out8 = TestDeleteChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out8.getET());
+        assertThat("Test out8 - USER_NOT_ACTIVE", out8.getET(), is(Constants.USER_NOT_ACTIVE));
         OAdUC out9 = TestAddUserToChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out9.getET());
+        assertThat("Test out8 - USER_NOT_ACTIVE", out9.getET(), is(Constants.USER_NOT_ACTIVE));
         OReUC out10 = TestRemoveUserFromChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out10.getET());
+        assertThat("Test out10 - USER_NOT_ACTIVE", out10.getET(), is(Constants.USER_NOT_ACTIVE));
         OLiUs out11 = TestListUserNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out11.getET());
+        assertThat("Test out11 - USER_NOT_ACTIVE", out11.getET(), is(Constants.USER_NOT_ACTIVE));
         OLiCh out12 = TestListChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out12.getET());
+        assertThat("Test out12 - USER_NOT_ACTIVE", out12.getET(), is(Constants.USER_NOT_ACTIVE));
         OSTeM out13 = TestSendTextMessageNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out13.getET());
+        assertThat("Test out13 - USER_NOT_ACTIVE", out13.getET(), is(Constants.USER_NOT_ACTIVE));
         OGTeM out14 = TestGetTextMessageNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out14.getET());
+        assertThat("Test out14 - USER_NOT_ACTIVE", out14.getET(), is(Constants.USER_NOT_ACTIVE));
         OIMIC out15 = TestInsertMessageIntoChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out15.getET());
+        assertThat("Test out15 - USER_NOT_ACTIVE", out15.getET(), is(Constants.USER_NOT_ACTIVE));
         OFMFC out16 = TestGetMessageFromChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out16.getET());
+        assertThat("Test out16 - USER_NOT_ACTIVE", out16.getET(), is(Constants.USER_NOT_ACTIVE));
         // OutCheckNewMessages out17 = TestCheckNewMessagesNotActive();
         // Assert.assertEquals(Constants.USER_NOT_ACTIVE, out17.getET());
         ODMFC out18 = TestDeleMessageFromChatNotActive();
-        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out18.getET());
+        assertThat("Test out18 - USER_NOT_ACTIVE", out18.getET(), is(Constants.USER_NOT_ACTIVE));
     }
 
     private OSiUp callTarget(ISiUp in) {
@@ -168,6 +169,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
         Response response = target.request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
+        LOGGER.debug(response);
         return response.readEntity(OSiUp.class);
     }
 
