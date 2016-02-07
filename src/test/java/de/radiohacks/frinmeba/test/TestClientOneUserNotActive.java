@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -46,9 +47,9 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.database.MySqlConnection;
 import de.radiohacks.frinmeba.modelshort.IAdUC;
 import de.radiohacks.frinmeba.modelshort.ICrCh;
 import de.radiohacks.frinmeba.modelshort.IIMIC;
@@ -73,6 +74,8 @@ import de.radiohacks.frinmeba.test.database.createDatabaseTables;
 import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 
 public class TestClientOneUserNotActive extends JerseyTest {
+    
+    private static final Logger LOGGER = Logger.getLogger(TestClientOneUserNotActive.class.getName());
 
     // Username welche anzulegen ist
     final static String username_org = "Test1";
@@ -161,6 +164,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
     private OSiUp callTarget(ISiUp in) {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + "user/signup");
+        LOGGER.debug(target);
         Response response = target.request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
