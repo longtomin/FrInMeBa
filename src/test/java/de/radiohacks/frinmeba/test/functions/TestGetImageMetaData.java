@@ -47,6 +47,7 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OGImMMD;
@@ -60,327 +61,339 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestGetImageMetaData extends JerseyTest {
 
-	/*
-	 * @GET
-	 * 
-	 * @Produces(MediaType.APPLICATION_XML)
-	 * 
-	 * @Path("/createchat") public OutCreateChat
-	 * CreateChat(@QueryParam(Constants.QPusername) String User,
-	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPchatname) String Chatname);
-	 */
+    /*
+     * @GET
+     * 
+     * @Produces(MediaType.APPLICATION_XML)
+     * 
+     * @Path("/createchat") public OutCreateChat
+     * CreateChat(@QueryParam(Constants.QPusername) String User,
+     * 
+     * @QueryParam(Constants.QPpassword) String Password,
+     * 
+     * @QueryParam(Constants.QPchatname) String Chatname);
+     */
 
-	// Username welche anzulegen ist
-	final static String username_org = "Test1";
-	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password_org = "Test1";
-	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email_org = "Test1@frinme.org";
-	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Username welche anzulegen ist
+    final static String username_org = "Test1";
+    final static String username = Base64.encodeBase64String(username_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password_org = "Test1";
+    final static String password = Base64.encodeBase64String(password_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email_org = "Test1@frinme.org";
+    final static String email = Base64.encodeBase64String(email_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-	final static String functionurl = "image/getimagemetadata";
+    final static String functionurl = "image/getimagemetadata";
 
-	final static String md5Sum = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+    final static String md5Sum = "e36ba04dd1ad642a6e8c74c72a4aab8c";
 
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
 
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
 
-	@BeforeClass
-	public static void prepareDB() {
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org,
-				help.InsertFixedImage());
-	}
+    @BeforeClass
+    public static void prepareDB() {
+        dropDatabaseTables drop = new dropDatabaseTables();
+        drop.dropTable();
+        createDatabaseTables create = new createDatabaseTables();
+        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.CreateActiveUser(username_org, username, password_org, email_org,
+                help.InsertFixedImage());
+    }
 
-	private int insertImage() {
-		// Insert new Image in DB an Filesystem
-		helperDatabase helper = new helperDatabase();
-		/*
-		 * Works only if a local server is used; URL url =
-		 * this.getClass().getResource("/test.jpg"); File in = new
-		 * File(url.getFile()); return helper.InsertAndSaveImage(in);
-		 */
+    private int insertImage() {
+        // Insert new Image in DB an Filesystem
+        helperDatabase helper = new helperDatabase();
+        /*
+         * Works only if a local server is used; URL url =
+         * this.getClass().getResource("/test.jpg"); File in = new
+         * File(url.getFile()); return helper.InsertAndSaveImage(in);
+         */
 
-		/*
-		 * Else use a static unixtime which is 1010101010 and a static filename
-		 * which is test.jpg insert it into the db, the copy must be done
-		 * outside.
-		 */
-		// return helper.InsertFixedImage();
-		OSImM o = helper.insertImageContent(username, password);
-		if ((o.getET() == null || o.getET().isEmpty()) && o.getImID() > 0) {
-			return o.getImID();
-		} else {
-			return 0;
-		}
-	}
+        /*
+         * Else use a static unixtime which is 1010101010 and a static filename
+         * which is test.jpg insert it into the db, the copy must be done
+         * outside.
+         */
+        // return helper.InsertFixedImage();
+        OSImM o = helper.insertImageContent(username, password);
+        if ((o.getET() == null || o.getET().isEmpty()) && o.getImID() > 0) {
+            return o.getImID();
+        } else {
+            return 0;
+        }
+    }
 
-	private void deleteImage(int in) {
-		helperDatabase helper = new helperDatabase();
-		/*
-		 * If the File was inserted and created by the the then use this
-		 */
-		// helper.deleteAndDropImage(in);
-		/*
-		 * Otherwise just delete the DB Entry and let the file delete be done
-		 * outside.
-		 */
-		helper.deleteFixedImage(in);
-	}
+    private void deleteImage(int in) {
+        helperDatabase helper = new helperDatabase();
+        /*
+         * If the File was inserted and created by the the then use this
+         */
+        // helper.deleteAndDropImage(in);
+        /*
+         * Otherwise just delete the DB Entry and let the file delete be done
+         * outside.
+         */
+        helper.deleteFixedImage(in);
+    }
 
-	@Test
-	public void testGetImageMetaDataUpNoValues() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(
-					TestConfig.URL + functionurl);
-		} else {
-			target = target(functionurl);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataUpNoValues() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient().target(
+                    TestConfig.URL + functionurl);
+        } else {
+            target = target(functionurl);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testGetImageMetaDataUser() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_USERNAME,
-					username);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataUser() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_USERNAME,
+                    username);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testGetImageMetaDataPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataPassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+    }
 
-	@Test
-	public void testGetImageMetaDataImageID() {
-		int imageid = insertImage();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_IMAGEID,
-					imageid);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataImageID() {
+        int imageid = insertImage();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_IMAGEID,
+                    imageid);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-		deleteImage(imageid);
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+        deleteImage(imageid);
+    }
 
-	@Test
-	public void testGetImageMetaDataUserPassword() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_USERNAME, username);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataUserPassword() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_USERNAME, username);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
-	}
+        assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
+    }
 
-	@Test
-	public void testGetImageMetaDataUserImageID() {
-		int imageid = insertImage();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_USERNAME,
-					username).queryParam(Constants.QP_IMAGEID, imageid);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataUserImageID() {
+        int imageid = insertImage();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_USERNAME,
+                    username).queryParam(Constants.QP_IMAGEID, imageid);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-		deleteImage(imageid);
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+        deleteImage(imageid);
+    }
 
-	@Test
-	public void testGetImageMetaDataPasswordImageID() {
-		int imageid = insertImage();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		} else {
-			target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_IMAGEID, imageid);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataPasswordImageID() {
+        int imageid = insertImage();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        } else {
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_IMAGEID, imageid);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-		deleteImage(imageid);
-	}
+        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+        deleteImage(imageid);
+    }
 
-	@Test
-	public void testGetImageMetaDataEncodingErrorUser() {
-		int imageid = insertImage();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, "$%&1233")
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, "$%&1233")
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataEncodingErrorUser() {
+        int imageid = insertImage();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, "$%&1233")
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, "$%&1233")
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-		deleteImage(imageid);
-	}
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+        deleteImage(imageid);
+    }
 
-	@Test
-	public void testGetImageMetaDataEncodingErrorPassword() {
-		int imageid = insertImage();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, "$%&1233")
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, "$%&1233")
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataEncodingErrorPassword() {
+        int imageid = insertImage();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, "$%&1233")
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, "$%&1233")
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-		deleteImage(imageid);
-	}
+        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+        deleteImage(imageid);
+    }
 
-	@Test
-	public void testGetImageMetaDataUserPasswordImageID() {
-		int imageid = insertImage();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataUserPasswordImageID() {
+        int imageid = insertImage();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getIS(), is(not(nullValue())));
-		deleteImage(imageid);
-	}
+        assertThat(out.getIS(), is(not(nullValue())));
+        deleteImage(imageid);
+    }
 
-	@Test
-	public void testGetImageMetaDataUserWrongPasswordImageID() {
-		int imageid = insertImage();
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(
-							Constants.QP_PASSWORD,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		} else {
-			target = target(functionurl)
-					.queryParam(
-							Constants.QP_PASSWORD,
-							Base64.encodeBase64String("XXX".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, imageid);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataUserWrongPasswordImageID() {
+        int imageid = insertImage();
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder
+                    .newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(
+                            Constants.QP_PASSWORD,
+                            Base64.encodeBase64String("XXX".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        } else {
+            target = target(functionurl)
+                    .queryParam(
+                            Constants.QP_PASSWORD,
+                            Base64.encodeBase64String("XXX".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, imageid);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
-		deleteImage(imageid);
-	}
+        assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
+        deleteImage(imageid);
+    }
 
-	@Test
-	public void testGetImageMetaDataUserPasswordWrongImageID() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, 107365);
-		} else {
-			target = target(functionurl)
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_IMAGEID, 107365);
-		}
-		OGImMMD out = target.request().get(OGImMMD.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testGetImageMetaDataUserPasswordWrongImageID() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, 107365);
+        } else {
+            target = target(functionurl)
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_IMAGEID, 107365);
+        }
+        OGImMMD out = target.request().get(OGImMMD.class);
 
-		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
-	}
+        assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
+    }
 
 }

@@ -43,6 +43,7 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OLiUs;
@@ -55,246 +56,258 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestListUser extends JerseyTest {
 
-	/*
-	 * @GET
-	 * 
-	 * @Produces(MediaType.APPLICATION_XML)
-	 * 
-	 * @Path("/listuser") public OLiUs
-	 * ListUsers(@QueryParam(Constants.QPusername) String User,
-	 * 
-	 * @QueryParam(Constants.QPpassword) String Password,
-	 * 
-	 * @QueryParam(Constants.QPsearch) String search);
-	 */
+    /*
+     * @GET
+     * 
+     * @Produces(MediaType.APPLICATION_XML)
+     * 
+     * @Path("/listuser") public OLiUs
+     * ListUsers(@QueryParam(Constants.QPusername) String User,
+     * 
+     * @QueryParam(Constants.QPpassword) String Password,
+     * 
+     * @QueryParam(Constants.QPsearch) String search);
+     */
 
-	// Username welche anzulegen ist
-	final static String username1_org = "Test1";
-	final static String username1 = Base64.encodeBase64String(username1_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password1_org = "Test1";
-	final static String password1 = Base64.encodeBase64String(password1_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email1_org = "Test1@frinme.org";
-	final static String email1 = Base64.encodeBase64String(email1_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Username welche anzulegen ist
+    final static String username1_org = "Test1";
+    final static String username1 = Base64.encodeBase64String(username1_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password1_org = "Test1";
+    final static String password1 = Base64.encodeBase64String(password1_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email1_org = "Test1@frinme.org";
+    final static String email1 = Base64.encodeBase64String(email1_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-	// Username welche anzulegen ist
-	final static String username2_org = "User1 mit Nachnamen";
-	final static String username2 = Base64.encodeBase64String(username2_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password2_org = "Test2";
-	final static String password2 = Base64.encodeBase64String(password2_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email2_org = "User2@frinme.org";
-	final static String email2 = Base64.encodeBase64String(email2_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Username welche anzulegen ist
-	final static String username3_org = "Andreas will mitspielen";
-	final static String username3 = Base64.encodeBase64String(username3_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password3_org = "Test3";
-	final static String password3 = Base64.encodeBase64String(password3_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email3_org = "andreas@frinme.org";
-	final static String email3 = Base64.encodeBase64String(email3_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Username welche anzulegen ist
+    final static String username2_org = "User1 mit Nachnamen";
+    final static String username2 = Base64.encodeBase64String(username2_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password2_org = "Test2";
+    final static String password2 = Base64.encodeBase64String(password2_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email2_org = "User2@frinme.org";
+    final static String email2 = Base64.encodeBase64String(email2_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Username welche anzulegen ist
+    final static String username3_org = "Andreas will mitspielen";
+    final static String username3 = Base64.encodeBase64String(username3_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password3_org = "Test3";
+    final static String password3 = Base64.encodeBase64String(password3_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email3_org = "andreas@frinme.org";
+    final static String email3 = Base64.encodeBase64String(email3_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-	final static String functionurl = "user/listuser";
+    final static String functionurl = "user/listuser";
 
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
 
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
 
-	@BeforeClass
-	public static void prepareDB() {
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username1_org, username1, password1_org,
-				email1_org, help.InsertFixedImage());
-		help.CreateActiveUser(username2_org, username2, password2_org,
-				email2_org, help.InsertFixedImage());
-		help.CreateActiveUser(username3_org, username3, password3_org,
-				email3_org, help.InsertFixedImage());
-	}
+    @BeforeClass
+    public static void prepareDB() {
+        dropDatabaseTables drop = new dropDatabaseTables();
+        drop.dropTable();
+        createDatabaseTables create = new createDatabaseTables();
+        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.CreateActiveUser(username1_org, username1, password1_org,
+                email1_org, help.InsertFixedImage());
+        help.CreateActiveUser(username2_org, username2, password2_org,
+                email2_org, help.InsertFixedImage());
+        help.CreateActiveUser(username3_org, username3, password3_org,
+                email3_org, help.InsertFixedImage());
+    }
 
-	@Test
-	public void testListUserUpNoValues() {
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + functionurl);
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserUpNoValues() {
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + functionurl);
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-	}
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+    }
 
-	@Test
-	public void testListUserUserPasswordSearch() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_PASSWORD, password1)
-				.queryParam(Constants.QP_USERNAME, username1)
-				.queryParam(
-						Constants.QP_SEARCH,
-						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CHARACTERSET))));
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserUserPasswordSearch() {
+        WebTarget target = ClientBuilder
+                .newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_PASSWORD, password1)
+                .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertNotNull(out.getU());
-	}
+        Assert.assertNotNull(out.getU());
+    }
 
-	@Test
-	public void testListUserUserWrongPasswordSearch() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(
-						Constants.QP_PASSWORD,
-						Base64.encodeBase64String("XXX".getBytes(Charset
-								.forName(Constants.CHARACTERSET))))
-				.queryParam(Constants.QP_USERNAME, username1)
-				.queryParam(
-						Constants.QP_SEARCH,
-						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CHARACTERSET))));
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserUserWrongPasswordSearch() {
+        WebTarget target = ClientBuilder
+                .newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(
+                        Constants.QP_PASSWORD,
+                        Base64.encodeBase64String("XXX".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))))
+                .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-	}
+        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+    }
 
-	@Test
-	public void testListUserUser() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_USERNAME, username1);
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserUser() {
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_USERNAME, username1);
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-	}
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+    }
 
-	@Test
-	public void testListUserPassword() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_PASSWORD, password1);
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserPassword() {
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_PASSWORD, password1);
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-	}
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+    }
 
-	@Test
-	public void testListUserSearch() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(
-						Constants.QP_SEARCH,
-						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CHARACTERSET))));
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserSearch() {
+        WebTarget target = ClientBuilder
+                .newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-	}
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+    }
 
-	@Test
-	public void testListUserUserPassword() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_PASSWORD, password1)
-				.queryParam(Constants.QP_USERNAME, username1);
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserUserPassword() {
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_PASSWORD, password1)
+                .queryParam(Constants.QP_USERNAME, username1);
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertNotNull(out.getU());
-	}
+        Assert.assertNotNull(out.getU());
+    }
 
-	@Test
-	public void testListUserUserSearch() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_USERNAME, username1)
-				.queryParam(
-						Constants.QP_SEARCH,
-						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CHARACTERSET))));
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserUserSearch() {
+        WebTarget target = ClientBuilder
+                .newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-	}
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+    }
 
-	@Test
-	public void testListUserPasswordSearch() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_PASSWORD, password1)
-				.queryParam(
-						Constants.QP_SEARCH,
-						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CHARACTERSET))));
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserPasswordSearch() {
+        WebTarget target = ClientBuilder
+                .newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_PASSWORD, password1)
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-	}
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+    }
 
-	@Test
-	public void testListUserEncodingErrorUser() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_PASSWORD, password1)
-				.queryParam(Constants.QP_USERNAME, "$%&1233")
-				.queryParam(
-						Constants.QP_SEARCH,
-						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CHARACTERSET))));
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserEncodingErrorUser() {
+        WebTarget target = ClientBuilder
+                .newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_PASSWORD, password1)
+                .queryParam(Constants.QP_USERNAME, "$%&1233")
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-	}
+        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+    }
 
-	@Test
-	public void testListUserEncodingErrorPassword() {
-		WebTarget target = ClientBuilder
-				.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_PASSWORD, "$%&1233")
-				.queryParam(Constants.QP_USERNAME, username1)
-				.queryParam(
-						Constants.QP_SEARCH,
-						Base64.encodeBase64String("Test".getBytes(Charset
-								.forName(Constants.CHARACTERSET))));
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserEncodingErrorPassword() {
+        WebTarget target = ClientBuilder
+                .newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_PASSWORD, "$%&1233")
+                .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-	}
+        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+    }
 
-	@Test
-	public void testListUserEncodingErrorSearch() {
-		WebTarget target = ClientBuilder.newClient()
-				.target(TestConfig.URL + functionurl)
-				.queryParam(Constants.QP_PASSWORD, password1)
-				.queryParam(Constants.QP_USERNAME, username1)
-				.queryParam(Constants.QP_SEARCH, "$%&1233");
-		OLiUs out = target.request().get(OLiUs.class);
+    @Test
+    @Ignore("temporarily suspended")
+    public void testListUserEncodingErrorSearch() {
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + functionurl)
+                .queryParam(Constants.QP_PASSWORD, password1)
+                .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(Constants.QP_SEARCH, "$%&1233");
+        OLiUs out = target.request().get(OLiUs.class);
 
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-	}
+        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+    }
 }

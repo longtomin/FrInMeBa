@@ -73,345 +73,345 @@ import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 
 public class TestClientOneUserNotActive extends JerseyTest {
 
-	// Username welche anzulegen ist
-	final static String username_org = "Test1";
-	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password_org = "Test1";
-	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email_org = "Test1@frinme.org";
-	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Username welche anzulegen ist
+    final static String username_org = "Test1";
+    final static String username = Base64.encodeBase64String(username_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password_org = "Test1";
+    final static String password = Base64.encodeBase64String(password_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email_org = "Test1@frinme.org";
+    final static String email = Base64.encodeBase64String(email_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
 
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
 
-	@BeforeClass
-	public static void prepareDB() {
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-	}
+    @BeforeClass
+    public static void prepareDB() {
+        dropDatabaseTables drop = new dropDatabaseTables();
+        drop.dropTable();
+        createDatabaseTables create = new createDatabaseTables();
+        create.createTable();
+    }
 
-	// configure auskommentieren wenn localhost als Ziel gewählt werden soll.
-	/*
-	 * @Override protected Application configure() { ResourceConfig rc = new
-	 * ResourceConfig(ServiceImpl.class); return rc; }
-	 */
+    // configure auskommentieren wenn localhost als Ziel gewählt werden soll.
+    /*
+     * @Override protected Application configure() { ResourceConfig rc = new
+     * ResourceConfig(ServiceImpl.class); return rc; }
+     */
 
-	// Es gibt nur eine Testfunktion, diese muss alle Funktionen in der
-	// richtigen Reihenfilge ausführen. Nachdem der Signup durch ist, ist die
-	// Reihenfolge egal da immer USER_NOT_ACTIVE zurück kommt
-	@Test
-	public void TestOneUserNegativeTests() {
-		OSiUp out1 = TestSignUpNoValues();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out1.getET());
-		OSiUp out2 = TestSignUpWithEmail();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out2.getET());
-		OSiUp out3 = TestSignUpWithEmailPassword();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out3.getET());
-		OSiUp out4 = TestSignUpWithEmailUser();
-		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out4.getET());
-		OSiUp out5 = TestSignUpWithEmailUserPassword();
-		Assert.assertEquals("SUCCESSFUL", out5.getSU());
-		OSiUp out5a = TestSignUpWithEmailUserPassword();
-		Assert.assertEquals(Constants.USER_ALREADY_EXISTS, out5a.getET());
-		OAuth out6 = TestAuthenticateNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out6.getET());
-		OCrCh out7 = TestCreateChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out7.getET());
-		ODeCh out8 = TestDeleteChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out8.getET());
-		OAdUC out9 = TestAddUserToChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out9.getET());
-		OReUC out10 = TestRemoveUserFromChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out10.getET());
-		OLiUs out11 = TestListUserNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out11.getET());
-		OLiCh out12 = TestListChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out12.getET());
-		OSTeM out13 = TestSendTextMessageNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out13.getET());
-		OGTeM out14 = TestGetTextMessageNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out14.getET());
-		OIMIC out15 = TestInsertMessageIntoChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out15.getET());
-		OFMFC out16 = TestGetMessageFromChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out16.getET());
-		// OutCheckNewMessages out17 = TestCheckNewMessagesNotActive();
-		// Assert.assertEquals(Constants.USER_NOT_ACTIVE, out17.getET());
-		ODMFC out18 = TestDeleMessageFromChatNotActive();
-		Assert.assertEquals(Constants.USER_NOT_ACTIVE, out18.getET());
-	}
+    // Es gibt nur eine Testfunktion, diese muss alle Funktionen in der
+    // richtigen Reihenfilge ausführen. Nachdem der Signup durch ist, ist die
+    // Reihenfolge egal da immer USER_NOT_ACTIVE zurück kommt
+    @Test
+    public void TestOneUserNegativeTests() {
+        OSiUp out1 = TestSignUpNoValues();
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out1.getET());
+        OSiUp out2 = TestSignUpWithEmail();
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out2.getET());
+        OSiUp out3 = TestSignUpWithEmailPassword();
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out3.getET());
+        OSiUp out4 = TestSignUpWithEmailUser();
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out4.getET());
+        OSiUp out5 = TestSignUpWithEmailUserPassword();
+        Assert.assertEquals("SUCCESSFUL", out5.getSU());
+        OSiUp out5a = TestSignUpWithEmailUserPassword();
+        Assert.assertEquals(Constants.USER_ALREADY_EXISTS, out5a.getET());
+        OAuth out6 = TestAuthenticateNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out6.getET());
+        OCrCh out7 = TestCreateChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out7.getET());
+        ODeCh out8 = TestDeleteChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out8.getET());
+        OAdUC out9 = TestAddUserToChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out9.getET());
+        OReUC out10 = TestRemoveUserFromChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out10.getET());
+        OLiUs out11 = TestListUserNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out11.getET());
+        OLiCh out12 = TestListChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out12.getET());
+        OSTeM out13 = TestSendTextMessageNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out13.getET());
+        OGTeM out14 = TestGetTextMessageNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out14.getET());
+        OIMIC out15 = TestInsertMessageIntoChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out15.getET());
+        OFMFC out16 = TestGetMessageFromChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out16.getET());
+        // OutCheckNewMessages out17 = TestCheckNewMessagesNotActive();
+        // Assert.assertEquals(Constants.USER_NOT_ACTIVE, out17.getET());
+        ODMFC out18 = TestDeleMessageFromChatNotActive();
+        Assert.assertEquals(Constants.USER_NOT_ACTIVE, out18.getET());
+    }
 
-	private OSiUp callTarget(ISiUp in) {
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + "user/signup");
-		Response response = target.request()
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		return response.readEntity(OSiUp.class);
-	}
+    private OSiUp callTarget(ISiUp in) {
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + "user/signup");
+        Response response = target.request()
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        return response.readEntity(OSiUp.class);
+    }
 
-	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	private OSiUp TestSignUpNoValues() {
-		ISiUp in = new ISiUp();
-		return callTarget(in);
-	}
+    // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
+    private OSiUp TestSignUpNoValues() {
+        ISiUp in = new ISiUp();
+        return callTarget(in);
+    }
 
-	public OSiUp TestSignUpWithEmail() {
-		ISiUp in = new ISiUp();
-		in.setE(email);
-		return callTarget(in);
-	}
+    public OSiUp TestSignUpWithEmail() {
+        ISiUp in = new ISiUp();
+        in.setE(email);
+        return callTarget(in);
+    }
 
-	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	public OSiUp TestSignUpWithEmailUser() {
-		ISiUp in = new ISiUp();
-		in.setE(email);
-		in.setUN(username);
-		return callTarget(in);
-	}
+    // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
+    public OSiUp TestSignUpWithEmailUser() {
+        ISiUp in = new ISiUp();
+        in.setE(email);
+        in.setUN(username);
+        return callTarget(in);
+    }
 
-	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	public OSiUp TestSignUpWithEmailPassword() {
-		ISiUp in = new ISiUp();
-		in.setE(email);
-		in.setPW(password);
-		return callTarget(in);
-	}
+    // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
+    public OSiUp TestSignUpWithEmailPassword() {
+        ISiUp in = new ISiUp();
+        in.setE(email);
+        in.setPW(password);
+        return callTarget(in);
+    }
 
-	// Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
-	public OSiUp TestSignUpWithEmailUserPassword() {
-		ISiUp in = new ISiUp();
-		in.setE(email);
-		in.setUN(username);
-		in.setPW(password);
-		return callTarget(in);
-	}
+    // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
+    public OSiUp TestSignUpWithEmailUserPassword() {
+        ISiUp in = new ISiUp();
+        in.setE(email);
+        in.setUN(username);
+        in.setPW(password);
+        return callTarget(in);
+    }
 
-	public OAuth TestAuthenticateNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/authenticate")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target("user/authenticate").queryParam(
-					Constants.QP_PASSWORD, password).queryParam(
-					Constants.QP_USERNAME, username);
-		}
-		return target.request().get(OAuth.class);
-	}
+    public OAuth TestAuthenticateNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + "user/authenticate")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target("user/authenticate").queryParam(
+                    Constants.QP_PASSWORD, password).queryParam(
+                    Constants.QP_USERNAME, username);
+        }
+        return target.request().get(OAuth.class);
+    }
 
-	public OCrCh TestCreateChatNotActive() {
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + "user/createchat");
-		ICrCh in = new ICrCh();
-		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-				.forName(Constants.CHARACTERSET))));
-		in.setPW(password);
-		in.setUN(username);
-		Response response = target.request()
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		return response.readEntity(OCrCh.class);
-	}
+    public OCrCh TestCreateChatNotActive() {
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + "user/createchat");
+        ICrCh in = new ICrCh();
+        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+                .forName(Constants.CHARACTERSET))));
+        in.setPW(password);
+        in.setUN(username);
+        Response response = target.request()
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        return response.readEntity(OCrCh.class);
+    }
 
-	public ODeCh TestDeleteChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/deletechat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_CHATID, 1)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target("user/deletechat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_CHATID, 1)
-					.queryParam(Constants.QP_USERNAME, username);
-		}
-		return target.request().delete(ODeCh.class);
-	}
+    public ODeCh TestDeleteChatNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + "user/deletechat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_CHATID, 1)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target("user/deletechat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_CHATID, 1)
+                    .queryParam(Constants.QP_USERNAME, username);
+        }
+        return target.request().delete(ODeCh.class);
+    }
 
-	public OAdUC TestAddUserToChatNotActive() {
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + "user/addusertochat");
-		IAdUC in = new IAdUC();
-		in.setUN(username);
-		in.setPW(password);
-		in.setCID(1);
-		in.setUID(1);
-		Response response = target.request()
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		return response.readEntity(OAdUC.class);
-	}
+    public OAdUC TestAddUserToChatNotActive() {
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + "user/addusertochat");
+        IAdUC in = new IAdUC();
+        in.setUN(username);
+        in.setPW(password);
+        in.setCID(1);
+        in.setUID(1);
+        Response response = target.request()
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        return response.readEntity(OAdUC.class);
+    }
 
-	public OReUC TestRemoveUserFromChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/removeuserfromchat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERID, 1)
-					.queryParam(Constants.QP_CHATID, 1)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target("user/removeuserfromchat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERID, 1)
-					.queryParam(Constants.QP_CHATID, 1)
-					.queryParam(Constants.QP_USERNAME, username);
-		}
-		return target.request().delete(OReUC.class);
-	}
+    public OReUC TestRemoveUserFromChatNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + "user/removeuserfromchat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERID, 1)
+                    .queryParam(Constants.QP_CHATID, 1)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target("user/removeuserfromchat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERID, 1)
+                    .queryParam(Constants.QP_CHATID, 1)
+                    .queryParam(Constants.QP_USERNAME, username);
+        }
+        return target.request().delete(OReUC.class);
+    }
 
-	public OLiUs TestListUserNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder
-					.newClient()
-					.target(TestConfig.URL + "user/listuser")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(
-							Constants.QP_SEARCH,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target("user/listuser")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(
-							Constants.QP_SEARCH,
-							Base64.encodeBase64String("Test".getBytes(Charset
-									.forName(Constants.CHARACTERSET))))
-					.queryParam(Constants.QP_USERNAME, username);
-		}
-		return target.request().get(OLiUs.class);
-	}
+    public OLiUs TestListUserNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder
+                    .newClient()
+                    .target(TestConfig.URL + "user/listuser")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(
+                            Constants.QP_SEARCH,
+                            Base64.encodeBase64String("Test".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target("user/listuser")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(
+                            Constants.QP_SEARCH,
+                            Base64.encodeBase64String("Test".getBytes(Charset
+                                    .forName(Constants.CHARACTERSET))))
+                    .queryParam(Constants.QP_USERNAME, username);
+        }
+        return target.request().get(OLiUs.class);
+    }
 
-	public OLiCh TestListChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/listchat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username);
-		} else {
-			target = target("user/listchat").queryParam(Constants.QP_PASSWORD,
-					password).queryParam(Constants.QP_USERNAME, username);
-		}
-		return target.request().get(OLiCh.class);
-	}
+    public OLiCh TestListChatNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + "user/listchat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username);
+        } else {
+            target = target("user/listchat").queryParam(Constants.QP_PASSWORD,
+                    password).queryParam(Constants.QP_USERNAME, username);
+        }
+        return target.request().get(OLiCh.class);
+    }
 
-	public OSTeM TestSendTextMessageNotActive() {
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + "user/sendtextmessage");
-		ISTeM in = new ISTeM();
-		in.setPW(password);
-		in.setUN(username);
-		in.setTM(Base64.encodeBase64String("Text Message".getBytes(Charset
-				.forName(Constants.CHARACTERSET))));
-		Response response = target.request()
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		return response.readEntity(OSTeM.class);
-	}
+    public OSTeM TestSendTextMessageNotActive() {
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + "user/sendtextmessage");
+        ISTeM in = new ISTeM();
+        in.setPW(password);
+        in.setUN(username);
+        in.setTM(Base64.encodeBase64String("Text Message".getBytes(Charset
+                .forName(Constants.CHARACTERSET))));
+        Response response = target.request()
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        return response.readEntity(OSTeM.class);
+    }
 
-	public OGTeM TestGetTextMessageNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/gettextmessage")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_TEXTMESSAGEID, 1);
-		} else {
-			target = target("user/gettextmessage")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_TEXTMESSAGEID, 1);
-		}
-		return target.request().get(OGTeM.class);
-	}
+    public OGTeM TestGetTextMessageNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + "user/gettextmessage")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_TEXTMESSAGEID, 1);
+        } else {
+            target = target("user/gettextmessage")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_TEXTMESSAGEID, 1);
+        }
+        return target.request().get(OGTeM.class);
+    }
 
-	public OIMIC TestInsertMessageIntoChatNotActive() {
-		WebTarget target = ClientBuilder.newClient().target(
-				TestConfig.URL + "user/insertmessageintochat");
-		IIMIC in = new IIMIC();
-		in.setUN(username);
-		in.setPW(password);
-		in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
-				.getBytes(Charset.forName(Constants.CHARACTERSET))));
-		in.setCID(1);
-		in.setMID(1);
+    public OIMIC TestInsertMessageIntoChatNotActive() {
+        WebTarget target = ClientBuilder.newClient().target(
+                TestConfig.URL + "user/insertmessageintochat");
+        IIMIC in = new IIMIC();
+        in.setUN(username);
+        in.setPW(password);
+        in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
+                .getBytes(Charset.forName(Constants.CHARACTERSET))));
+        in.setCID(1);
+        in.setMID(1);
 
-		Response response = target.request()
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		return response.readEntity(OIMIC.class);
-	}
+        Response response = target.request()
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        return response.readEntity(OIMIC.class);
+    }
 
-	public OFMFC TestGetMessageFromChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/getmessagefromchat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_CHATID, 1)
-					.queryParam(Constants.QP_TIMESTAMP, 0);
-		} else {
-			target = target("user/getmessagefromchat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_CHATID, 1)
-					.queryParam(Constants.QP_TIMESTAMP, 0);
-		}
-		return target.request().get(OFMFC.class);
-	}
+    public OFMFC TestGetMessageFromChatNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + "user/getmessagefromchat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_CHATID, 1)
+                    .queryParam(Constants.QP_TIMESTAMP, 0);
+        } else {
+            target = target("user/getmessagefromchat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_CHATID, 1)
+                    .queryParam(Constants.QP_TIMESTAMP, 0);
+        }
+        return target.request().get(OFMFC.class);
+    }
 
-	/*
-	 * public OutCheckNewMessages TestCheckNewMessagesNotActive() { WebTarget
-	 * target; if (TestConfig.remote) { target = ClientBuilder.newClient()
-	 * .target(TestConfig.URL + "user/checknewmessages")
-	 * .queryParam(Constants.QPpassword, password)
-	 * .queryParam(Constants.QPusername, username); } else { target =
-	 * target("user/checknewmessages").queryParam( Constants.QPpassword,
-	 * password).queryParam( Constants.QPusername, username); } return
-	 * target.request().get(OutCheckNewMessages.class); }
-	 */
+    /*
+     * public OutCheckNewMessages TestCheckNewMessagesNotActive() { WebTarget
+     * target; if (TestConfig.remote) { target = ClientBuilder.newClient()
+     * .target(TestConfig.URL + "user/checknewmessages")
+     * .queryParam(Constants.QPpassword, password)
+     * .queryParam(Constants.QPusername, username); } else { target =
+     * target("user/checknewmessages").queryParam( Constants.QPpassword,
+     * password).queryParam( Constants.QPusername, username); } return
+     * target.request().get(OutCheckNewMessages.class); }
+     */
 
-	public ODMFC TestDeleMessageFromChatNotActive() {
-		WebTarget target;
-		if (TestConfig.remote) {
-			target = ClientBuilder.newClient()
-					.target(TestConfig.URL + "user/deletemessagefromchat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_MESSAGEID, 1);
-		} else {
-			target = target("user/deletemessagefromchat")
-					.queryParam(Constants.QP_PASSWORD, password)
-					.queryParam(Constants.QP_USERNAME, username)
-					.queryParam(Constants.QP_MESSAGEID, 1);
-		}
-		return target.request().delete(ODMFC.class);
-	}
+    public ODMFC TestDeleMessageFromChatNotActive() {
+        WebTarget target;
+        if (TestConfig.remote) {
+            target = ClientBuilder.newClient()
+                    .target(TestConfig.URL + "user/deletemessagefromchat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_MESSAGEID, 1);
+        } else {
+            target = target("user/deletemessagefromchat")
+                    .queryParam(Constants.QP_PASSWORD, password)
+                    .queryParam(Constants.QP_USERNAME, username)
+                    .queryParam(Constants.QP_MESSAGEID, 1);
+        }
+        return target.request().delete(ODMFC.class);
+    }
 }
