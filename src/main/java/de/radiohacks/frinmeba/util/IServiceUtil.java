@@ -86,7 +86,7 @@ public interface IServiceUtil {
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/signup")
-	public OSiUp singUpUser(ISiUp in);
+	public OSiUp signUpUser(ISiUp in);
 
 	@PUT
 	@Produces(MediaType.APPLICATION_XML)

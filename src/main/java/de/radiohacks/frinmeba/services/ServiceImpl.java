@@ -37,7 +37,7 @@ import javax.ws.rs.Path;
 import org.apache.log4j.Logger;
 
 import de.radiohacks.frinmeba.database.Check;
-import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.database.MyConnection;
 import de.radiohacks.frinmeba.modelshort.IAckCD;
 import de.radiohacks.frinmeba.modelshort.IAckMD;
 import de.radiohacks.frinmeba.modelshort.IAdUC;
@@ -93,8 +93,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + password);
 
 		OAuth out = new OAuth();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -151,8 +151,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + in.getPW() + " ChatID = " + in.getCID()
 				+ " MessageID = " + in.getMID() + " MessageType = "
 				+ in.getMT());
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 		OIMIC out = new OIMIC();
@@ -249,8 +249,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + in.getPW() + " TextMessage = " + in.getTM());
 
 		OSTeM out = new OSTeM();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -319,13 +319,13 @@ public class ServiceImpl implements IServiceUtil {
 	}
 
 	@Override
-	public OSiUp singUpUser(ISiUp in) {
+	public OSiUp signUpUser(ISiUp in) {
 
 		LOGGER.debug("Start SingUpUser with User = " + in.getUN()
 				+ " Password = " + in.getPW() + " Email = " + in.getE());
 
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 		OSiUp out = new OSiUp();
@@ -393,8 +393,8 @@ public class ServiceImpl implements IServiceUtil {
 		LOGGER.debug("Start CreateChat with User = " + in.getUN()
 				+ " Password = " + in.getPW() + " Chatname = " + in.getCN());
 
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		OCrCh out = new OCrCh();
 		Check actcheck = new Check(con);
@@ -469,8 +469,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ password + " ChatID = " + chatID);
 
 		ODeCh out = new ODeCh();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -535,8 +535,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + in.getPW() + " ChatID = " + in.getCID()
 				+ "UserID = " + in.getUID());
 
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 		OAdUC out = new OAdUC();
@@ -611,8 +611,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + password + " ChatID = " + chatID
 				+ "UserID = " + userID);
 
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 		OReUC out = new OReUC();
@@ -685,8 +685,8 @@ public class ServiceImpl implements IServiceUtil {
 		LOGGER.debug("Start ListUsers with User = " + user + " Password = "
 				+ password);
 
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 		OLiUs out = new OLiUs();
@@ -760,8 +760,8 @@ public class ServiceImpl implements IServiceUtil {
 		LOGGER.debug("Start ListChats with User = " + user + " Password = "
 				+ password);
 
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		OLiCh out = new OLiCh();
 		Check actcheck = new Check(con);
@@ -826,8 +826,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + password + " ChatID = " + chatID);
 
 		OFMFC out = new OFMFC();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -899,8 +899,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ textMessageID);
 
 		OGTeM out = new OGTeM();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -971,8 +971,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + password);
 
 		OCN out = new OCN();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -1039,8 +1039,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + password + " MessageID = " + messageID);
 
 		ODMFC out = new ODMFC();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -1117,8 +1117,8 @@ public class ServiceImpl implements IServiceUtil {
 		LOGGER.debug("Start setShowTimeStamp with User = " + in.getUN()
 				+ " Password = " + in.getPW() + " MessageID = " + in.getMID());
 
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 		OSShT out = new OSShT();
@@ -1215,8 +1215,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + password);
 
 		OGMI out = new OGMI();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -1297,8 +1297,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ in.getUN() + " Password = " + in.getPW());
 
 		OAckMD out = new OAckMD();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -1381,8 +1381,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Password = " + in.getPW());
 
 		OAckCD out = new OAckCD();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -1465,8 +1465,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ password);
 
 		OSU out = new OSU();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -1547,8 +1547,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Icon = " + in.getIcID());
 
 		OIUIc out = new OIUIc();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
@@ -1617,8 +1617,8 @@ public class ServiceImpl implements IServiceUtil {
 				+ " Icon = " + in.getIcID() + "ChatID = " + in.getCID());
 
 		OICIc out = new OICIc();
-		MySqlConnection mc = new MySqlConnection();
-		Connection con = mc.getMySqlConnection();
+		MyConnection mc = new MyConnection();
+		Connection con = mc.getConnection();
 		User actuser = new User(con);
 		Check actcheck = new Check(con);
 
