@@ -36,15 +36,6 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet>
-        <servlet-name>Log4JInitServlet</servlet-name>
-        <servlet-class>de.radiohacks.frinmeba.servlet.Log4jInitServlet</servlet-class>
-        <init-param>
-            <param-name>log4j-properties-location</param-name>
-            <param-value>WEB-INF/log4j.properties</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/*</url-pattern>
