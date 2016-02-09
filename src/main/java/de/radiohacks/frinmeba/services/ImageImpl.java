@@ -51,7 +51,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
-import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.database.MyConnection;
 import de.radiohacks.frinmeba.modelshort.IAuth;
 import de.radiohacks.frinmeba.modelshort.IGImM;
 import de.radiohacks.frinmeba.modelshort.IGImMMD;
@@ -78,8 +78,8 @@ public class ImageImpl implements IImageUtil {
             FormDataContentDisposition contentDispositionHeader) {
 
         OSImM out = new OSImM();
-        MySqlConnection mc = new MySqlConnection();
-        Connection con = mc.getMySqlConnection();
+        MyConnection mc = new MyConnection();
+        Connection con = mc.getConnection();
         User actuser = new User(con);
         Check actcheck = new Check(con);
 
@@ -206,8 +206,8 @@ public class ImageImpl implements IImageUtil {
     @Override
     public Response downloadImage(String user, String password, int imageid) {
 
-        MySqlConnection mc = new MySqlConnection();
-        Connection con = mc.getMySqlConnection();
+        MyConnection mc = new MyConnection();
+        Connection con = mc.getConnection();
         User actuser = new User(con);
         Check actcheck = new Check(con);
         OGImM out = new OGImM();
@@ -281,8 +281,8 @@ public class ImageImpl implements IImageUtil {
     @Override
     public OGImMMD getImageMetadata(String user, String password, int imageid) {
 
-        MySqlConnection mc = new MySqlConnection();
-        Connection con = mc.getMySqlConnection();
+        MyConnection mc = new MyConnection();
+        Connection con = mc.getConnection();
         User actuser = new User(con);
         Check actcheck = new Check(con);
         OGImMMD out = new OGImMMD();
@@ -387,8 +387,8 @@ public class ImageImpl implements IImageUtil {
             FormDataContentDisposition contentDispositionHeader) {
 
         OSIcM out = new OSIcM();
-        MySqlConnection mc = new MySqlConnection();
-        Connection con = mc.getMySqlConnection();
+        MyConnection mc = new MyConnection();
+        Connection con = mc.getConnection();
         User actuser = new User(con);
         Check actcheck = new Check(con);
 

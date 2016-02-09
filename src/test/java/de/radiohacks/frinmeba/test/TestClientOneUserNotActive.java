@@ -166,7 +166,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + "user/signup");
         LOGGER.debug(target);
-        Response response = target.request()
+        Response response = target.request().accept(MediaType.APPLICATION_XML_TYPE)
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);

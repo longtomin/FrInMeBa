@@ -49,7 +49,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
-import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.database.MyConnection;
 import de.radiohacks.frinmeba.modelshort.IAuth;
 import de.radiohacks.frinmeba.modelshort.IGViM;
 import de.radiohacks.frinmeba.modelshort.IGViMMD;
@@ -74,8 +74,8 @@ public class VideoImpl implements IVideoUtil {
             FormDataContentDisposition contentDispositionHeader) {
 
         OSViM out = new OSViM();
-        MySqlConnection mc = new MySqlConnection();
-        Connection con = mc.getMySqlConnection();
+        MyConnection mc = new MyConnection();
+        Connection con = mc.getConnection();
         User actuser = new User(con);
         Check actcheck = new Check(con);
 
@@ -200,8 +200,8 @@ public class VideoImpl implements IVideoUtil {
     @Override
     public Response downloadVideo(String user, String password, int videoid) {
 
-        MySqlConnection mc = new MySqlConnection();
-        Connection con = mc.getMySqlConnection();
+        MyConnection mc = new MyConnection();
+        Connection con = mc.getConnection();
         User actuser = new User(con);
         Check actcheck = new Check(con);
         OGViM out = new OGViM();
@@ -269,8 +269,8 @@ public class VideoImpl implements IVideoUtil {
     @Override
     public OGViMMD getVideoMetadata(String user, String password, int videoid) {
 
-        MySqlConnection mc = new MySqlConnection();
-        Connection con = mc.getMySqlConnection();
+        MyConnection mc = new MyConnection();
+        Connection con = mc.getConnection();
         User actuser = new User(con);
         Check actcheck = new Check(con);
         OGViMMD out = new OGViMMD();
