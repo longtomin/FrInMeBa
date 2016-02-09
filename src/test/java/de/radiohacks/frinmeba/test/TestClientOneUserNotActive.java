@@ -133,7 +133,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
         OSiUp out5 = TestSignUpWithEmailUserPassword();
         assertThat("Test out5 - SUCCESSFUL", out5.getSU(), is("SUCCESSFUL"));
         OSiUp out5a = TestSignUpWithEmailUserPassword();
-        assertThat("Test out5a - USER_ALREADY_EXISTS", out5a, is(Constants.USER_ALREADY_EXISTS));
+        assertThat("Test out5a - USER_ALREADY_EXISTS", out5a.getET(), is(Constants.USER_ALREADY_EXISTS));
         OAuth out6 = TestAuthenticateNotActive();
         assertThat("Test out6 - USER_NOT_ACTIVE", out6.getET(), is(Constants.USER_NOT_ACTIVE));
         OCrCh out7 = TestCreateChatNotActive();
