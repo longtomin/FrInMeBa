@@ -48,7 +48,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.IAckCD;
@@ -142,7 +141,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUpNoValues() {
         IAckCD in = new IAckCD();
         OAckCD out = callTarget(in);
@@ -151,7 +149,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUser() {
         IAckCD in = new IAckCD();
         in.setUN(username);
@@ -160,7 +157,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadPassword() {
         IAckCD in = new IAckCD();
         in.setPW(password);
@@ -169,7 +165,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUserPassword() {
         IAckCD in = new IAckCD();
         in.setUN(username);
@@ -179,7 +174,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUserPasswordNoAcknowledge() {
         IAckCD in = new IAckCD();
         in.setUN(username);
@@ -190,7 +184,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUserWrongPassword() {
         int hashCode = chatname_org.hashCode();
         String sha1b64 = new String(Base64.encodeBase64(String
@@ -207,7 +200,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUserEncodeFailureUser() {
         IAckCD in = new IAckCD();
         in.setUN("XXX");
@@ -217,7 +209,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUserEncodeFailurePassword() {
         IAckCD in = new IAckCD();
         in.setUN(username);
@@ -227,7 +218,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUserPasswordAcknowledgeChat() {
 
         int hashCode = chatname_org.hashCode();
@@ -245,7 +235,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAcknowledgeChatDownloadUserPasswordAcknowledge() {
 
         int hashCode = chatname_org.hashCode();

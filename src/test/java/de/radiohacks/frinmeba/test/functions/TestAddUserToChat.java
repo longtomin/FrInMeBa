@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.IAdUC;
@@ -143,7 +142,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUpNoValues() {
         IAdUC in = new IAdUC();
         OAdUC out = callTarget(in);
@@ -151,7 +149,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordUserIDChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -165,7 +162,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordUserID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -178,7 +174,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordChatID() {
         IAdUC in = new IAdUC();
         in.setUN(username);
@@ -189,7 +184,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserUserIDChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -202,7 +196,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatPasswordUserIDChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -215,7 +208,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPassword() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -227,7 +219,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserUserID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -239,7 +230,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -251,7 +241,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatPasswordUserID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -263,7 +252,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatPasswordChatID() {
         System.out.print("Start testAddUserToChatPasswordChatID\n");
         helperDatabase help = new helperDatabase();
@@ -276,7 +264,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserIDChatID() {
         System.out.print("Start testAddUserToChatUserIDChatID\n");
         helperDatabase help = new helperDatabase();
@@ -289,7 +276,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUser() {
         IAdUC in = new IAdUC();
         in.setUN(username);
@@ -298,7 +284,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatPassword() {
         IAdUC in = new IAdUC();
         in.setPW(password);
@@ -307,7 +292,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -318,7 +302,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatChatID() {
         IAdUC in = new IAdUC();
         in.setCID(chatid);
@@ -327,7 +310,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatWrongUserPasswordUserIDChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -342,7 +324,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserWrongPasswordUserIDChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -357,7 +338,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordWrongUserIDChatID() {
         IAdUC in = new IAdUC();
         in.setUN(username);
@@ -369,7 +349,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordUserIDWrongChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -383,7 +362,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordUserIDChatID_Again() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -398,7 +376,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordUserIDChatID_foreignChat() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -414,7 +391,6 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAddUserToChatUserPasswordUserIDChatID_selfAdd() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username_org);
