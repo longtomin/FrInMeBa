@@ -54,7 +54,6 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OSViM;
@@ -134,7 +133,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -163,7 +161,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -195,7 +192,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -225,7 +221,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -257,7 +252,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -289,7 +283,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -321,7 +314,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserPasswordAcknowledgeNoDisposition() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -356,7 +348,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserPasswordNoAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -388,7 +379,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserWrongPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -431,7 +421,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserEncodeFailureUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -467,7 +456,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserEncodeFailurePassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -503,7 +491,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserEncodeFailureAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -539,7 +526,6 @@ public class TestUploadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadVideoUserPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {

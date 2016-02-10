@@ -47,7 +47,6 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OGImMMD;
@@ -151,7 +150,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -166,7 +164,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -183,7 +180,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -200,7 +196,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataImageID() {
         int imageid = insertImage();
         WebTarget target;
@@ -219,7 +214,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataUserPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -237,7 +231,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataUserImageID() {
         int imageid = insertImage();
         WebTarget target;
@@ -257,7 +250,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataPasswordImageID() {
         int imageid = insertImage();
         WebTarget target;
@@ -277,7 +269,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataEncodingErrorUser() {
         int imageid = insertImage();
         WebTarget target;
@@ -300,7 +291,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataEncodingErrorPassword() {
         int imageid = insertImage();
         WebTarget target;
@@ -323,7 +313,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataUserPasswordImageID() {
         int imageid = insertImage();
         WebTarget target;
@@ -346,7 +335,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataUserWrongPasswordImageID() {
         int imageid = insertImage();
         WebTarget target;
@@ -376,7 +364,6 @@ public class TestGetImageMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetImageMetaDataUserPasswordWrongImageID() {
         WebTarget target;
         if (TestConfig.remote) {

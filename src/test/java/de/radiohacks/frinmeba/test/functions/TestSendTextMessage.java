@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.ISTeM;
@@ -123,7 +122,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageUpNoValues() {
         ISTeM in = new ISTeM();
         OSTeM out = callTarget(in);
@@ -131,7 +129,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessagePasswordMessage() {
         ISTeM in = new ISTeM();
         in.setPW(password);
@@ -141,7 +138,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageUserMessage() {
         ISTeM in = new ISTeM();
         in.setUN(username);
@@ -151,7 +147,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageUserPassword() {
         ISTeM in = new ISTeM();
         in.setPW(password);
@@ -161,7 +156,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageMessage() {
         ISTeM in = new ISTeM();
         in.setTM(textmessage);
@@ -170,7 +164,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageUserPasswordMessage() {
         ISTeM in = new ISTeM();
         in.setPW(password);
@@ -181,7 +174,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageUserWrongPasswordMessage() {
         ISTeM in = new ISTeM();
         in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
@@ -193,7 +185,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageWrongUserPasswordMessage() {
         ISTeM in = new ISTeM();
         in.setPW(password);
@@ -205,7 +196,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageWrongUserWrongPasswordMessage() {
         ISTeM in = new ISTeM();
         in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
@@ -218,7 +208,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageUser() {
         ISTeM in = new ISTeM();
         in.setUN(username);
@@ -227,7 +216,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessagePassword() {
         ISTeM in = new ISTeM();
         in.setPW(password);
@@ -236,7 +224,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageEncodimgErrorUser() {
         ISTeM in = new ISTeM();
         in.setPW(password);
@@ -247,7 +234,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageEncodimgErrorPassword() {
         ISTeM in = new ISTeM();
         in.setPW("$%&1234");
@@ -258,7 +244,6 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSendTextMessageEncodimgErrorTextMessage() {
         ISTeM in = new ISTeM();
         in.setPW(password);

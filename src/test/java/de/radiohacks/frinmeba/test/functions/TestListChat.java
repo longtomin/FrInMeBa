@@ -43,7 +43,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OLiCh;
@@ -112,7 +111,6 @@ public class TestListChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListChatUpNoValues() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + functionurl);
@@ -122,7 +120,6 @@ public class TestListChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListChatUserPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -138,7 +135,6 @@ public class TestListChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListChatUserWrongPassword() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -154,7 +150,6 @@ public class TestListChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListChatUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -165,7 +160,6 @@ public class TestListChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListChatPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -176,7 +170,6 @@ public class TestListChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListChatEncodingErrorUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -188,7 +181,6 @@ public class TestListChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListChatEncodingErrorPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)

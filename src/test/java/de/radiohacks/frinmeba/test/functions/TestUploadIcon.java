@@ -54,7 +54,6 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OSIcM;
@@ -141,7 +140,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -170,7 +168,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -201,7 +198,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -232,7 +228,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -263,7 +258,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -294,7 +288,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -325,7 +318,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserPasswordNoDisposition() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -359,7 +351,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserPasswordNoAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -390,7 +381,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserWrongPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -431,7 +421,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserEncodeFailureUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -462,7 +451,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserEncodeFailurePassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -494,7 +482,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserEncodeFailureAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -528,7 +515,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserPasswordAcknowledgeNoQuadrat() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -562,7 +548,6 @@ public class TestUploadIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testUploadIconUserPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {

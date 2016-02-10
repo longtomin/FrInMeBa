@@ -43,7 +43,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OAuth;
@@ -106,7 +105,6 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAuthenticateUpNoValues() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + functionurl);
@@ -116,7 +114,6 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAuthenticateUserPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -128,7 +125,6 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAuthenticateUserWrongPassword() {
         WebTarget target;
         target = ClientBuilder
@@ -145,7 +141,6 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAuthenticateUserEncodeFailureUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -158,7 +153,6 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAuthenticateUserEncodeFailurePassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -171,7 +165,6 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAuthenticateUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -182,7 +175,6 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testAuthenticatePassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)

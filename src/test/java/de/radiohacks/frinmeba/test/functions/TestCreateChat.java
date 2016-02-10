@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.ICrCh;
@@ -117,7 +116,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatUpNoValues() {
         ICrCh in = new ICrCh();
         OCrCh out = callTarget(in);
@@ -125,7 +123,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatUserPasswordChatname() {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
@@ -137,7 +134,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatUserWrongPasswordChatname() {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
@@ -150,7 +146,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatUser() {
         ICrCh in = new ICrCh();
         in.setUN(username);
@@ -159,7 +154,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatPassword() {
         ICrCh in = new ICrCh();
         in.setPW(password);
@@ -168,7 +162,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatChatname() {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
@@ -178,7 +171,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatUserPassword() {
         ICrCh in = new ICrCh();
         in.setPW(password);
@@ -188,7 +180,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatUserChatname() {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
@@ -199,7 +190,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatPasswordChatname() {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
@@ -210,7 +200,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatEncodingErrorUser() {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
@@ -222,7 +211,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatEncodingErrorPassword() {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
@@ -234,7 +222,6 @@ public class TestCreateChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCreateChatEncodingErrorChatname() {
         ICrCh in = new ICrCh();
         in.setCN("$%&1233");

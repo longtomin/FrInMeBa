@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.ISShT;
@@ -167,7 +166,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUpNoValues() {
         ISShT in = new ISShT();
         OSShT out = callTarget(in);
@@ -175,7 +173,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUser() {
         ISShT in = new ISShT();
         in.setUN(username1);
@@ -184,7 +181,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampPassword() {
         ISShT in = new ISShT();
         in.setPW(password1);
@@ -193,7 +189,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserPassword() {
         ISShT in = new ISShT();
         in.setUN(username1);
@@ -203,7 +198,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserWrongPassword() {
         ISShT in = new ISShT();
         in.setUN(username1);
@@ -214,7 +208,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserEncodeFailureUser() {
         ISShT in = new ISShT();
         in.setUN("XXX");
@@ -225,7 +218,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserEncodeFailurePassword() {
         ISShT in = new ISShT();
         in.setUN(username1);
@@ -235,7 +227,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserPasswordMsgNotRead1() {
         ISShT in = new ISShT();
         in.setUN(username1);
@@ -246,7 +237,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserPasswordMsgNotRead() {
         ISShT in = new ISShT();
         in.setUN(username1);
@@ -257,7 +247,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserPasswordMsgWrongMsg() {
         helperDatabase help = new helperDatabase();
         help.setTimestamp(msg2, 11, "READ");
@@ -271,7 +260,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSetShowTimeStampUserPasswordMsgRightMsg() {
         helperDatabase help = new helperDatabase();
         help.setTimestamp(msg1, 11, "READ");

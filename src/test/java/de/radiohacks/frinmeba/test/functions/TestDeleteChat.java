@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.ICrCh;
@@ -122,7 +121,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatUpNoValues() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + functionurl);
@@ -131,7 +129,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatUserPasswordChatid() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -162,7 +159,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatUserWrongPasswordChatid() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -178,7 +174,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -188,7 +183,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -198,7 +192,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatChatid() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -208,7 +201,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatUserPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -219,7 +211,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatUserChatid() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -229,7 +220,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatPasswordChatid() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -240,7 +230,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatEncodingErrorUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -252,7 +241,6 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteChatEncodingErrorPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)

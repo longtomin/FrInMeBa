@@ -43,7 +43,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OCN;
@@ -106,7 +105,6 @@ public class TestCheckNew extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCheckNewMessagesUpNoValues() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + functionurl);
@@ -115,7 +113,6 @@ public class TestCheckNew extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCheckNewMessagesUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -125,7 +122,6 @@ public class TestCheckNew extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCheckNewMessagesPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -135,7 +131,6 @@ public class TestCheckNew extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCheckNewMessagesUserPassword() {
         helperDatabase help = new helperDatabase();
         int TxtmsgID = help.CreateContentMessage("Test Nachricht",
@@ -155,7 +150,6 @@ public class TestCheckNew extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCheckNewMessagesUserWrongPassword() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -170,7 +164,6 @@ public class TestCheckNew extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCheckNewMessagesUserEncodeFailureUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -181,7 +174,6 @@ public class TestCheckNew extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testCheckNewMessagesUserEncodeFailurePassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)

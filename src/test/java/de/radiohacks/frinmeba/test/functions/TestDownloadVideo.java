@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OSViM;
@@ -147,7 +146,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -163,7 +161,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoUser() {
         WebTarget target;
 
@@ -180,7 +177,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoPassword() {
         WebTarget target;
 
@@ -197,7 +193,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoVideoID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -217,7 +212,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoUserPassword() {
         int videoid = insertVideo();
         WebTarget target;
@@ -237,7 +231,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoUserImageID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -258,7 +251,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoPasswordImageID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -279,7 +271,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoEncodingErrorUser() {
         int videoid = insertVideo();
         WebTarget target;
@@ -304,7 +295,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoEncodingErrorPassword() {
         int videoid = insertVideo();
         WebTarget target;
@@ -328,7 +318,6 @@ public class TestDownloadVideo extends JerseyTest {
         deleteVideo(videoid);
     }
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoUserPasswordImageID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -349,7 +338,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoUserWrongPasswordImageID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -381,7 +369,6 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDownloadVideoUserPasswordWrongImageID() {
         WebTarget target;
 

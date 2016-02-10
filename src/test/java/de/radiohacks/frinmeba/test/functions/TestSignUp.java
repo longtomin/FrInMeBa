@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.ISiUp;
@@ -115,7 +114,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpNoValues() {
         ISiUp in = new ISiUp();
         OSiUp out = callTarget(in);
@@ -124,7 +122,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpEmail() {
         ISiUp in = new ISiUp();
         in.setE(email);
@@ -134,7 +131,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpUsername() {
         ISiUp in = new ISiUp();
         in.setUN(username);
@@ -143,7 +139,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpPassword() {
         ISiUp in = new ISiUp();
         in.setPW(password);
@@ -152,7 +147,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpEmailUsername() {
         ISiUp in = new ISiUp();
         in.setE(email);
@@ -162,7 +156,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpEmailPassword() {
         ISiUp in = new ISiUp();
         in.setPW(password);
@@ -172,7 +165,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpUserPassword() {
         ISiUp in = new ISiUp();
         in.setUN(username);
@@ -182,7 +174,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpEmailUserPassword() {
         ISiUp in = new ISiUp();
         in.setE(email);
@@ -193,7 +184,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpEncodingErrorEmail() {
         ISiUp in = new ISiUp();
         in.setPW(password);
@@ -204,7 +194,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpEncodingErrorUser() {
         ISiUp in = new ISiUp();
         in.setPW(password);
@@ -215,7 +204,6 @@ public class TestSignUp extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testSignUpEncodingErrorPassword() {
         ISiUp in = new ISiUp();
         in.setPW("$%&XASD");

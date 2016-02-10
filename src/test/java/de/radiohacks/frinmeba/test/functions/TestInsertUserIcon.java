@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.IIUIc;
@@ -123,7 +122,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconUpNoValues() {
         IIUIc in = new IIUIc();
         OIUIc out = callTarget(in);
@@ -131,7 +129,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconPasswordMessage() {
         IIUIc in = new IIUIc();
         in.setPW(password);
@@ -141,7 +138,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconUserMessage() {
         IIUIc in = new IIUIc();
         in.setUN(username);
@@ -151,7 +147,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconUserPassword() {
         IIUIc in = new IIUIc();
         in.setPW(password);
@@ -162,7 +157,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconMessage() {
         IIUIc in = new IIUIc();
         in.setIcID(iconid);
@@ -171,7 +165,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconUserPasswordMessage() {
         IIUIc in = new IIUIc();
         in.setPW(password);
@@ -182,7 +175,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconUserWrongPasswordMessage() {
         IIUIc in = new IIUIc();
         in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
@@ -194,7 +186,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconWrongUserPasswordMessage() {
         IIUIc in = new IIUIc();
         in.setPW(password);
@@ -206,7 +197,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconWrongUserWrongPasswordMessage() {
         IIUIc in = new IIUIc();
         in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
@@ -219,7 +209,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconUser() {
         IIUIc in = new IIUIc();
         in.setUN(username);
@@ -228,7 +217,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconPassword() {
         IIUIc in = new IIUIc();
         in.setPW(password);
@@ -237,7 +225,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconEncodimgErrorUser() {
         IIUIc in = new IIUIc();
         in.setPW(password);
@@ -248,7 +235,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconEncodimgErrorPassword() {
         IIUIc in = new IIUIc();
         in.setPW("$%&1234");
@@ -259,7 +245,6 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertUserIconEncodimgErrorTextMessage() {
         IIUIc in = new IIUIc();
         in.setPW(password);

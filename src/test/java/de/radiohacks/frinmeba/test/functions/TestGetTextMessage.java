@@ -43,7 +43,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OGTeM;
@@ -119,7 +118,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUpNoValues() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + functionurl);
@@ -129,7 +127,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -140,7 +137,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessagePassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -151,7 +147,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUserTextmessage() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -163,7 +158,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessagePasswordTextmessage() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -175,7 +169,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUserPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -188,7 +181,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUserWrongPassword() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -204,7 +196,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUserEncodeFailureUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -216,7 +207,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUserEncodeFailurePassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -228,7 +218,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUserPasswordTextmessage1() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -241,7 +230,6 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetTextMessageUserPasswordTextmessage2() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)

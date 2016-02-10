@@ -47,7 +47,6 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OGViMMD;
@@ -149,7 +148,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -164,7 +162,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -181,7 +178,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -198,7 +194,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataVideoID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -217,7 +212,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataUserPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -235,7 +229,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataUserVideoID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -255,7 +248,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataPasswordvideoid() {
         int videoid = insertVideo();
         WebTarget target;
@@ -275,7 +267,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataEncodingErrorUser() {
         int videoid = insertVideo();
         WebTarget target;
@@ -298,7 +289,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataEncodingErrorPassword() {
         int videoid = insertVideo();
         WebTarget target;
@@ -321,7 +311,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataUserPasswordVideoID() {
         
         helperDatabase help = new helperDatabase();
@@ -359,7 +348,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataUserWrongPasswordVideoID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -389,7 +377,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testGetVideoMetaDataUserPasswordWrongVideoID() {
         WebTarget target;
         if (TestConfig.remote) {

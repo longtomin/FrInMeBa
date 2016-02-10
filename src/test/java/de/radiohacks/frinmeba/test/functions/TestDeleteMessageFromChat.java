@@ -43,7 +43,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.ODMFC;
@@ -181,7 +180,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUpNoValues() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + functionurl);
@@ -190,7 +188,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -200,7 +197,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -210,7 +206,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -221,7 +216,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserWrongPassword() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -237,7 +231,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserEncodeFailureUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -249,7 +242,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserEncodeFailurePassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -261,7 +253,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserPasswordMessageIDTextNotOwner() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -273,7 +264,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserPasswordMessageIDTextOwner() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -295,7 +285,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserPasswordMessageIDImageNotOwner() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -307,7 +296,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserPasswordMessageIDImageOwner() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -329,7 +317,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserPasswordMessageIDVideoNotOwner() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -341,7 +328,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testDeleteMessageFromChatUserPasswordMessageIDVideoOwner() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)

@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.IIMIC;
@@ -191,7 +190,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUpNoValues() {
         IIMIC in = new IIMIC();
         OIMIC out = callTarget(in);
@@ -199,7 +197,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUser() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -208,7 +205,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatPassword() {
         IIMIC in = new IIMIC();
         in.setPW(password1);
@@ -217,7 +213,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPassword() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -227,7 +222,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserWrongPasswordNoMessageType() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -238,7 +232,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserWrongPasswordMessageType() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -251,7 +244,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserEncodeFailureUser() {
         IIMIC in = new IIMIC();
         in.setUN("XXX");
@@ -265,7 +257,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserEncodeFailurePassword() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -280,7 +271,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeChatID() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -293,7 +283,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgID() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -306,7 +295,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser1() {
         IIMIC in = new IIMIC();
         in.setUN(username1);
@@ -321,7 +309,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser3() {
         IIMIC in = new IIMIC();
         in.setUN(username3);
@@ -336,7 +323,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser2() {
         IIMIC in = new IIMIC();
         in.setUN(username2);
@@ -351,7 +337,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDImage() {
         IIMIC in = new IIMIC();
         in.setUN(username2);
@@ -366,7 +351,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDVideo() {
         IIMIC in = new IIMIC();
         in.setUN(username2);
@@ -381,7 +365,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDLocation() {
         IIMIC in = new IIMIC();
         in.setUN(username2);
@@ -396,7 +379,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDFile() {
         IIMIC in = new IIMIC();
         in.setUN(username2);
@@ -411,7 +393,6 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDContact() {
         IIMIC in = new IIMIC();
         in.setUN(username1);

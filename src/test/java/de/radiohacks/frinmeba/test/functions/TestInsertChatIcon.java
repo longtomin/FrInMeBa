@@ -46,7 +46,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.IICIc;
@@ -139,7 +138,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUpNoValues() {
         IICIc in = new IICIc();
         OICIc out = callTarget(in);
@@ -147,7 +145,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconPasswordIcon() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -157,7 +154,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUserIcon() {
         IICIc in = new IICIc();
         in.setUN(username1);
@@ -167,7 +163,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUserPassword() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -177,7 +172,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconIcon() {
         IICIc in = new IICIc();
         in.setIcID(iconid);
@@ -186,7 +180,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUserPasswordIcon() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -197,7 +190,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUserPasswordChat() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -209,7 +201,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUserWrongPasswordMessage() {
         IICIc in = new IICIc();
         in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
@@ -222,7 +213,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconWrongUserPasswordMessage() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -235,7 +225,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconWrongUserWrongPasswordIconChat() {
         IICIc in = new IICIc();
         in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
@@ -249,7 +238,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUser() {
         IICIc in = new IICIc();
         in.setUN(username1);
@@ -258,7 +246,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconPassword() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -267,7 +254,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconEncodimgErrorUser() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -279,7 +265,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconEncodimgErrorPassword() {
         IICIc in = new IICIc();
         in.setPW("$%&1234");
@@ -291,7 +276,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconNoneExistingChat() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -303,7 +287,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconNotChatOwner() {
         IICIc in = new IICIc();
         in.setPW(password1);
@@ -315,7 +298,6 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testInsertChatIconUserPasswordIconChatCorrect() {
         IICIc in = new IICIc();
         in.setPW(password1);

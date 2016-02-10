@@ -43,7 +43,6 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OLiUs;
@@ -137,7 +136,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserUpNoValues() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + functionurl);
@@ -147,7 +145,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserUserPasswordSearch() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -164,7 +161,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserUserWrongPasswordSearch() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -184,7 +180,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserUser() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -195,7 +190,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -206,7 +200,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserSearch() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -221,7 +214,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserUserPassword() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
@@ -233,7 +225,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserUserSearch() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -249,7 +240,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserPasswordSearch() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -265,7 +255,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserEncodingErrorUser() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -282,7 +271,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserEncodingErrorPassword() {
         WebTarget target = ClientBuilder
                 .newClient()
@@ -299,7 +287,6 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporarily suspended")
     public void testListUserEncodingErrorSearch() {
         WebTarget target = ClientBuilder.newClient()
                 .target(TestConfig.URL + functionurl)
