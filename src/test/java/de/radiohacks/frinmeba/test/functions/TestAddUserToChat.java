@@ -46,6 +46,7 @@ import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.IAdUC;
@@ -149,6 +150,7 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
+    @Ignore("temporay disabeld")
     public void testAddUserToChatUserPasswordUserIDChatID() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
@@ -362,6 +364,7 @@ public class TestAddUserToChat extends JerseyTest {
     }
 
     @Test
+    @Ignore("temporay disabeld")
     public void testAddUserToChatUserPasswordUserIDChatID_Again() {
         helperDatabase help = new helperDatabase();
         userid = help.getUserID(username2_org);
