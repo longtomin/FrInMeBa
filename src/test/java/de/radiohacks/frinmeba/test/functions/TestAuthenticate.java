@@ -34,6 +34,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -55,132 +56,166 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestAuthenticate extends JerseyTest {
 
-    /*
-     * @GET
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/authenticate") public OutAuthenticate
-     * AuthenticateUser(@QueryParam(Constants.QPusername) String User,
-     * 
-     * @QueryParam(Constants.QPpassword) String Password);
-     */
+	/*
+	 * @GET
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/authenticate") public OutAuthenticate
+	 * AuthenticateUser(@QueryParam(Constants.QPusername) String User,
+	 * 
+	 * @QueryParam(Constants.QPpassword) String Password);
+	 */
 
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private static final Logger LOGGER = Logger.getLogger(TestAuthenticate.class.getName());
 
-    final static String functionurl = "user/authenticate";
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64
+			.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64
+			.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	final static String functionurl = "user/authenticate";
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        System.out.print("Start prepareDB\n");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(new ServletContainer(new ResourceConfig(ServiceImpl.class))).build();
+	}
 
-    @Test
-    public void testAuthenticateUpNoValues() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + functionurl);
-        OAuth out = target.request().get(OAuth.class);
+	@BeforeClass
+	public static void prepareDB() {
+		System.out.print("Start prepareDB\n");
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
+	}
 
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testAuthenticateUpNoValues() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
+		} else {
+			target = target(functionurl);
+		}
+		LOGGER.debug(target);
+		OAuth out = target.request().get(OAuth.class);
+		LOGGER.debug(out);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testAuthenticateUserPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, username);
-        OAuth out = target.request().get(OAuth.class);
+	@Test
+	public void testAuthenticateUserPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		OAuth out = target.request().get(OAuth.class);
+		LOGGER.debug(out);
+		Assert.assertEquals(Constants.AUTHENTICATE_TRUE, out.getA());
+	}
 
-        Assert.assertEquals(Constants.AUTHENTICATE_TRUE, out.getA());
-    }
+	@Test
+	public void testAuthenticateUserWrongPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		OAuth out = target.request().get(OAuth.class);
+		LOGGER.debug(out);
+		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testAuthenticateUserWrongPassword() {
-        WebTarget target;
-        target = ClientBuilder
-                .newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(
-                        Constants.QP_PASSWORD,
-                        Base64.encodeBase64String("XXX".getBytes(Charset
-                                .forName(Constants.CHARACTERSET))))
-                .queryParam(Constants.QP_USERNAME, username);
-        OAuth out = target.request().get(OAuth.class);
-        Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
+	@Test
+	public void testAuthenticateUserEncodeFailureUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, "XXX");
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					"XXX");
+		}
+		LOGGER.debug(target);
+		OAuth out = target.request().get(OAuth.class);
+		LOGGER.debug(out);
+		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 
-    @Test
-    public void testAuthenticateUserEncodeFailureUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, "XXX");
-        OAuth out = target.request().get(OAuth.class);
+	@Test
+	public void testAuthenticateUserEncodeFailurePassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, "XXX").queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, "XXX").queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		OAuth out = target.request().get(OAuth.class);
+		LOGGER.debug(out);
+		Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 
-        Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testAuthenticateUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_USERNAME,
+					username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		OAuth out = target.request().get(OAuth.class);
+		LOGGER.debug(out);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testAuthenticateUserEncodeFailurePassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, "XXX")
-                .queryParam(Constants.QP_USERNAME, username);
-        OAuth out = target.request().get(OAuth.class);
-
-        Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testAuthenticateUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_USERNAME, username);
-        OAuth out = target.request().get(OAuth.class);
-
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testAuthenticatePassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password);
-        OAuth out = target.request().get(OAuth.class);
-
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testAuthenticatePassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD,
+					password);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password);
+		}
+		LOGGER.debug(target);
+		OAuth out = target.request().get(OAuth.class);
+		LOGGER.debug(out);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 }
