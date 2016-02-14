@@ -36,10 +36,6 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<sonar.login>frinme</sonar.login>
-		<sonar.password>FrInMe</sonar.password>
-		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
 	</properties>
 
 	<dependencies>
@@ -151,7 +147,7 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
-			<version>7.0</version>
+			<version>6.0</version>
 		</dependency>
 	</dependencies>
 
