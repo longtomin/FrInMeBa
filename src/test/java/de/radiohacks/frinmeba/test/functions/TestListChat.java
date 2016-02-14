@@ -34,6 +34,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -55,139 +56,172 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestListChat extends JerseyTest {
 
-    /*
-     * @GET
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/listchat") public OLiCh
-     * ListChats(@QueryParam(Constants.QPusername) String User,
-     * 
-     * @QueryParam(Constants.QPpassword) String Password);
-     */
+	/*
+	 * @GET
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/listchat") public OLiCh
+	 * ListChats(@QueryParam(Constants.QPusername) String User,
+	 * 
+	 * @QueryParam(Constants.QPpassword) String Password);
+	 */
 
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private static final Logger LOGGER = Logger.getLogger(TestListChat.class.getName());
 
-    final static String functionurl = "user/listchat";
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64
+			.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64
+			.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	final static String functionurl = "user/listchat";
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-        int c1 = help.CreateChat(username_org, "TESTCHAT1");
-        int c2 = help.CreateChat(username_org, "TESTCHAT2");
-        int c3 = help.CreateChat(username_org, "TESTCHAT3");
-        help.AddUserToChat(help.getUserID(username_org), c1);
-        help.AddUserToChat(help.getUserID(username_org), c2);
-        help.AddUserToChat(help.getUserID(username_org), c3);
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(new ServletContainer(new ResourceConfig(ServiceImpl.class))).build();
+	}
 
-    @Test
-    public void testListChatUpNoValues() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + functionurl);
-        OLiCh out = target.request().get(OLiCh.class);
+	@BeforeClass
+	public static void prepareDB() {
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
+		int c1 = help.CreateChat(username_org, "TESTCHAT1");
+		int c2 = help.CreateChat(username_org, "TESTCHAT2");
+		int c3 = help.CreateChat(username_org, "TESTCHAT3");
+		help.AddUserToChat(help.getUserID(username_org), c1);
+		help.AddUserToChat(help.getUserID(username_org), c2);
+		help.AddUserToChat(help.getUserID(username_org), c3);
+	}
 
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testListChatUpNoValues() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
+		} else {
+			target = target(functionurl);
+		}
+		LOGGER.debug(target);
+		OLiCh out = target.request().get(OLiCh.class);
 
-    @Test
-    public void testListChatUserPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, username);
-        OLiCh out = target.request().get(OLiCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-        Assert.assertNotNull(out.getC());
-        Assert.assertNotNull(out.getC().get(0).getCN());
-        Assert.assertNotNull(out.getC().get(0).getCID());
-        Assert.assertNotNull(out.getC().get(0).getICID());
-        Assert.assertNotNull(out.getC().get(0).getOU());
-    }
+	@Test
+	public void testListChatUserPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		OLiCh out = target.request().get(OLiCh.class);
 
-    @Test
-    public void testListChatUserWrongPassword() {
-        WebTarget target = ClientBuilder
-                .newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(
-                        Constants.QP_PASSWORD,
-                        Base64.encodeBase64String("XXX".getBytes(Charset
-                                .forName(Constants.CHARACTERSET))))
-                .queryParam(Constants.QP_USERNAME, username);
-        OLiCh out = target.request().get(OLiCh.class);
+		Assert.assertNotNull(out.getC());
+		Assert.assertNotNull(out.getC().get(0).getCN());
+		Assert.assertNotNull(out.getC().get(0).getCID());
+		Assert.assertNotNull(out.getC().get(0).getICID());
+		Assert.assertNotNull(out.getC().get(0).getOU());
+	}
 
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
+	@Test
+	public void testListChatUserWrongPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		OLiCh out = target.request().get(OLiCh.class);
 
-    @Test
-    public void testListChatUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_USERNAME, username);
-        OLiCh out = target.request().get(OLiCh.class);
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+	}
 
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testListChatUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_USERNAME,
+					username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		OLiCh out = target.request().get(OLiCh.class);
 
-    @Test
-    public void testListChatPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password);
-        OLiCh out = target.request().get(OLiCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testListChatPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD,
+					password);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password);
+		}
+		LOGGER.debug(target);
+		OLiCh out = target.request().get(OLiCh.class);
 
-    @Test
-    public void testListChatEncodingErrorUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, "$%&1233");
-        OLiCh out = target.request().get(OLiCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testListChatEncodingErrorUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, "$%&1233");
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					"$%&1233");
+		}
+		LOGGER.debug(target);
+		OLiCh out = target.request().get(OLiCh.class);
 
-    @Test
-    public void testListChatEncodingErrorPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, "$%&1233")
-                .queryParam(Constants.QP_USERNAME, username);
-        OLiCh out = target.request().get(OLiCh.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testListChatEncodingErrorPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, "$%&1233").queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, "$%&1233").queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		OLiCh out = target.request().get(OLiCh.class);
+
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 }

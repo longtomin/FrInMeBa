@@ -14,6 +14,7 @@ public class FrinmebaServletContainer extends ServletContainer {
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void init(ServletConfig config) throws ServletException {
 		System.out.println("Log4JInitServlet is initializing log4j");
 		String log4jLoc = config.getInitParameter("log4j-location");

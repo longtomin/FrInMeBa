@@ -34,6 +34,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -55,131 +56,164 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestCheckNew extends JerseyTest {
 
-    /*
-     * @GET
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/checknewmessages") public OCN
-     * checkNewMessages(@QueryParam(Constants.QPusername) String User,
-     * 
-     * @QueryParam(Constants.QPpassword) String Password);
-     */
+	/*
+	 * @GET
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/checknewmessages") public OCN
+	 * checkNewMessages(@QueryParam(Constants.QPusername) String User,
+	 * 
+	 * @QueryParam(Constants.QPpassword) String Password);
+	 */
 
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private static final Logger LOGGER = Logger.getLogger(TestCheckNew.class.getName());
 
-    final static String functionurl = "user/checknew";
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64
+			.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64
+			.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	final static String functionurl = "user/checknew";
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        System.out.print("Start prepareDB CheckNewMessages\n");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(new ServletContainer(new ResourceConfig(ServiceImpl.class))).build();
+	}
 
-    @Test
-    public void testCheckNewMessagesUpNoValues() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + functionurl);
-        OCN out = target.request().get(OCN.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@BeforeClass
+	public static void prepareDB() {
+		LOGGER.debug("Start BeforeClass");
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
+		LOGGER.debug("End BeforeClass");
+	}
 
-    @Test
-    public void testCheckNewMessagesUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_USERNAME, username);
-        OCN out = target.request().get(OCN.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testCheckNewMessagesUpNoValues() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
+		} else {
+			target = target(functionurl);
+		}
+		LOGGER.debug(target);
+		OCN out = target.request().get(OCN.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testCheckNewMessagesPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password);
-        OCN out = target.request().get(OCN.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testCheckNewMessagesUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_USERNAME,
+					username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		OCN out = target.request().get(OCN.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testCheckNewMessagesUserPassword() {
-        helperDatabase help = new helperDatabase();
-        int TxtmsgID = help.CreateContentMessage("Test Nachricht",
-                Constants.TYP_TEXT);
-        int ChatID = help.CreateChat(username_org, "TestChat");
-        int UserID = help.getUserID(username_org);
-        int User2ChatID = help.AddUserToChat(UserID, ChatID);
-        help.insertMessage(UserID, User2ChatID, Constants.TYP_TEXT, TxtmsgID,
-                0, true);
+	@Test
+	public void testCheckNewMessagesPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD,
+					password);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password);
+		}
+		LOGGER.debug(target);
+		OCN out = target.request().get(OCN.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, username);
-        OCN out = target.request().get(OCN.class);
-        Assert.assertNotNull(out.getC());
-    }
+	@Test
+	public void testCheckNewMessagesUserPassword() {
+		helperDatabase help = new helperDatabase();
+		int TxtmsgID = help.CreateContentMessage("Test Nachricht", Constants.TYP_TEXT);
+		int ChatID = help.CreateChat(username_org, "TestChat");
+		int UserID = help.getUserID(username_org);
+		int User2ChatID = help.AddUserToChat(UserID, ChatID);
+		help.insertMessage(UserID, User2ChatID, Constants.TYP_TEXT, TxtmsgID, 0, true);
 
-    @Test
-    public void testCheckNewMessagesUserWrongPassword() {
-        WebTarget target = ClientBuilder
-                .newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(
-                        Constants.QP_PASSWORD,
-                        Base64.encodeBase64String("XXX".getBytes(Charset
-                                .forName(Constants.CHARACTERSET))))
-                .queryParam(Constants.QP_USERNAME, username);
-        OCN out = target.request().get(OCN.class);
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		OCN out = target.request().get(OCN.class);
+		Assert.assertNotNull(out.getC());
+	}
 
-    @Test
-    public void testCheckNewMessagesUserEncodeFailureUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, "$!%1234");
-        OCN out = target.request().get(OCN.class);
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testCheckNewMessagesUserWrongPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		OCN out = target.request().get(OCN.class);
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testCheckNewMessagesUserEncodeFailurePassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, "$!%1234")
-                .queryParam(Constants.QP_USERNAME, username);
-        OCN out = target.request().get(OCN.class);
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testCheckNewMessagesUserEncodeFailureUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, "$!%1234");
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					"$!%1234");
+		}
+		LOGGER.debug(target);
+		OCN out = target.request().get(OCN.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
+
+	@Test
+	public void testCheckNewMessagesUserEncodeFailurePassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, "$!%1234").queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, "$!%1234").queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		OCN out = target.request().get(OCN.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 }

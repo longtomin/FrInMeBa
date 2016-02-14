@@ -28,6 +28,11 @@
  */
 package de.radiohacks.frinmeba.test.functions;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -38,6 +43,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -50,10 +56,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OSImM;
@@ -66,491 +69,428 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestUploadImage extends JerseyTest {
 
-    /*
-     * @POST
-     * 
-     * @Path("/upload")
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSImM uploadImage(
-     * 
-     * @QueryParam(Constants.QPusername) String User,
-     * 
-     * @QueryParam(Constants.QPpassword) String Password,
-     * 
-     * @FormDataParam("file") InputStream fileInputStream,
-     * 
-     * @FormDataParam("file") FormDataContentDisposition
-     * contentDispositionHeader);
-     */
-
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Acknowledge
-    final static String acknowledge_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
-    final static String acknowledge = Base64.encodeBase64String(acknowledge_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
-    final static String functionurl = "image/upload";
-
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
-
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
-
-    @Override
-    protected void configureClient(ClientConfig config) {
-        config.register(MultiPartFeature.class);
-    }
-
-    @BeforeClass
-    public static void prepareDB() {
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUpNoValues() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
-
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl).queryParam(
-                    Constants.QP_USERNAME, username);
-            ;
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImagePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl).queryParam(
-                    Constants.QP_PASSWORD, password);
-            ;
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_USERNAME, username);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserAcknowledge() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge)
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_ACKNOWLEDGE,
-                    acknowledge).queryParam(Constants.QP_USERNAME, username);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-        
-        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImagePasswordAcknowledge() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-        
-        assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserPasswordNoDisposition() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        // final FormDataContentDisposition dispo = FormDataContentDisposition
-        // .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart("File", data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-        
-        assertThat(out.getET(), is(Constants.NO_IMAGEMESSAGE_GIVEN));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserPasswordNoAcknowledge() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_USERNAME, username);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-        
-        assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserWrongPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        } else {
-            target = target(functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserEncodeFailureUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, "XXX");
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_USERNAME, "XXX");
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserEncodeFailurePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "XXX")
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "XXX").queryParam(
-                            Constants.QP_USERNAME, username);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserEncodeFailureAcknowledge() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getET(), is(Constants.ENCODING_ERROR));
-    }
-
-    @Test
-    @Ignore("temporay disabeld")
-    public void testUploadImageUserPasswordAcknowledge() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            Client client = ClientBuilder.newBuilder()
-                    .register(MultiPartFeature.class).build();
-
-            target = client.target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-        }
-        final FormDataMultiPart mp = new FormDataMultiPart();
-
-        InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        final FormDataContentDisposition dispo = FormDataContentDisposition
-                .name("file").fileName("test.jpg").size(1).build();
-
-        final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        mp.bodyPart(fdp2);
-
-        OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
-                OSImM.class);
-
-        assertThat(out.getImID(), is(not(nullValue())));
-        assertThat(out.getImF(), is(not(nullValue())));
-    }
+	/*
+	 * @POST
+	 * 
+	 * @Path("/upload")
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Consumes(MediaType.MULTIPART_FORM_DATA) public OSImM uploadImage(
+	 * 
+	 * @QueryParam(Constants.QPusername) String User,
+	 * 
+	 * @QueryParam(Constants.QPpassword) String Password,
+	 * 
+	 * @FormDataParam("file") InputStream fileInputStream,
+	 * 
+	 * @FormDataParam("file") FormDataContentDisposition
+	 * contentDispositionHeader);
+	 */
+
+	private static final Logger LOGGER = Logger.getLogger(TestUploadImage.class.getName());
+
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64
+			.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64
+			.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Acknowledge
+	final static String acknowledge_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+	final static String acknowledge = Base64
+			.encodeBase64String(acknowledge_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+
+	final static String functionurl = "image/upload";
+
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
+
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(new ServletContainer(new ResourceConfig(ServiceImpl.class))).build();
+	}
+
+	@Override
+	protected void configureClient(ClientConfig config) {
+		config.register(MultiPartFeature.class);
+	}
+
+	@BeforeClass
+	public static void prepareDB() {
+		LOGGER.debug("Start BeforeClass");
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
+		LOGGER.debug("End BeforeClass");
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUpNoValues() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl);
+		} else {
+			target = target(functionurl);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImagePassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge)
+					.queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge)
+					.queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImagePasswordAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserPasswordNoDisposition() {
+		WebTarget target;
+		Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+		if (TestConfig.remote) {
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		} else {
+			target = client.target(functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		// final FormDataContentDisposition dispo = FormDataContentDisposition
+		// .name("file").fileName("test.jpg").size(1).build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart("File", data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.NO_IMAGEMESSAGE_GIVEN));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserPasswordNoAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserWrongPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserEncodeFailureUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "XXX");
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					"XXX");
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserEncodeFailurePassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, "XXX")
+					.queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, "XXX").queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserEncodeFailureAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+	}
+
+	@Test
+	// @Ignore("temporay disabeld")
+	public void testUploadImageUserPasswordAcknowledge() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+
+			target = client.target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		}
+		LOGGER.debug(target);
+		final FormDataMultiPart mp = new FormDataMultiPart();
+
+		InputStream data = this.getClass().getResourceAsStream("/test.jpg");
+		final FormDataContentDisposition dispo = FormDataContentDisposition.name("file").fileName("test.jpg").size(1)
+				.build();
+
+		final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+		mp.bodyPart(fdp2);
+
+		OSImM out = target.request().post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
+
+		assertThat(out.getImID(), is(not(nullValue())));
+		assertThat(out.getImF(), is(not(nullValue())));
+	}
 }

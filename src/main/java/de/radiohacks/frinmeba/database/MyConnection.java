@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 public class MyConnection implements Serializable {
 
     private static final long serialVersionUID = -5775145889024550232L;
-    private static final Logger LOGGER = Logger.getLogger(MySqlConnection.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MyConnection.class.getName());
     private Connection con = null;
 
     public MyConnection() {

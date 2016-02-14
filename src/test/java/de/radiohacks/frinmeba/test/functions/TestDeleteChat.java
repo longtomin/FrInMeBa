@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -60,194 +61,252 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestDeleteChat extends JerseyTest {
 
-    /*
-     * @DELETE
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/deletechat") public ODeCh
-     * DeleteChat(@QueryParam(Constants.QPusername) String User,
-     * 
-     * @QueryParam(Constants.QPpassword) String Password,
-     * 
-     * @QueryParam(Constants.QPchatid) int ChatID);
-     */
+	/*
+	 * @DELETE
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/deletechat") public ODeCh
+	 * DeleteChat(@QueryParam(Constants.QPusername) String User,
+	 * 
+	 * @QueryParam(Constants.QPpassword) String Password,
+	 * 
+	 * @QueryParam(Constants.QPchatid) int ChatID);
+	 */
 
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private static final Logger LOGGER = Logger.getLogger(TestDeleteChat.class.getName());
 
-    final static String functionurl = "user/deletechat";
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64
+			.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64
+			.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	final static String functionurl = "user/deletechat";
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(new ServletContainer(new ResourceConfig(ServiceImpl.class))).build();
+	}
 
-    private OCrCh callCreateChat(ICrCh in) {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/createchat");
-        Response response = target.request()
-                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-                .invoke();
-        return response.readEntity(OCrCh.class);
-    }
+	@BeforeClass
+	public static void prepareDB() {
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
+	}
 
-    @Test
-    public void testDeleteChatUpNoValues() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + functionurl);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	private OCrCh callCreateChat(ICrCh in) {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + "user/createchat");
+		} else {
+			target = target("user/createchat");
+		}
+		Response response = target.request().buildPut(Entity.entity(in, MediaType.APPLICATION_XML)).invoke();
+		return response.readEntity(OCrCh.class);
+	}
 
-    @Test
-    public void testDeleteChatUserPasswordChatid() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, username)
-                .queryParam(Constants.QP_CHATID, 1);
-        ODeCh out = target.request().delete(ODeCh.class);
+	@Test
+	public void testDeleteChatUpNoValues() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
+		} else {
+			target = target(functionurl);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-        Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
+	@Test
+	public void testDeleteChatUserPasswordChatid() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_CHATID, 1);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_CHATID, 1);
+		}
+		LOGGER.debug(target);
 
-        ICrCh inCreateChat = new ICrCh();
-        inCreateChat.setUN(username);
-        inCreateChat.setPW(password);
-        inCreateChat.setCN(Base64.encodeBase64String("Testchat"
-                .getBytes(Charset.forName(Constants.CHARACTERSET))));
-        OCrCh out2 = callCreateChat(inCreateChat);
+		ODeCh out = target.request().delete(ODeCh.class);
 
-        Assert.assertEquals("Testchat", out2.getCN());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
 
-        WebTarget target2 = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, username)
-                .queryParam(Constants.QP_CHATID, out2.getCID());
-        ODeCh out3 = target2.request().delete(ODeCh.class);
+		ICrCh inCreateChat = new ICrCh();
+		inCreateChat.setUN(username);
+		inCreateChat.setPW(password);
+		inCreateChat.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset.forName(Constants.CHARACTERSET))));
+		OCrCh out2 = callCreateChat(inCreateChat);
 
-        Assert.assertEquals(Constants.CHAT_DELETED, out3.getR());
-    }
+		Assert.assertEquals("Testchat", out2.getCN());
 
-    @Test
-    public void testDeleteChatUserWrongPasswordChatid() {
-        WebTarget target = ClientBuilder
-                .newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(
-                        Constants.QP_PASSWORD,
-                        Base64.encodeBase64String("XXX".getBytes(Charset
-                                .forName(Constants.CHARACTERSET))))
-                .queryParam(Constants.QP_USERNAME, username)
-                .queryParam(Constants.QP_CHATID, 1);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
+		WebTarget target2;
+		if (TestConfig.remote) {
+			target2 = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_CHATID, out2.getCID());
+		} else {
+			target2 = target(functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_CHATID, out2.getCID());
+		}
+		LOGGER.debug(target2);
 
-    @Test
-    public void testDeleteChatUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_USERNAME, username);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+		ODeCh out3 = target2.request().delete(ODeCh.class);
 
-    @Test
-    public void testDeleteChatPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+		Assert.assertEquals(Constants.CHAT_DELETED, out3.getR());
+	}
 
-    @Test
-    public void testDeleteChatChatid() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_CHATID, 1);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testDeleteChatUserWrongPasswordChatid() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_CHATID, 1);
+		} else {
+			target = target(functionurl)
+					.queryParam(Constants.QP_PASSWORD,
+							Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))))
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_CHATID, 1);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testDeleteChatUserPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, username);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
-    }
+	@Test
+	public void testDeleteChatUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_USERNAME,
+					username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_USERNAME, username);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testDeleteChatUserChatid() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_USERNAME, username);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testDeleteChatPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_PASSWORD,
+					password);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testDeleteChatPasswordChatid() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_CHATID, 1);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testDeleteChatChatid() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).queryParam(Constants.QP_CHATID, 1);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_CHATID, 1);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testDeleteChatEncodingErrorUser() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, password)
-                .queryParam(Constants.QP_USERNAME, "$%&1234")
-                .queryParam(Constants.QP_CHATID, 1);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testDeleteChatUserPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, username);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME,
+					username);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
+	}
 
-    @Test
-    public void testDeleteChatEncodingErrorPassword() {
-        WebTarget target = ClientBuilder.newClient()
-                .target(TestConfig.URL + functionurl)
-                .queryParam(Constants.QP_PASSWORD, "$%&1234")
-                .queryParam(Constants.QP_USERNAME, username)
-                .queryParam(Constants.QP_CHATID, 1);
-        ODeCh out = target.request().delete(ODeCh.class);
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testDeleteChatUserChatid() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_CHATID, 1);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_CHATID, 1);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
+
+	@Test
+	public void testDeleteChatPasswordChatid() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_CHATID, 1);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_CHATID, 1);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
+
+	@Test
+	public void testDeleteChatEncodingErrorUser() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, password).queryParam(Constants.QP_USERNAME, "$%&1234")
+					.queryParam(Constants.QP_CHATID, 1);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, password)
+					.queryParam(Constants.QP_USERNAME, "$%&1234").queryParam(Constants.QP_CHATID, 1);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
+
+	@Test
+	public void testDeleteChatEncodingErrorPassword() {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl)
+					.queryParam(Constants.QP_PASSWORD, "$%&1234").queryParam(Constants.QP_USERNAME, username)
+					.queryParam(Constants.QP_CHATID, 1);
+		} else {
+			target = target(functionurl).queryParam(Constants.QP_PASSWORD, "$%&1234")
+					.queryParam(Constants.QP_USERNAME, username).queryParam(Constants.QP_CHATID, 1);
+		}
+		LOGGER.debug(target);
+		ODeCh out = target.request().delete(ODeCh.class);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 }

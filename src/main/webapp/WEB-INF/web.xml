@@ -23,7 +23,7 @@
 	<display-name>Archetype Created Web Application</display-name>
 	<servlet>
 		<servlet-name>FrInMeBa Web Application</servlet-name>
-		<servlet-class>de.radiohacks.frinmeba.services.FrinmebaServletContainer
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer
 		</servlet-class>
 		<init-param>
 			<param-name>jersey.config.server.provider.packages</param-name>

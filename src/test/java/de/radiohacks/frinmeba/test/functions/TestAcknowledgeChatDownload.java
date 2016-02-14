@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -61,192 +62,183 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestAcknowledgeChatDownload extends JerseyTest {
 
-    /*
-     * @POST
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Consumes(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/acknowledgechatdownload") public OAckCD
-     * acknowledgeChatDownload(IAckCD in);
-     */
+	/*
+	 * @POST
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Consumes(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/acknowledgechatdownload") public OAckCD
+	 * acknowledgeChatDownload(IAckCD in);
+	 */
 
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	private static final Logger LOGGER = Logger.getLogger(TestAcknowledgeChatDownload.class.getName());
 
-    final static String functionurl = "user/acknowledgechatdownload";
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64
+			.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64
+			.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    final static String chatname_org = "Test Nachnricht fuer Acknowledge";
-    final static String chatname = Base64.encodeBase64String(chatname_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String functionurl = "user/acknowledgechatdownload";
 
-    static int cid;
+	final static String chatname_org = "Test Nachnricht fuer Acknowledge";
+	final static String chatname = Base64
+			.encodeBase64String(chatname_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    // final static String md5sumimg_org = "e36ba04dd1ad642a6e8c74c72a4aabc";
-    // final static String md5sumimg = Base64.encodeBase64String(md5sumimg_org
-    // .getBytes(Charset.forName(Constants.CharacterSet)));
-    // final static String md5sumtxt_org = "[B@2e41b2e9";
-    // final static String md5sumtxt = Base64.encodeBase64String(md5sumtxt_org
-    // .getBytes(Charset.forName(Constants.CharacterSet)));
+	static int cid;
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(new ServletContainer(new ResourceConfig(ServiceImpl.class))).build();
+	}
 
-    @Override
-    protected void configureClient(ClientConfig config) {
-        config.register(MultiPartFeature.class);
-    }
+	@Override
+	protected void configureClient(ClientConfig config) {
+		config.register(MultiPartFeature.class);
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-        cid = help.CreateChat(username_org, chatname_org);
-        help.AddUserToChat(help.getUserID(username_org), cid);
+	@BeforeClass
+	public static void prepareDB() {
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org, help.InsertFixedImage());
+		cid = help.CreateChat(username_org, chatname_org);
+		help.AddUserToChat(help.getUserID(username_org), cid);
 
-    }
+	}
 
-    private OAckCD callTarget(IAckCD in) {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + functionurl);
-        Response response = target.request()
-                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
-                .invoke();
-        return response.readEntity(OAckCD.class);
-    }
+	private OAckCD callTarget(IAckCD in) {
+		WebTarget target;
+		if (TestConfig.remote) {
+			target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
+		} else {
+			target = target(functionurl);
+		}
+		LOGGER.debug(target);
+		Response response = target.request().buildPost(Entity.entity(in, MediaType.APPLICATION_XML)).invoke();
+		LOGGER.debug(response);
+		return response.readEntity(OAckCD.class);
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUpNoValues() {
-        IAckCD in = new IAckCD();
-        OAckCD out = callTarget(in);
+	@Test
+	public void testAcknowledgeChatDownloadUpNoValues() {
+		IAckCD in = new IAckCD();
+		OAckCD out = callTarget(in);
 
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUser() {
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testAcknowledgeChatDownloadUser() {
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadPassword() {
-        IAckCD in = new IAckCD();
-        in.setPW(password);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
+	@Test
+	public void testAcknowledgeChatDownloadPassword() {
+		IAckCD in = new IAckCD();
+		in.setPW(password);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUserPassword() {
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
-    }
+	@Test
+	public void testAcknowledgeChatDownloadUserPassword() {
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUserPasswordNoAcknowledge() {
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
-        in.setCID(cid);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
-    }
+	@Test
+	public void testAcknowledgeChatDownloadUserPasswordNoAcknowledge() {
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(cid);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUserWrongPassword() {
-        int hashCode = chatname_org.hashCode();
-        String sha1b64 = new String(Base64.encodeBase64(String
-                .valueOf(hashCode).getBytes()),
-                Charset.forName(Constants.CHARACTERSET));
+	@Test
+	public void testAcknowledgeChatDownloadUserWrongPassword() {
+		int hashCode = chatname_org.hashCode();
+		String sha1b64 = new String(Base64.encodeBase64(String.valueOf(hashCode).getBytes()),
+				Charset.forName(Constants.CHARACTERSET));
 
-        IAckCD in = new IAckCD();
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(username);
-        in.setACK(sha1b64);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
+		IAckCD in = new IAckCD();
+		in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset.forName(Constants.CHARACTERSET))));
+		in.setUN(username);
+		in.setACK(sha1b64);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUserEncodeFailureUser() {
-        IAckCD in = new IAckCD();
-        in.setUN("XXX");
-        in.setPW(password);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testAcknowledgeChatDownloadUserEncodeFailureUser() {
+		IAckCD in = new IAckCD();
+		in.setUN("XXX");
+		in.setPW(password);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUserEncodeFailurePassword() {
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW("XXX");
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testAcknowledgeChatDownloadUserEncodeFailurePassword() {
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW("XXX");
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUserPasswordAcknowledgeChat() {
+	@Test
+	public void testAcknowledgeChatDownloadUserPasswordAcknowledgeChat() {
 
-        int hashCode = chatname_org.hashCode();
-        String sha1b64 = new String(Base64.encodeBase64(String
-                .valueOf(hashCode).getBytes()),
-                Charset.forName(Constants.CHARACTERSET));
+		int hashCode = chatname_org.hashCode();
+		String sha1b64 = new String(Base64.encodeBase64(String.valueOf(hashCode).getBytes()),
+				Charset.forName(Constants.CHARACTERSET));
 
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
-        in.setCID(cid);
-        in.setACK(sha1b64);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getACK());
-    }
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		in.setCID(cid);
+		in.setACK(sha1b64);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getACK());
+	}
 
-    @Test
-    public void testAcknowledgeChatDownloadUserPasswordAcknowledge() {
+	@Test
+	public void testAcknowledgeChatDownloadUserPasswordAcknowledge() {
 
-        int hashCode = chatname_org.hashCode();
-        String sha1b64 = new String(Base64.encodeBase64(String
-                .valueOf(hashCode).getBytes()),
-                Charset.forName(Constants.CHARACTERSET));
+		int hashCode = chatname_org.hashCode();
+		String sha1b64 = new String(Base64.encodeBase64(String.valueOf(hashCode).getBytes()),
+				Charset.forName(Constants.CHARACTERSET));
 
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
-        in.setACK(sha1b64);
-        OAckCD out = callTarget(in);
-        Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
-    }
+		IAckCD in = new IAckCD();
+		in.setUN(username);
+		in.setPW(password);
+		in.setACK(sha1b64);
+		OAckCD out = callTarget(in);
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
+	}
 }
