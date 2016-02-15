@@ -41,7 +41,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import com.google.common.hash.HashCode;
@@ -66,7 +68,8 @@ public class VideoImpl implements IVideoUtil {
      * Upload a File
      */
     
-    private static final Logger LOGGER = Logger.getLogger(VideoImpl.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(VideoImpl.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(VideoImpl.class);
 
     @Override
     public OSViM uploadVideo(String user, String password, String acknowldge,

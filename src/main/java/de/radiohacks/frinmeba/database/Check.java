@@ -39,13 +39,17 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.radiohacks.frinmeba.services.Constants;
 
 public class Check {
 
-	private static final Logger LOGGER = Logger.getLogger(Check.class);
+        private static final long serialVersionUID = -5775145889024550232L;
+	//private static final Logger LOGGER = Logger.getLogger(Check.class);
+        private static final Logger LOGGER = LogManager.getLogger(Check.class);
 
 	private Connection con = null;
 	private String lastError = null;

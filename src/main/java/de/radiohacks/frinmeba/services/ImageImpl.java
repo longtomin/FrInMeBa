@@ -43,7 +43,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import com.google.common.hash.HashCode;
@@ -66,7 +68,8 @@ import de.radiohacks.frinmeba.util.IImageUtil;
 
 @Path("/image")
 public class ImageImpl implements IImageUtil {
-    private static final Logger LOGGER = Logger.getLogger(ImageImpl.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(ImageImpl.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ImageImpl.class);
     
     /**
      * Upload a File

@@ -39,7 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.radiohacks.frinmeba.modelshort.C;
 import de.radiohacks.frinmeba.modelshort.CNM;
@@ -107,7 +109,8 @@ public class User {
     private int id = 0;
     private Connection con;
 
-    private static final Logger LOGGER = Logger.getLogger(User.class);
+    //private static final Logger LOGGER = Logger.getLogger(User.class);
+    private static final Logger LOGGER = LogManager.getLogger(User.class);
 
     public User(Connection conin) {
         LOGGER.debug("Start User with Connection");

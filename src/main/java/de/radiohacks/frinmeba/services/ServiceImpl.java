@@ -34,7 +34,9 @@ import java.util.List;
 
 import javax.ws.rs.Path;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MyConnection;
@@ -85,7 +87,8 @@ import de.radiohacks.frinmeba.util.IServiceUtil;
 @Path("/user")
 public class ServiceImpl implements IServiceUtil {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceImpl.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(ServiceImpl.class.getName());
+        private static final Logger LOGGER = LogManager.getLogger(ServiceImpl.class);
 
 	@Override
 	public OAuth authenticateUser(String user, String password) {

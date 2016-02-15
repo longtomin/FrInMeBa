@@ -30,11 +30,14 @@ package de.radiohacks.frinmeba.services;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Constants {
 
-	private static final Logger LOGGER = Logger.getLogger(Constants.class);
+	//private static final Logger LOGGER = Logger.getLogger(Constants.class);
+        private static final Logger LOGGER = LogManager.getLogger(Constants.class);
 
 	public static final String NONE_EXISTING_USER = "NONE_EXISTING_USER";
 	public static final String NONE_EXISTING_CHAT = "NONE_EXISTING_CHAT";
