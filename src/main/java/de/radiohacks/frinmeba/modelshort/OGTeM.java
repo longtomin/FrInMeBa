@@ -77,60 +77,61 @@ import de.radiohacks.frinmeba.services.Constants;
 @XmlType(name = "", propOrder = { "tm", "et" })
 @XmlRootElement(name = "OGTeM")
 public class OGTeM {
+
 	private static final Logger LOGGER = Logger.getLogger(OGTeM.class.getName());
-	
-	@XmlElement(name = "TM")
-	protected String tm;
-	@XmlElement(name = "ET")
-	protected String et;
 
-	/**
-	 * Gets the value of the tm property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public String getTM() {
-		return tm;
-	}
+    @XmlElement(name = "TM")
+    protected String tm;
+    @XmlElement(name = "ET")
+    protected String et;
 
-	/**
-	 * Sets the value of the tm property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setTM(String value) {
-		byte[] inarray = Base64.decodeBase64(value);
-		String x = null;
-		try {
-			x = new String(inarray, Constants.CHARACTERSET);
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error(e);
-		}
-		this.tm = x;
-	}
+    /**
+     * Gets the value of the tm property.
+     * 
+     * @return possible object is {@link String }
+     * 
+     */
+    public String getTM() {
+        return tm;
+    }
 
-	/**
-	 * Gets the value of the et property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public String getET() {
-		return et;
-	}
+    /**
+     * Sets the value of the tm property.
+     * 
+     * @param value
+     *            allowed object is {@link String }
+     * 
+     */
+    public void setTM(String value) {
+        byte[] inarray = Base64.decodeBase64(value);
+        String x = null;
+        try {
+            x = new String(inarray, Constants.CHARACTERSET);
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error(e);
+        }
+        this.tm = x;
+    }
 
-	/**
-	 * Sets the value of the et property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setET(String value) {
-		this.et = value;
-	}
+    /**
+     * Gets the value of the et property.
+     * 
+     * @return possible object is {@link String }
+     * 
+     */
+    public String getET() {
+        return et;
+    }
+
+    /**
+     * Sets the value of the et property.
+     * 
+     * @param value
+     *            allowed object is {@link String }
+     * 
+     */
+    public void setET(String value) {
+        this.et = value;
+    }
 
 }
