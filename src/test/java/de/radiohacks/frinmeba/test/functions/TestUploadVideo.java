@@ -28,6 +28,11 @@
  */
 package de.radiohacks.frinmeba.test.functions;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -38,6 +43,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -50,11 +56,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OSViM;
@@ -85,6 +87,9 @@ public class TestUploadVideo extends JerseyTest {
      * @FormDataParam("file") FormDataContentDisposition
      * contentDispositionHeader);
      */
+
+    private static final Logger LOGGER = Logger.getLogger(TestUploadVideo.class
+            .getName());
 
     // Username welche anzulegen ist
     final static String username_org = "Test1";
@@ -124,6 +129,7 @@ public class TestUploadVideo extends JerseyTest {
 
     @BeforeClass
     public static void prepareDB() {
+        LOGGER.debug("Start BeforeClass");
         dropDatabaseTables drop = new dropDatabaseTables();
         drop.dropTable();
         createDatabaseTables create = new createDatabaseTables();
@@ -131,10 +137,10 @@ public class TestUploadVideo extends JerseyTest {
         helperDatabase help = new helperDatabase();
         help.CreateActiveUser(username_org, username, password_org, email_org,
                 help.InsertFixedImage());
+        LOGGER.debug("End BeforeClass");
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -145,6 +151,7 @@ public class TestUploadVideo extends JerseyTest {
         } else {
             target = target(functionurl);
         }
+        LOGGER.debug(target);
 
         final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -158,12 +165,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -178,6 +184,7 @@ public class TestUploadVideo extends JerseyTest {
                     username);
             ;
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -190,12 +197,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -208,6 +214,7 @@ public class TestUploadVideo extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -220,12 +227,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -240,6 +246,7 @@ public class TestUploadVideo extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -252,12 +259,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-        
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -272,6 +278,7 @@ public class TestUploadVideo extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_ACKNOWLEDGE,
                     acknowledge).queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -284,12 +291,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-        
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -304,6 +310,7 @@ public class TestUploadVideo extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -316,12 +323,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserPasswordAcknowledgeNoDisposition() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -339,6 +345,7 @@ public class TestUploadVideo extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -351,12 +358,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_IMAGEMESSAGE_GIVEN));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserPasswordNoAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -371,6 +377,7 @@ public class TestUploadVideo extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -383,12 +390,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserWrongPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -414,6 +420,7 @@ public class TestUploadVideo extends JerseyTest {
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
             ;
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -426,12 +433,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserEncodeFailureUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -450,6 +456,7 @@ public class TestUploadVideo extends JerseyTest {
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
             ;
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -462,12 +469,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserEncodeFailurePassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -486,6 +492,7 @@ public class TestUploadVideo extends JerseyTest {
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
             ;
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -498,12 +505,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserEncodeFailureAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -522,6 +528,7 @@ public class TestUploadVideo extends JerseyTest {
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
             ;
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -534,12 +541,11 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadVideoUserPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -558,6 +564,7 @@ public class TestUploadVideo extends JerseyTest {
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
             ;
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -570,7 +577,8 @@ public class TestUploadVideo extends JerseyTest {
 
         OSViM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSViM.class);
-
+        LOGGER.debug("VID=" + out.getVID());
+        LOGGER.debug("VF=" + out.getVF());
         assertThat(out.getVID(), is(not(nullValue())));
         assertThat(out.getVF(), is(not(nullValue())));
     }

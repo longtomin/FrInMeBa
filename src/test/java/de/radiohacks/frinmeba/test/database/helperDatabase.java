@@ -639,9 +639,13 @@ public class helperDatabase {
 
 		WebTarget target;
 		Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
-
-		target = client.target(TestConfig.URL + videouploadurl).queryParam(Constants.QP_PASSWORD, p)
+        if (TestConfig.remote) {
+		    target = client.target(TestConfig.URL + videouploadurl).queryParam(Constants.QP_PASSWORD, p)
 				.queryParam(Constants.QP_USERNAME, u).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		} else {
+            target = client.target(videouploadurl).queryParam(Constants.QP_PASSWORD, p)
+				.queryParam(Constants.QP_USERNAME, u).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+        }		
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
 		InputStream data = this.getClass().getResourceAsStream("/test.mp4");
@@ -660,14 +664,15 @@ public class helperDatabase {
 				.encodeBase64String(acknowledge_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
 		WebTarget target;
-//		if (TestConfig.remote) {
-			target = ClientBuilder.newClient().target(TestConfig.URL + imageuploadurl)
+		Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+		if (TestConfig.remote) {
+			target = client.target(TestConfig.URL + imageuploadurl)
 					.queryParam(Constants.QP_PASSWORD, p).queryParam(Constants.QP_USERNAME, u)
 					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-//		} else {
-		// target = target(imageuploadurl).queryParam(Constants.QP_PASSWORD, p).queryParam(Constants.QP_USERNAME, u)
-//					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
-//		}
+		} else {
+		    target = client.target(imageuploadurl).queryParam(Constants.QP_PASSWORD, p).queryParam(Constants.QP_USERNAME, u)
+					.queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
+		}
 		final FormDataMultiPart mp = new FormDataMultiPart();
 
 		InputStream data = this.getClass().getResourceAsStream("/test.jpg");

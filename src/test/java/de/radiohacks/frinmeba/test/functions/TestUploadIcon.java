@@ -28,6 +28,11 @@
  */
 package de.radiohacks.frinmeba.test.functions;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -38,6 +43,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -50,11 +56,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OSIcM;
@@ -87,6 +89,9 @@ public class TestUploadIcon extends JerseyTest {
      * @FormDataParam("file") FormDataContentDisposition
      * contentDispositionHeader);
      */
+
+    private static final Logger LOGGER = Logger.getLogger(TestUploadIcon.class
+            .getName());
 
     // Username welche anzulegen ist
     final static String username_org = "Test1";
@@ -131,6 +136,7 @@ public class TestUploadIcon extends JerseyTest {
 
     @BeforeClass
     public static void prepareDB() {
+        LOGGER.debug("Start BeforeClass");
         dropDatabaseTables drop = new dropDatabaseTables();
         drop.dropTable();
         createDatabaseTables create = new createDatabaseTables();
@@ -138,10 +144,10 @@ public class TestUploadIcon extends JerseyTest {
         helperDatabase help = new helperDatabase();
         help.CreateActiveUser(username_org, username, password_org, email_org,
                 help.InsertFixedImage());
+        LOGGER.debug("End BeforeClass");
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -152,6 +158,7 @@ public class TestUploadIcon extends JerseyTest {
         } else {
             target = target(functionurl);
         }
+        LOGGER.debug(target);
 
         final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -165,12 +172,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -184,6 +190,7 @@ public class TestUploadIcon extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_USERNAME,
                     username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -196,12 +203,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -215,6 +221,7 @@ public class TestUploadIcon extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -227,12 +234,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -246,6 +252,7 @@ public class TestUploadIcon extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -258,12 +265,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-        
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -277,6 +283,7 @@ public class TestUploadIcon extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_ACKNOWLEDGE,
                     acknowledge).queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -289,12 +296,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-        
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -308,6 +314,7 @@ public class TestUploadIcon extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -320,12 +327,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-        
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserPasswordNoDisposition() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -342,6 +348,7 @@ public class TestUploadIcon extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -354,12 +361,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-        
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_IMAGEMESSAGE_GIVEN));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserPasswordNoAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -373,6 +379,7 @@ public class TestUploadIcon extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -385,12 +392,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-        
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.UPLOAD_FAILED));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserWrongPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -414,6 +420,7 @@ public class TestUploadIcon extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -426,12 +433,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserEncodeFailureUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -445,6 +451,7 @@ public class TestUploadIcon extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_USERNAME, "XXX");
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -457,12 +464,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserEncodeFailurePassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -473,10 +479,10 @@ public class TestUploadIcon extends JerseyTest {
                     .queryParam(Constants.QP_PASSWORD, "XXX")
                     .queryParam(Constants.QP_USERNAME, username);
         } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "XXX").queryParam(
-                            Constants.QP_USERNAME, username);
+            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
+                    "XXX").queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -489,12 +495,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserEncodeFailureAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -511,6 +516,7 @@ public class TestUploadIcon extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_org);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -523,12 +529,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserPasswordAcknowledgeNoQuadrat() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -545,6 +550,7 @@ public class TestUploadIcon extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
@@ -557,12 +563,11 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_QUADRAT_IMAGE));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testUploadIconUserPasswordAcknowledge() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -579,6 +584,7 @@ public class TestUploadIcon extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_ACKNOWLEDGE, acknowledge_quadrat);
         }
+        LOGGER.debug(target);
         final FormDataMultiPart mp = new FormDataMultiPart();
 
         InputStream data = this.getClass().getResourceAsStream("/quadrat.jpg");
@@ -591,7 +597,9 @@ public class TestUploadIcon extends JerseyTest {
 
         OSIcM out = target.request().post(Entity.entity(mp, mp.getMediaType()),
                 OSIcM.class);
-
+        LOGGER.debug(out.toString());
+        LOGGER.debug("IcID=" + out.getIcID());
+        LOGGER.debug("IcF=" + out.getIcF());
         assertThat(out.getIcID(), is(not(nullValue())));
         assertThat(out.getIcF(), is(not(nullValue())));
     }

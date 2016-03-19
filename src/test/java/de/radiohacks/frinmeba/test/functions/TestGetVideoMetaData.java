@@ -39,6 +39,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -47,7 +48,6 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.radiohacks.frinmeba.modelshort.OGViMMD;
@@ -75,14 +75,19 @@ public class TestGetVideoMetaData extends JerseyTest {
      * @QueryParam(Constants.QPvideoid) int videoid);
      */
 
+    private static final Logger LOGGER = Logger
+            .getLogger(TestGetVideoMetaData.class.getName());
+
     // Username welche anzulegen ist
     private final static String username_org = "Test1";
-    private final static String username = 
-            Base64.encodeBase64String(username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    private final static String username = Base64
+            .encodeBase64String(username_org.getBytes(Charset
+                    .forName(Constants.CHARACTERSET)));
     // Passwort zum User
     private final static String password_org = "Test1";
-    private final static String password = 
-            Base64.encodeBase64String(password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    private final static String password = Base64
+            .encodeBase64String(password_org.getBytes(Charset
+                    .forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     private final static String email_org = "Test1@frinme.org";
 
@@ -99,9 +104,10 @@ public class TestGetVideoMetaData extends JerseyTest {
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-    
+
     @BeforeClass
     public static void prepareDB() {
+        LOGGER.debug("Start BeforeClass");
         dropDatabaseTables drop = new dropDatabaseTables();
         drop.dropTable();
         createDatabaseTables create = new createDatabaseTables();
@@ -109,6 +115,7 @@ public class TestGetVideoMetaData extends JerseyTest {
         helperDatabase help = new helperDatabase();
         help.CreateActiveUser(username_org, username, password_org, email_org,
                 help.InsertFixedImage());
+        LOGGER.debug("End BeforeClass");
     }
 
     private int insertVideo() {
@@ -132,7 +139,7 @@ public class TestGetVideoMetaData extends JerseyTest {
         } else {
             return 0;
         }
-        
+
     }
 
     private void deleteVideo(int in) {
@@ -149,7 +156,6 @@ public class TestGetVideoMetaData extends JerseyTest {
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataUpNoValues() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -158,13 +164,13 @@ public class TestGetVideoMetaData extends JerseyTest {
         } else {
             target = target(functionurl);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataUser() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -175,13 +181,13 @@ public class TestGetVideoMetaData extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_USERNAME,
                     username);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -192,13 +198,13 @@ public class TestGetVideoMetaData extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataVideoID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -210,14 +216,14 @@ public class TestGetVideoMetaData extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_VIDEOID,
                     videoid);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
         deleteVideo(videoid);
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataUserPassword() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -229,13 +235,13 @@ public class TestGetVideoMetaData extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_USERNAME, username);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataUserVideoID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -248,14 +254,14 @@ public class TestGetVideoMetaData extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_USERNAME,
                     username).queryParam(Constants.QP_VIDEOID, videoid);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
         deleteVideo(videoid);
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataPasswordvideoid() {
         int videoid = insertVideo();
         WebTarget target;
@@ -268,14 +274,14 @@ public class TestGetVideoMetaData extends JerseyTest {
             target = target(functionurl).queryParam(Constants.QP_PASSWORD,
                     password).queryParam(Constants.QP_VIDEOID, videoid);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NO_USERNAME_OR_PASSWORD));
         deleteVideo(videoid);
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataEncodingErrorUser() {
         int videoid = insertVideo();
         WebTarget target;
@@ -291,14 +297,14 @@ public class TestGetVideoMetaData extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, "$%&1233")
                     .queryParam(Constants.QP_VIDEOID, videoid);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
         deleteVideo(videoid);
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataEncodingErrorPassword() {
         int videoid = insertVideo();
         WebTarget target;
@@ -314,20 +320,20 @@ public class TestGetVideoMetaData extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_VIDEOID, videoid);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.ENCODING_ERROR));
         deleteVideo(videoid);
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataUserPasswordVideoID() {
-        
+
         helperDatabase help = new helperDatabase();
         OSViM O1 = help.insertVideoContent(username, password);
         int videoid = O1.getVID();
-        //int videoid = insertVideo();
+        // int videoid = insertVideo();
         System.out.println("videoid ==> " + videoid);
         WebTarget target;
         System.out.println("TestConfig - remote ==> " + TestConfig.remote);
@@ -343,6 +349,7 @@ public class TestGetVideoMetaData extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_VIDEOID, videoid);
         }
+        LOGGER.debug(target);
         System.out.println("target ==> " + target);
         System.out.println("request ==> " + target.request());
         System.out.println("==> " + target.request().get());
@@ -353,13 +360,12 @@ public class TestGetVideoMetaData extends JerseyTest {
         System.out.println("getVM == > " + out.getVM());
         System.out.println("getVMD5 == > " + out.getVMD5());
         System.out.println("getVS == > " + out.getVS());
-
+        LOGGER.debug("VS=" + out.getVS());
         assertThat(out.getVS(), is(not(nullValue())));
         deleteVideo(videoid);
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataUserWrongPasswordVideoID() {
         int videoid = insertVideo();
         WebTarget target;
@@ -382,14 +388,14 @@ public class TestGetVideoMetaData extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_VIDEOID, videoid);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.WRONG_PASSWORD));
         deleteVideo(videoid);
     }
 
     @Test
-    @Ignore("temporay disabeld")
     public void testGetVideoMetaDataUserPasswordWrongVideoID() {
         WebTarget target;
         if (TestConfig.remote) {
@@ -404,8 +410,9 @@ public class TestGetVideoMetaData extends JerseyTest {
                     .queryParam(Constants.QP_USERNAME, username)
                     .queryParam(Constants.QP_VIDEOID, 107365);
         }
+        LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
-
+        LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
     }
 
