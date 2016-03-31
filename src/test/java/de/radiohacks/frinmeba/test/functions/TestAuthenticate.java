@@ -32,9 +32,12 @@ import java.nio.charset.Charset;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -46,7 +49,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OAuth;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -111,133 +113,62 @@ public class TestAuthenticate extends JerseyTest {
     }
 
     @Test
-    public void testAuthenticateUpNoValues() {
+    public void testAuthenticateUpNoCredentials() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
         LOGGER.debug(target);
-        OAuth out = target.request().get(OAuth.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+        Response resp = target.request(MediaType.APPLICATION_XML).get();
+        LOGGER.debug(resp);
+        // OAuth out = resp.readEntity(OAuth.class);
+        Assert.assertEquals(resp.getStatus(), 401);
     }
 
     @Test
     public void testAuthenticateUserPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_USERNAME, username);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
         LOGGER.debug(target);
-        OAuth out = target.request().get(OAuth.class);
-        LOGGER.debug(out.getA());
-        Assert.assertEquals(Constants.AUTHENTICATE_TRUE, out.getA());
+        Response resp = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username, password).build())
+                .request(MediaType.APPLICATION_XML).get();
+        LOGGER.debug(resp);
+        // OAuth out = resp.readEntity(OAuth.class);
+        Assert.assertEquals(resp.getStatus(), 404);
     }
 
     @Test
     public void testAuthenticateUserWrongPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl).queryParam(
-                    Constants.QP_PASSWORD,
-                    Base64.encodeBase64String("XXX".getBytes(Charset
-                            .forName(Constants.CHARACTERSET)))).queryParam(
-                    Constants.QP_USERNAME, username);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
         LOGGER.debug(target);
-        OAuth out = target.request().get(OAuth.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+        Response resp = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username, "XXX").build())
+                .request(MediaType.APPLICATION_XML).get();
+        LOGGER.debug(resp);
+        // OAuth out = resp.readEntity(OAuth.class);
+        Assert.assertEquals(resp.getStatus(), 401);
     }
 
     @Test
-    public void testAuthenticateUserEncodeFailureUser() {
+    public void testAuthenticateWrongUserPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, "XXX");
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_USERNAME, "XXX");
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
         LOGGER.debug(target);
-        OAuth out = target.request().get(OAuth.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testAuthenticateUserEncodeFailurePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "XXX")
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    "XXX").queryParam(Constants.QP_USERNAME, username);
-        }
-        LOGGER.debug(target);
-        OAuth out = target.request().get(OAuth.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.AUTHENTICATE_FALSE, out.getA());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testAuthenticateUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username);
-        }
-        LOGGER.debug(target);
-        OAuth out = target.request().get(OAuth.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testAuthenticatePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password);
-        }
-        LOGGER.debug(target);
-        OAuth out = target.request().get(OAuth.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+        Response resp = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials("XXX", password).build())
+                .request(MediaType.APPLICATION_XML).get();
+        LOGGER.debug(resp);
+        // OAuth out = resp.readEntity(OAuth.class);
+        Assert.assertEquals(resp.getStatus(), 401);
     }
 }

@@ -40,7 +40,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.codec.binary.Base64;
-
 import org.apache.log4j.Logger;
 
 import de.radiohacks.frinmeba.services.Constants;
@@ -48,7 +47,8 @@ import de.radiohacks.frinmeba.services.Constants;
 public class Check implements Serializable {
 
     private static final long serialVersionUID = 6984249988911637721L;
-    private static final Logger LOGGER = Logger.getLogger(Check.class.getName());
+    private static final Logger LOGGER = Logger
+            .getLogger(Check.class.getName());
 
     private Connection con = null;
     private String lastError = null;
@@ -67,7 +67,9 @@ public class Check implements Serializable {
 
             try {
                 statement = con.createStatement();
-                resultSet = statement.executeQuery("select ID, Chatname from Chats where ID = '" + chatid + "'");
+                resultSet = statement
+                        .executeQuery("select ID, Chatname from Chats where ID = '"
+                                + chatid + "'");
 
                 if (resultSet != null && resultSet.next()) {
                     ret = true;
@@ -97,7 +99,9 @@ public class Check implements Serializable {
 
             try {
                 statement = con.createStatement();
-                resultSet = statement.executeQuery("select ID from Messages where ID = '" + messageid + "'");
+                resultSet = statement
+                        .executeQuery("select ID from Messages where ID = '"
+                                + messageid + "'");
 
                 if (resultSet != null && resultSet.next()) {
                     ret = true;
@@ -118,7 +122,8 @@ public class Check implements Serializable {
     }
 
     public boolean checkMessageIDReadTimestamp(int messageid) {
-        LOGGER.debug("Start CheckMessageIDReadTimestamp with MessageID = " + messageid);
+        LOGGER.debug("Start CheckMessageIDReadTimestamp with MessageID = "
+                + messageid);
 
         boolean ret = false;
         if (messageid != 0) {
@@ -127,7 +132,9 @@ public class Check implements Serializable {
 
             try {
                 statement = con.createStatement();
-                resultSet = statement.executeQuery("select ReadTimestamp from Messages where ID = '" + messageid + "'");
+                resultSet = statement
+                        .executeQuery("select ReadTimestamp from Messages where ID = '"
+                                + messageid + "'");
 
                 if (resultSet != null && resultSet.next()) {
                     if (resultSet.getInt("ReadTimestamp") > 0) {
@@ -145,12 +152,14 @@ public class Check implements Serializable {
                 }
             }
         }
-        LOGGER.debug("End CheckMessageIDReadTimestamp with MessageID = " + messageid);
+        LOGGER.debug("End CheckMessageIDReadTimestamp with MessageID = "
+                + messageid);
         return ret;
     }
 
     public boolean checkContenMessageID(int messageid, String messagetype) {
-        LOGGER.debug("Start CheckContenMessageID with MessageID = " + messageid + " MessageType = " + messagetype);
+        LOGGER.debug("Start CheckContenMessageID with MessageID = " + messageid
+                + " MessageType = " + messagetype);
         boolean ret = false;
 
         if (messageid != 0 && messagetype != null && !messagetype.isEmpty()) {
@@ -165,32 +174,44 @@ public class Check implements Serializable {
             try {
                 statement = con.createStatement();
                 if (messagetype.equalsIgnoreCase(Constants.TYP_TEXT)) {
-                    rsText = statement.executeQuery("select ID from Text where ID = '" + messageid + "'");
+                    rsText = statement
+                            .executeQuery("select ID from Text where ID = '"
+                                    + messageid + "'");
                     if (rsText != null && rsText.next()) {
                         ret = true;
                     }
                 } else if (messagetype.equalsIgnoreCase(Constants.TYP_IMAGE)) {
-                    rsImage = statement.executeQuery("select ID from Image where ID = '" + messageid + "'");
+                    rsImage = statement
+                            .executeQuery("select ID from Image where ID = '"
+                                    + messageid + "'");
                     if (rsImage != null && rsImage.next()) {
                         ret = true;
                     }
                 } else if (messagetype.equalsIgnoreCase(Constants.TYP_LOCATION)) {
-                    rsLoc = statement.executeQuery("select ID from Location where ID = '" + messageid + "'");
+                    rsLoc = statement
+                            .executeQuery("select ID from Location where ID = '"
+                                    + messageid + "'");
                     if (rsLoc != null && rsLoc.next()) {
                         ret = true;
                     }
                 } else if (messagetype.equalsIgnoreCase(Constants.TYP_CONTACT)) {
-                    rsCon = statement.executeQuery("select ID from Contact where ID = '" + messageid + "'");
+                    rsCon = statement
+                            .executeQuery("select ID from Contact where ID = '"
+                                    + messageid + "'");
                     if (rsCon != null && rsCon.next()) {
                         ret = true;
                     }
                 } else if (messagetype.equalsIgnoreCase(Constants.TYP_FILE)) {
-                    rsFile = statement.executeQuery("select ID from File where ID = '" + messageid + "'");
+                    rsFile = statement
+                            .executeQuery("select ID from File where ID = '"
+                                    + messageid + "'");
                     if (rsFile != null && rsFile.next()) {
                         ret = true;
                     }
                 } else if (messagetype.equalsIgnoreCase(Constants.TYP_VIDEO)) {
-                    rsVideo = statement.executeQuery("select ID from Video where ID = '" + messageid + "'");
+                    rsVideo = statement
+                            .executeQuery("select ID from Video where ID = '"
+                                    + messageid + "'");
                     if (rsVideo != null && rsVideo.next()) {
                         ret = true;
                     }
@@ -223,12 +244,14 @@ public class Check implements Serializable {
                 }
             }
         }
-        LOGGER.debug("End CheckContenMessageID with MessageID = " + messageid + " MessageType = " + messagetype);
+        LOGGER.debug("End CheckContenMessageID with MessageID = " + messageid
+                + " MessageType = " + messagetype);
         return ret;
     }
 
     public boolean checkOwnMessage(int userid, int messageid) {
-        LOGGER.debug("End CheckOwnMessage with MessageID = " + messageid + " UserID = " + userid);
+        LOGGER.debug("End CheckOwnMessage with MessageID = " + messageid
+                + " UserID = " + userid);
         boolean ret = false;
         if (messageid != 0 && userid != 0) {
             ResultSet rs = null;
@@ -236,8 +259,9 @@ public class Check implements Serializable {
 
             try {
                 statement = con.createStatement();
-                rs = statement.executeQuery("SELECT UserID FROM UserToChats a, Messages b WHERE b.ID = '" + messageid
-                        + "' AND b.UsertoChatID = a.ID");
+                rs = statement
+                        .executeQuery("SELECT UserID FROM UserToChats a, Messages b WHERE b.ID = '"
+                                + messageid + "' AND b.UsertoChatID = a.ID");
                 if (rs != null) {
                     while (rs.next()) {
                         if (rs.getInt("UserID") == userid) {
@@ -258,7 +282,8 @@ public class Check implements Serializable {
                 }
             }
         }
-        LOGGER.debug("End CheckOwnMessage with MessageID = " + messageid + " UserID = " + userid);
+        LOGGER.debug("End CheckOwnMessage with MessageID = " + messageid
+                + " UserID = " + userid);
         return ret;
     }
 
@@ -272,7 +297,9 @@ public class Check implements Serializable {
 
             try {
                 statement = con.createStatement();
-                resultSet = statement.executeQuery("select ID from Users where ID = '" + userid + "'");
+                resultSet = statement
+                        .executeQuery("select ID from Users where ID = '"
+                                + userid + "'");
 
                 if (resultSet != null && resultSet.next()) {
                     ret = true;

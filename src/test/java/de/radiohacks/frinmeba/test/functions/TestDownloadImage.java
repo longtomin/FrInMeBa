@@ -33,12 +33,14 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 //import org.glassfish.jersey.client.ClientConfig;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -51,7 +53,7 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OSImM;
+import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -64,14 +66,12 @@ public class TestDownloadImage extends JerseyTest {
     /*
      * @GET
      * 
-     * @Produces(MediaType.APPLICATION_XML)
+     * @Path("/download/{imageid}")
      * 
-     * @Path("/createchat") public OutCreateChat
-     * CreateChat(@QueryParam(Constants.QPusername) String User,
+     * @Produces("image/*") public Response downloadImage(@Context HttpHeaders
+     * headers,
      * 
-     * @QueryParam(Constants.QPpassword) String Password,
-     * 
-     * @QueryParam(Constants.QPchatname) String Chatname);
+     * @PathParam(Constants.QP_IMAGEID) int imageid);
      */
 
     private static final Logger LOGGER = Logger
@@ -104,10 +104,10 @@ public class TestDownloadImage extends JerseyTest {
                 .build();
     }
 
-    /*@Override
-    protected void configureClient(ClientConfig config) {
-        config.register(MultiPartFeature.class);
-    }*/
+    /*
+     * @Override protected void configureClient(ClientConfig config) {
+     * config.register(MultiPartFeature.class); }
+     */
 
     @BeforeClass
     public static void prepareDB() {
@@ -157,48 +157,10 @@ public class TestDownloadImage extends JerseyTest {
     @Test
     public void testDownloadImageUpNoValues() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
 
-        assertThat(status, is(404));
-    }
-
-    @Test
-    public void testDownloadImageUser() {
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username);
-        } else {
-            target = target(functionurl).path(username);
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-    }
-
-    @Test
-    public void testDownloadImagePassword() {
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(password);
-        } else {
-            target = target(functionurl).path(password);
-        }
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
@@ -212,151 +174,11 @@ public class TestDownloadImage extends JerseyTest {
         int imageid = insertImage();
         WebTarget target;
 
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .path(String.valueOf(imageid));
-        } else {
-            target = target(functionurl).path(String.valueOf(imageid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
 
-        assertThat(status, is(404));
-        deleteImage(imageid);
-    }
-
-    @Test
-    public void testDownloadImageUserPassword() {
-        int imageid = insertImage();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(password);
-        } else {
-            target = target(functionurl).path(username).path(password);
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-        deleteImage(imageid);
-    }
-
-    @Test
-    public void testDownloadImageUserImageID() {
-        int imageid = insertImage();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(String.valueOf(imageid));
-        } else {
-            target = target(functionurl).path(username).path(
-                    String.valueOf(imageid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-        deleteImage(imageid);
-    }
-
-    @Test
-    public void testDownloadImagePasswordImageID() {
-        int imageid = insertImage();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(password)
-                    .path(String.valueOf(imageid));
-        } else {
-            target = target(functionurl).path(password).path(
-                    String.valueOf(imageid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-        deleteImage(imageid);
-    }
-
-    @Test
-    public void testDownloadImageEncodingErrorUser() {
-        int imageid = insertImage();
-        WebTarget target;
-		
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(TestConfig.URL + functionurl).path("1234$")
-                    .path(password).path(String.valueOf(imageid));
-        } else {
-            target = target(functionurl).path("1234$").path(password)
-                    .path(String.valueOf(imageid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
-        deleteImage(imageid);
-    }
-
-    @Test
-    public void testDownloadImageEncodingErrorPassword() {
-        int imageid = insertImage();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path("1234$").path(String.valueOf(imageid));
-        } else {
-            target = target(functionurl).path(username).path("1234$")
-                    .path(String.valueOf(imageid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
-        deleteImage(imageid);
-    }
-
-    @Test
-    public void testDownloadImageUserPasswordImageID() {
-        int imageid = insertImage();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(password).path(String.valueOf(imageid));
-        } else {
-            target = target(functionurl).path(username).path(password)
-                    .path(String.valueOf(imageid));
-        }
+        target = c.target(TestConfig.URL).path(functionurl)
+                .path(String.valueOf(imageid));
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
@@ -367,35 +189,42 @@ public class TestDownloadImage extends JerseyTest {
     }
 
     @Test
-    public void testDownloadImageUserWrongPasswordImageID() {
+    public void testDownloadImageEncodingErrorUser() {
         int imageid = insertImage();
         WebTarget target;
 
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .path(username)
-                    .path(Base64.encodeBase64String("XXX".getBytes(Charset
-                            .forName(Constants.CHARACTERSET))))
-                    .path(String.valueOf(imageid));
-        } else {
-            target = target(functionurl)
-                    .path(username)
-                    .path(Base64.encodeBase64String("XXX".getBytes(Charset
-                            .forName(Constants.CHARACTERSET))))
-                    .path(String.valueOf(imageid));
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, "1234$"));
+
+        target = c.target(TestConfig.URL).path(functionurl)
+                .path(String.valueOf(imageid));
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
 
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
+        assertThat(status, is(401));
+        deleteImage(imageid);
+    }
+
+    @Test
+    public void testDownloadImageUserWrongPasswordImageID() {
+        int imageid = insertImage();
+        WebTarget target;
+
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, Base64
+                .encodeBase64String("XXX".getBytes(Charset
+                        .forName(Constants.CHARACTERSET)))));
+
+        target = c.target(TestConfig.URL).path(functionurl)
+                .path(String.valueOf(imageid));
+        LOGGER.debug(target);
+        Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
+        LOGGER.debug(rsp);
+        int status = rsp.getStatus();
+
+        assertThat(status, is(401));
         deleteImage(imageid);
     }
 
@@ -403,24 +232,16 @@ public class TestDownloadImage extends JerseyTest {
     public void testDownloadImageUserPasswordWrongImageID() {
         WebTarget target;
 
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(password).path(String.valueOf(14325));
-        } else {
-            target = target(functionurl).path(username).path(password)
-                    .path(String.valueOf(14325));
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+
+        target = c.target(TestConfig.URL).path(functionurl)
+                .path(String.valueOf(14325));
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
 
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
-
+        assertThat(status, is(204));
     }
 }

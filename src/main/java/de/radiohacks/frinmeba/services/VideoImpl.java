@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
@@ -50,14 +51,12 @@ import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MyConnection;
-import de.radiohacks.frinmeba.modelshort.IAuth;
-import de.radiohacks.frinmeba.modelshort.IGViM;
-import de.radiohacks.frinmeba.modelshort.IGViMMD;
-import de.radiohacks.frinmeba.modelshort.ISViM;
-import de.radiohacks.frinmeba.modelshort.OAuth;
-import de.radiohacks.frinmeba.modelshort.OGViM;
-import de.radiohacks.frinmeba.modelshort.OGViMMD;
-import de.radiohacks.frinmeba.modelshort.OSViM;
+import de.radiohacks.frinmeba.model.jaxb.IGViM;
+import de.radiohacks.frinmeba.model.jaxb.IGViMMD;
+import de.radiohacks.frinmeba.model.jaxb.ISViM;
+import de.radiohacks.frinmeba.model.jaxb.OGViM;
+import de.radiohacks.frinmeba.model.jaxb.OGViMMD;
+import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.util.IVideoUtil;
 
 @Path("/video")
@@ -65,118 +64,80 @@ public class VideoImpl implements IVideoUtil {
     /**
      * Upload a File
      */
-    
-    private static final Logger LOGGER = Logger.getLogger(VideoImpl.class.getName());
+
+    private static final Logger LOGGER = Logger.getLogger(VideoImpl.class
+            .getName());
 
     @Override
-    public OSViM uploadVideo(String user, String password, String acknowldge,
+    public OSViM uploadVideo(HttpHeaders headers, String acknowldge,
             InputStream fileInputStream,
             FormDataContentDisposition contentDispositionHeader) {
 
         OSViM out = new OSViM();
         MyConnection mc = new MyConnection();
         Connection con = mc.getConnection();
-        User actuser = new User(con);
+        User actuser = new User(con,
+                headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check(con);
 
-        if (actcheck.checkValueMust(user)) {
-            if (actcheck.checkValueMust(password)) {
-                if (actcheck.checkValueMust(acknowldge)) {
+        if (actcheck.checkValueMust(acknowldge)) {
 
-                    IAuth inauth = new IAuth();
-                    OAuth outauth = new OAuth();
-                    inauth.setPW(actuser.base64Decode(password));
-                    inauth.setUN(user);
+            ISViM in = new ISViM();
+            if (contentDispositionHeader != null) {
+                if (fileInputStream != null) {
+                    if (contentDispositionHeader.getFileName() != null
+                            && !contentDispositionHeader.getFileName()
+                                    .isEmpty()) {
 
-                    ISViM in = new ISViM();
-                    in.setPW(actuser.base64Decode(password));
-                    in.setUN(actuser.base64Decode(user));
+                        // Now we save the Image
+                        long currentTime = System.currentTimeMillis() / 1000L;
+                        String filetime = Objects.toString(currentTime, null);
 
-                    /* First check if the User is valid */
-                    actuser.authenticate(inauth, outauth);
+                        String filePath = (new Constants())
+                                .getUploadFolderVideo()
+                                + File.separatorChar
+                                + filetime
+                                + contentDispositionHeader.getFileName();
 
-                    if (outauth.getA().equalsIgnoreCase(
-                            Constants.AUTHENTICATE_FALSE)) {
-                        out.setET(outauth.getET());
-                    } else {
-                        if (contentDispositionHeader != null) {
-                            if (fileInputStream != null) {
-                                if (contentDispositionHeader.getFileName() != null
-                                        && !contentDispositionHeader
-                                                .getFileName().isEmpty()) {
+                        // save the file to the server
+                        saveFile(fileInputStream, filePath);
+                        // Insert the New Image Message into the
+                        // Database an set
+                        // the out
+                        // Information.
 
-                                    // Now we save the Image
-                                    long currentTime = System
-                                            .currentTimeMillis() / 1000L;
-                                    String filetime = Objects.toString(
-                                            currentTime, null);
-
-                                    String filePath = (new Constants()).getUploadFolderVideo() + File.separatorChar
-                                            + filetime
-                                            + contentDispositionHeader
-                                                    .getFileName();
-
-                                    // save the file to the server
-                                    saveFile(fileInputStream, filePath);
-                                    // Insert the New Image Message into the
-                                    // Database an set
-                                    // the out
-                                    // Information.
-
-                                    HashCode md5 = null;
-                                    try {
-                                        md5 = Files.hash(new File(filePath),
-                                                Hashing.md5());
-                                    } catch (IOException e) {
-                                        LOGGER.error(e);
-                                    }
-                                    String md5Hex = md5.toString();
-
-                                    out.setVF(filetime
-                                            + contentDispositionHeader
-                                                    .getFileName());
-                                    in.setVM(filetime
-                                            + contentDispositionHeader
-                                                    .getFileName());
-                                    in.setVMD5(md5Hex);
-                                    if (actuser.base64Decode(acknowldge)
-                                            .equalsIgnoreCase(md5Hex)) {
-                                        actuser.sendVideoMessage(in, out);
-                                    } else {
-                                        out.setET(Constants.UPLOAD_FAILED);
-                                    }
-                                } else {
-                                    out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
-                                }
-                            } else {
-                                out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
-                            }
-                        } else {
-                            out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
+                        HashCode md5 = null;
+                        try {
+                            md5 = Files.hash(new File(filePath), Hashing.md5());
+                        } catch (IOException e) {
+                            LOGGER.error(e);
                         }
+                        String md5Hex = md5.toString();
+
+                        out.setVF(filetime
+                                + contentDispositionHeader.getFileName());
+                        in.setVM(filetime
+                                + contentDispositionHeader.getFileName());
+                        in.setVMD5(md5Hex);
+                        if (actuser.base64Decode(acknowldge).equalsIgnoreCase(
+                                md5Hex)) {
+                            actuser.sendVideoMessage(in, out);
+                        } else {
+                            out.setET(Constants.UPLOAD_FAILED);
+                        }
+                    } else {
+                        out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
                     }
                 } else {
-                    if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.NO_CONTENT_GIVEN)) {
-                        out.setET(Constants.UPLOAD_FAILED);
-                    } else if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.ENCODING_ERROR)) {
-                        out.setET(Constants.ENCODING_ERROR);
-                    }
+                    out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
                 }
             } else {
-                if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.NO_CONTENT_GIVEN)) {
-                    out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-                } else if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.ENCODING_ERROR)) {
-                    out.setET(Constants.ENCODING_ERROR);
-                }
+                out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
             }
         } else {
             if (actcheck.getLastError().equalsIgnoreCase(
                     Constants.NO_CONTENT_GIVEN)) {
-                out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+                out.setET(Constants.UPLOAD_FAILED);
             } else if (actcheck.getLastError().equalsIgnoreCase(
                     Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
@@ -198,61 +159,40 @@ public class VideoImpl implements IVideoUtil {
      */
 
     @Override
-    public Response downloadVideo(String user, String password, int videoid) {
+    public Response downloadVideo(HttpHeaders headers, int videoid) {
 
         MyConnection mc = new MyConnection();
         Connection con = mc.getConnection();
-        User actuser = new User(con);
+        User actuser = new User(con,
+                headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check(con);
         OGViM out = new OGViM();
 
-        if (actcheck.checkValueMust(user)) {
-            if (actcheck.checkValueMust(password)) {
+        IGViM in = new IGViM();
+        in.setVID(videoid);
 
-                IAuth inauth = new IAuth();
-                OAuth outauth = new OAuth();
-                inauth.setPW(actuser.base64Decode(password));
-                inauth.setUN(user);
+        if (!actcheck.checkContenMessageID(videoid, Constants.TYP_VIDEO)) {
+            out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+        } else {
+            actuser.getVideoMessages(in, out);
 
-                IGViM in = new IGViM();
-                in.setUN(actuser.base64Decode(user));
-                in.setPW(actuser.base64Decode(password));
-                in.setVID(videoid);
-
-                actuser.authenticate(inauth, outauth);
-
-                if (outauth.getA().equalsIgnoreCase(
-                        Constants.AUTHENTICATE_FALSE)) {
-                    out.setET(outauth.getET());
-                } else {
-                    if (!actcheck.checkContenMessageID(videoid,
-                            Constants.TYP_VIDEO)) {
-                        out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
-                    } else {
-                        actuser.getVideoMessages(in, out);
-
-                        final File file = new File(
-                                (new Constants()).getUploadFolderVideo() + File.separatorChar
-                                        + out.getVM());
-                        if (!file.exists()) {
-                            LOGGER.error("file not found : " + file.getAbsolutePath());
-                        }
-                        try {
-                            if (con != null) {
-                                con.close();
-                                con = null;
-                            }
-                            return Response
-                                    .ok(FileUtils.readFileToByteArray(file))
-                                    .header("Content-Disposition", "attachment")
-                                    .header("filename", out.getVM()).build();
-                        } catch (java.io.IOException ex) {
-                            LOGGER.error(ex);
-                        } catch (SQLException e) {
-                            LOGGER.error(e);
-                        }
-                    }
+            final File file = new File((new Constants()).getUploadFolderVideo()
+                    + File.separatorChar + out.getVM());
+            if (!file.exists()) {
+                LOGGER.error("file not found : " + file.getAbsolutePath());
+            }
+            try {
+                if (con != null) {
+                    con.close();
+                    con = null;
                 }
+                return Response.ok(FileUtils.readFileToByteArray(file))
+                        .header("Content-Disposition", "attachment")
+                        .header("filename", out.getVM()).build();
+            } catch (java.io.IOException ex) {
+                LOGGER.error(ex);
+            } catch (SQLException e) {
+                LOGGER.error(e);
             }
         }
 
@@ -267,74 +207,35 @@ public class VideoImpl implements IVideoUtil {
     }
 
     @Override
-    public OGViMMD getVideoMetadata(String user, String password, int videoid) {
+    public OGViMMD getVideoMetadata(HttpHeaders headers, int videoid) {
 
         MyConnection mc = new MyConnection();
         Connection con = mc.getConnection();
-        User actuser = new User(con);
+        User actuser = new User(con,
+                headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check(con);
         OGViMMD out = new OGViMMD();
 
-        if (actcheck.checkValueMust(user)) {
-            if (actcheck.checkValueMust(password)) {
+        IGViMMD in = new IGViMMD();
+        in.setVID(videoid);
 
-                IAuth inauth = new IAuth();
-                OAuth outauth = new OAuth();
-                inauth.setPW(actuser.base64Decode(password));
-                inauth.setUN(user);
+        IGViM tmpin = new IGViM();
+        tmpin.setVID(videoid);
+        OGViM tmpout = new OGViM();
 
-                IGViMMD in = new IGViMMD();
-                in.setUN(actuser.base64Decode(user));
-                in.setPW(actuser.base64Decode(password));
-                in.setVID(videoid);
-
-                actuser.authenticate(inauth, outauth);
-
-                actuser.authenticate(inauth, outauth);
-
-                if (outauth.getA().equalsIgnoreCase(
-                        Constants.AUTHENTICATE_FALSE)) {
-                    out.setET(outauth.getET());
-                } else {
-                    IGViM tmpin = new IGViM();
-                    tmpin.setUN(user);
-                    tmpin.setPW(password);
-                    tmpin.setVID(videoid);
-                    OGViM tmpout = new OGViM();
-
-                    if (!actcheck.checkContenMessageID(videoid,
-                            Constants.TYP_VIDEO)) {
-                        out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
-                    } else {
-                        actuser.getVideoMessages(tmpin, tmpout);
-
-                        final File file = new File(
-                                (new Constants()).getUploadFolderVideo() + tmpout.getVM());
-                        if (file.exists()) {
-                            out.setVM(tmpout.getVM());
-                            out.setVMD5(tmpout.getVMD5());
-                            out.setVS(file.length());
-                        } else {
-                            out.setET(Constants.FILE_NOT_FOUND);
-                        }
-                    }
-                }
-            } else {
-                if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.NO_CONTENT_GIVEN)) {
-                    out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-                } else if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.ENCODING_ERROR)) {
-                    out.setET(Constants.ENCODING_ERROR);
-                }
-            }
+        if (!actcheck.checkContenMessageID(videoid, Constants.TYP_VIDEO)) {
+            out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
-                out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
-                out.setET(Constants.ENCODING_ERROR);
+            actuser.getVideoMessages(tmpin, tmpout);
+
+            final File file = new File((new Constants()).getUploadFolderVideo()
+                    + tmpout.getVM());
+            if (file.exists()) {
+                out.setVM(tmpout.getVM());
+                out.setVMD5(tmpout.getVMD5());
+                out.setVS(file.length());
+            } else {
+                out.setET(Constants.FILE_NOT_FOUND);
             }
         }
 

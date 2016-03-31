@@ -38,15 +38,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import de.radiohacks.frinmeba.modelshort.OGImMMD;
-import de.radiohacks.frinmeba.modelshort.OSIcM;
-import de.radiohacks.frinmeba.modelshort.OSImM;
+import de.radiohacks.frinmeba.model.jaxb.OGImMMD;
+import de.radiohacks.frinmeba.model.jaxb.OSIcM;
+import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 
 public interface IImageUtil {
@@ -56,8 +58,7 @@ public interface IImageUtil {
     @Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public OSImM uploadImage(
-            @QueryParam(Constants.QP_USERNAME) String user,
-            @QueryParam(Constants.QP_PASSWORD) String password,
+            @Context HttpHeaders headers,
             @QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
             @FormDataParam("file") InputStream fileInputStream,
             @FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
@@ -65,25 +66,21 @@ public interface IImageUtil {
     @GET
     @Path("/getimagemetadata")
     @Produces(MediaType.APPLICATION_XML)
-    public OGImMMD getImageMetadata(
-            @QueryParam(Constants.QP_USERNAME) String user,
-            @QueryParam(Constants.QP_PASSWORD) String password,
+    public OGImMMD getImageMetadata(@Context HttpHeaders headers,
             @QueryParam("imageid") int imageid);
 
     @GET
-    @Path("/download/{username}/{password}/{imageid}")
+    @Path("/download/{imageid}")
     @Produces("image/*")
-    public Response downloadImage(@PathParam(Constants.QP_USERNAME) String user,
-            @PathParam(Constants.QP_PASSWORD) String password,
+    public Response downloadImage(@Context HttpHeaders headers,
             @PathParam(Constants.QP_IMAGEID) int imageid);
-    
+
     @POST
     @Path("/uploadicon")
     @Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public OSIcM uploadIcon(
-            @QueryParam(Constants.QP_USERNAME) String user,
-            @QueryParam(Constants.QP_PASSWORD) String password,
+            @Context HttpHeaders headers,
             @QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
             @FormDataParam("file") InputStream fileInputStream,
             @FormDataParam("file") FormDataContentDisposition contentDispositionHeader);

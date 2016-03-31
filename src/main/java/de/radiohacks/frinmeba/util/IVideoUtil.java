@@ -37,41 +37,39 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import de.radiohacks.frinmeba.modelshort.OGViMMD;
-import de.radiohacks.frinmeba.modelshort.OSViM;
+import de.radiohacks.frinmeba.model.jaxb.OGViMMD;
+import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
 
 public interface IVideoUtil {
 
-	@POST
-	@Path("/upload")
-	@Produces(MediaType.APPLICATION_XML)
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public OSViM uploadVideo(
-			@QueryParam(Constants.QP_USERNAME) String user,
-			@QueryParam(Constants.QP_PASSWORD) String password,
-			@QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
-			@FormDataParam("file") InputStream fileInputStream,
-			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
+    @POST
+    @Path("/upload")
+    @Produces(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public OSViM uploadVideo(
+            @Context HttpHeaders headers,
+            @QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
+            @FormDataParam("file") InputStream fileInputStream,
+            @FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
 
-	@GET
-	@Path("/getvideometadata")
-	@Produces(MediaType.APPLICATION_XML)
-	public OGViMMD getVideoMetadata(
-			@QueryParam(Constants.QP_USERNAME) String user,
-			@QueryParam(Constants.QP_PASSWORD) String password,
-			@QueryParam(Constants.QP_VIDEOID) int videoid);
+    @GET
+    @Path("/getvideometadata")
+    @Produces(MediaType.APPLICATION_XML)
+    public OGViMMD getVideoMetadata(@Context HttpHeaders headers,
+            @QueryParam(Constants.QP_VIDEOID) int videoid);
 
-	@GET
-	@Path("/download/{username}/{password}/{videoid}")
-	@Produces("video/*")
-	public Response downloadVideo(@PathParam(Constants.QP_USERNAME) String user,
-			@PathParam(Constants.QP_PASSWORD) String password,
-			@PathParam(Constants.QP_VIDEOID) int videoid);
+    @GET
+    @Path("/download/{videoid}")
+    @Produces("video/*")
+    public Response downloadVideo(@Context HttpHeaders headers,
+            @PathParam(Constants.QP_VIDEOID) int videoid);
 }

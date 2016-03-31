@@ -33,12 +33,14 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -49,7 +51,7 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OSViM;
+import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -62,14 +64,12 @@ public class TestDownloadVideo extends JerseyTest {
     /*
      * @GET
      * 
-     * @Produces(MediaType.APPLICATION_XML)
+     * @Path("/download/{username}/{password}/{videoid}")
      * 
-     * @Path("/createchat") public OutCreateChat
-     * CreateChat(@QueryParam(Constants.QPusername) String User,
+     * @Produces("video/*") public Response downloadVideo(@Context HttpHeaders
+     * headers,
      * 
-     * @QueryParam(Constants.QPpassword) String Password,
-     * 
-     * @QueryParam(Constants.QPchatname) String Chatname);
+     * @PathParam(Constants.QP_VIDEOID) int videoid);
      */
 
     private static final Logger LOGGER = Logger
@@ -154,48 +154,10 @@ public class TestDownloadVideo extends JerseyTest {
     @Test
     public void testDownloadVideoUpNoValues() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
 
-        assertThat(status, is(404));
-    }
-
-    @Test
-    public void testDownloadVideoUser() {
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username);
-        } else {
-            target = target(functionurl).path(username);
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-    }
-
-    @Test
-    public void testDownloadVideoPassword() {
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(password);
-        } else {
-            target = target(functionurl).path(password);
-        }
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response rsp = target.request("video/mp4").accept("video/mp4").head();
         LOGGER.debug(rsp);
@@ -208,153 +170,10 @@ public class TestDownloadVideo extends JerseyTest {
     public void testDownloadVideoVideoID() {
         int videoid = insertVideo();
         WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .path(String.valueOf(videoid));
-        } else {
-            target = target(functionurl).path(String.valueOf(videoid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-        deleteVideo(videoid);
-    }
-
-    @Test
-    public void testDownloadVideoUserPassword() {
-        int videoid = insertVideo();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(password);
-        } else {
-            target = target(functionurl).path(username).path(password);
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-        deleteVideo(videoid);
-    }
-
-    @Test
-    public void testDownloadVideoUserImageID() {
-        int videoid = insertVideo();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(String.valueOf(videoid));
-        } else {
-            target = target(functionurl).path(username).path(
-                    String.valueOf(videoid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-        deleteVideo(videoid);
-    }
-
-    @Test
-    public void testDownloadVideoPasswordImageID() {
-        int videoid = insertVideo();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(password)
-                    .path(String.valueOf(videoid));
-        } else {
-            target = target(functionurl).path(password).path(
-                    String.valueOf(videoid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        assertThat(status, is(404));
-        deleteVideo(videoid);
-    }
-
-    @Test
-    public void testDownloadVideoEncodingErrorUser() {
-        int videoid = insertVideo();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path("1234$")
-                    .path(password).path(String.valueOf(videoid));
-        } else {
-            target = target(functionurl).path("1234$").path(password)
-                    .path(String.valueOf(videoid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
-        deleteVideo(videoid);
-    }
-
-    @Test
-    public void testDownloadVideoEncodingErrorPassword() {
-        int videoid = insertVideo();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path("1234$").path(String.valueOf(videoid));
-        } else {
-            target = target(functionurl).path(username).path("1234$")
-                    .path(String.valueOf(videoid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
-        deleteVideo(videoid);
-    }
-
-    @Test
-    public void testDownloadVideoUserPasswordImageID() {
-        int videoid = insertVideo();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(password).path(String.valueOf(videoid));
-        } else {
-            target = target(functionurl).path(username).path(password)
-                    .path(String.valueOf(videoid));
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        target = c.target(TestConfig.URL).path(functionurl)
+                .path(String.valueOf(videoid));
         LOGGER.debug(target);
         Response rsp = target.request("video/mp4").accept("video/mp4").head();
         LOGGER.debug(rsp);
@@ -365,59 +184,17 @@ public class TestDownloadVideo extends JerseyTest {
     }
 
     @Test
-    public void testDownloadVideoUserWrongPasswordImageID() {
-        int videoid = insertVideo();
-        WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .path(username)
-                    .path(Base64.encodeBase64String("XXX".getBytes(Charset
-                            .forName(Constants.CHARACTERSET))))
-                    .path(String.valueOf(videoid));
-        } else {
-            target = target(functionurl)
-                    .path(username)
-                    .path(Base64.encodeBase64String("XXX".getBytes(Charset
-                            .forName(Constants.CHARACTERSET))))
-                    .path(String.valueOf(videoid));
-        }
-        LOGGER.debug(target);
-        Response rsp = target.request("video/mp4").accept("video/mp4").head();
-        LOGGER.debug(rsp);
-        int status = rsp.getStatus();
-
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
-        deleteVideo(videoid);
-    }
-
-    @Test
     public void testDownloadVideoUserPasswordWrongImageID() {
         WebTarget target;
-
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl).path(username)
-                    .path(password).path(String.valueOf(14325));
-        } else {
-            target = target(functionurl).path(username).path(password)
-                    .path(String.valueOf(14325));
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        target = c.target(TestConfig.URL).path(functionurl)
+                .path(String.valueOf(14325));
         LOGGER.debug(target);
         Response rsp = target.request("video/mp4").accept("video/mp4").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
 
-        if (TestConfig.remote) {
-            assertThat(status, is(204));
-        } else {
-            assertThat(status, is(404));
-        }
+        assertThat(status, is(204));
     }
 }

@@ -49,8 +49,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.ISiUp;
-import de.radiohacks.frinmeba.modelshort.OSiUp;
+import de.radiohacks.frinmeba.model.jaxb.ISiUp;
+import de.radiohacks.frinmeba.model.jaxb.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -112,12 +112,7 @@ public class TestSignUp extends JerseyTest {
 
     private OSiUp callTarget(ISiUp in) {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
         Response response = target.request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))

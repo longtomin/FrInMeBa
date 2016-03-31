@@ -30,11 +30,13 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -46,7 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OFMFC;
+import de.radiohacks.frinmeba.model.jaxb.OFMFC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -187,66 +189,13 @@ public class TestGetMessageFromChat extends JerseyTest {
     }
 
     @Test
-    public void testGetMessageFromChatUpNoValues() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
-        LOGGER.debug(target);
-        OFMFC out = target.request().get(OFMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetMessageFromChatUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username1);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username1);
-        }
-        LOGGER.debug(target);
-        OFMFC out = target.request().get(OFMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetMessageFromChatPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1);
-        }
-        LOGGER.debug(target);
-        OFMFC out = target.request().get(OFMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testGetMessageFromChatUserPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(Constants.QP_USERNAME, username1);
-        }
+
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
         OFMFC out = target.request().get(OFMFC.class);
         LOGGER.debug("ET=" + out.getET());
@@ -254,81 +203,13 @@ public class TestGetMessageFromChat extends JerseyTest {
     }
 
     @Test
-    public void testGetMessageFromChatUserWrongPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username1);
-        } else {
-            target = target(functionurl).queryParam(
-                    Constants.QP_PASSWORD,
-                    Base64.encodeBase64String("XXX".getBytes(Charset
-                            .forName(Constants.CHARACTERSET)))).queryParam(
-                    Constants.QP_USERNAME, username1);
-        }
-        LOGGER.debug(target);
-        OFMFC out = target.request().get(OFMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetMessageFromChatUserEncodeFailureUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "XXX");
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(Constants.QP_USERNAME, "XXX");
-        }
-        LOGGER.debug(target);
-        OFMFC out = target.request().get(OFMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testGetMessageFromChatUserEncodeFailurePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "XXX");
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(Constants.QP_USERNAME, "XXX");
-        }
-        LOGGER.debug(target);
-        OFMFC out = target.request().get(OFMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testGetMessageFromChatUserPasswordChatID() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_CHATID, cid1to2);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_CHATID, cid1to2);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_CHATID, cid1to2);
         LOGGER.debug(target);
         OFMFC out = target.request().get(OFMFC.class);
         LOGGER.debug("M (size) =" + out.getM().size());
@@ -338,18 +219,11 @@ public class TestGetMessageFromChat extends JerseyTest {
     @Test
     public void testGetMessageFromChatUserPasswordTimestamp() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_TIMESTAMP, 0);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_TIMESTAMP, 0);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_TIMESTAMP, 0);
         LOGGER.debug(target);
         OFMFC out = target.request().get(OFMFC.class);
         LOGGER.debug("ET=" + out.getET());
@@ -359,20 +233,15 @@ public class TestGetMessageFromChat extends JerseyTest {
     @Test
     public void testGetMessageFromChatUserPasswordChatIDTimestampToBig() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_TIMESTAMP, 200)
-                    .queryParam(Constants.QP_CHATID, cid1to2);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_TIMESTAMP, 200)
-                    .queryParam(Constants.QP_CHATID, cid1to2);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c
+                .target(TestConfig.URL + functionurl)
+                // .queryParam(Constants.QP_PASSWORD, password2)
+                // .queryParam(Constants.QP_USERNAME, username2)
+                .queryParam(Constants.QP_TIMESTAMP, 200)
+                .queryParam(Constants.QP_CHATID, cid1to2);
         LOGGER.debug(target);
         OFMFC out = target.request().get(OFMFC.class);
         LOGGER.debug("M (size) =" + out.getM().size());
@@ -382,20 +251,15 @@ public class TestGetMessageFromChat extends JerseyTest {
     @Test
     public void testGetMessageFromChatUserPasswordChatIDTimestampNewMessages() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_TIMESTAMP, 0)
-                    .queryParam(Constants.QP_CHATID, cid3to12);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_TIMESTAMP, 0)
-                    .queryParam(Constants.QP_CHATID, cid3to12);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c
+                .target(TestConfig.URL + functionurl)
+                // .queryParam(Constants.QP_PASSWORD, password1)
+                // .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(Constants.QP_TIMESTAMP, 0)
+                .queryParam(Constants.QP_CHATID, cid3to12);
         LOGGER.debug(target);
         OFMFC out = target.request().get(OFMFC.class);
         LOGGER.debug("M (size) =" + out.getM().size());

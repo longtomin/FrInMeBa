@@ -30,11 +30,13 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -46,7 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.ODMFC;
+import de.radiohacks.frinmeba.model.jaxb.ODMFC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -186,68 +188,12 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    public void testDeleteMessageFromChatUpNoValues() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
-        LOGGER.debug(target);
-        ODMFC out = target.request().delete(ODMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testDeleteMessageFromChatUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username1);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username1);
-        }
-        LOGGER.debug(target);
-        ODMFC out = target.request().delete(ODMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testDeleteMessageFromChatPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1);
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1);
-        }
-        LOGGER.debug(target);
-        ODMFC out = target.request().delete(ODMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testDeleteMessageFromChatUserPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(Constants.QP_USERNAME, username1);
-
-        }
+        target = c.target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
         ODMFC out = target.request().delete(ODMFC.class);
         LOGGER.debug("ET=" + out.getET());
@@ -255,91 +201,13 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     }
 
     @Test
-    public void testDeleteMessageFromChatUserWrongPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        } else {
-            target = target(functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        }
-        LOGGER.debug(target);
-        ODMFC out = target.request().delete(ODMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testDeleteMessageFromChatUserEncodeFailureUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "XXX")
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "XXX")
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        }
-        LOGGER.debug(target);
-        ODMFC out = target.request().delete(ODMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testDeleteMessageFromChatUserEncodeFailurePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "XXX")
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "XXX")
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        }
-        LOGGER.debug(target);
-
-        ODMFC out = target.request().delete(ODMFC.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testDeleteMessageFromChatUserPasswordMessageIDTextNotOwner() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_txt2a);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_txt2a);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_txt2);
         LOGGER.debug(target);
         ODMFC out = target.request().delete(ODMFC.class);
         LOGGER.debug("ET=" + out.getET());
@@ -349,18 +217,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     @Test
     public void testDeleteMessageFromChatUserPasswordMessageIDTextOwner() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_txt1);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_txt1);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_txt1);
         LOGGER.debug(target);
         ODMFC out1 = target.request().delete(ODMFC.class);
         LOGGER.debug(out1.getMID());
@@ -368,18 +229,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         Assert.assertNull(out1.getET());
 
         WebTarget target2;
-        if (TestConfig.remote) {
-            target2 = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_txt2);
-        } else {
-            target2 = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_txt2);
-        }
+        Client c2 = ClientBuilder.newClient();
+        c2.register(HttpAuthenticationFeature.basic(username2, password2));
+
+        target2 = c2.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_txt2);
         LOGGER.debug(target2);
 
         ODMFC out2 = target2.request().delete(ODMFC.class);
@@ -391,18 +245,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     @Test
     public void testDeleteMessageFromChatUserPasswordMessageIDImageNotOwner() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_img2a);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_img2a);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_img2);
         LOGGER.debug(target);
         ODMFC out = target.request().delete(ODMFC.class);
         LOGGER.debug("ET=" + out.getET());
@@ -412,18 +259,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     @Test
     public void testDeleteMessageFromChatUserPasswordMessageIDImageOwner() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_img1);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_img1);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_img1);
         LOGGER.debug(target);
         ODMFC out1 = target.request().delete(ODMFC.class);
         LOGGER.debug(out1.getMID());
@@ -431,20 +271,17 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         Assert.assertNull(out1.getET());
 
         WebTarget target2;
-        if (TestConfig.remote) {
-            target2 = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_img2);
-        } else {
-            target2 = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_img2);
-        }
+        Client c2 = ClientBuilder.newClient();
+        c2.register(HttpAuthenticationFeature.basic(username2, password2));
+
+        target2 = c2.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_img2);
         LOGGER.debug(target2);
-        ODMFC out2 = target2.request().delete(ODMFC.class);
+        ODMFC out2 = target2
+                .register(
+                        HttpAuthenticationFeature.basicBuilder().credentials(
+                                username2, password2)).request()
+                .delete(ODMFC.class);
         LOGGER.debug(out2.getMID());
         Assert.assertNotNull(out2.getMID());
         Assert.assertNull(out2.getET());
@@ -453,18 +290,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     @Test
     public void testDeleteMessageFromChatUserPasswordMessageIDVideoNotOwner() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid2a);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid2a);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username2, password2));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_vid2a);
         LOGGER.debug(target);
 
         ODMFC out = target.request().delete(ODMFC.class);
@@ -475,18 +305,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
     @Test
     public void testDeleteMessageFromChatUserPasswordMessageIDVideoOwner() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid1);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_vid1);
         LOGGER.debug(target);
 
         ODMFC out1 = target.request().delete(ODMFC.class);
@@ -495,18 +318,11 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         Assert.assertNull(out1.getET());
 
         WebTarget target2;
-        if (TestConfig.remote) {
-            target2 = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid2);
-        } else {
-            target2 = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password2)
-                    .queryParam(Constants.QP_USERNAME, username2)
-                    .queryParam(Constants.QP_MESSAGEID, message_vid2);
-        }
+        Client c2 = ClientBuilder.newClient();
+        c2.register(HttpAuthenticationFeature.basic(username2, password2));
+
+        target2 = c2.target(TestConfig.URL + functionurl).queryParam(
+                Constants.QP_MESSAGEID, message_vid2);
         LOGGER.debug(target2);
 
         ODMFC out2 = target2.request().delete(ODMFC.class);

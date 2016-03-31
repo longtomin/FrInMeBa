@@ -40,6 +40,7 @@ import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
@@ -52,136 +53,96 @@ import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.database.MyConnection;
-import de.radiohacks.frinmeba.modelshort.IAuth;
-import de.radiohacks.frinmeba.modelshort.IGImM;
-import de.radiohacks.frinmeba.modelshort.IGImMMD;
-import de.radiohacks.frinmeba.modelshort.ISIcM;
-import de.radiohacks.frinmeba.modelshort.ISImM;
-import de.radiohacks.frinmeba.modelshort.OAuth;
-import de.radiohacks.frinmeba.modelshort.OGImM;
-import de.radiohacks.frinmeba.modelshort.OGImMMD;
-import de.radiohacks.frinmeba.modelshort.OSIcM;
-import de.radiohacks.frinmeba.modelshort.OSImM;
+import de.radiohacks.frinmeba.model.jaxb.IGImM;
+import de.radiohacks.frinmeba.model.jaxb.IGImMMD;
+import de.radiohacks.frinmeba.model.jaxb.ISIcM;
+import de.radiohacks.frinmeba.model.jaxb.ISImM;
+import de.radiohacks.frinmeba.model.jaxb.OGImM;
+import de.radiohacks.frinmeba.model.jaxb.OGImMMD;
+import de.radiohacks.frinmeba.model.jaxb.OSIcM;
+import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.util.IImageUtil;
 
 @Path("/image")
 public class ImageImpl implements IImageUtil {
-	private static final Logger LOGGER = Logger.getLogger(ImageImpl.class.getName());
-    
+    private static final Logger LOGGER = Logger.getLogger(ImageImpl.class
+            .getName());
+
     /**
      * Upload a File
      */
 
     @Override
-    public OSImM uploadImage(String user, String password, String acknowledge,
+    public OSImM uploadImage(HttpHeaders headers, String acknowledge,
             InputStream fileInputStream,
             FormDataContentDisposition contentDispositionHeader) {
 
         OSImM out = new OSImM();
         MyConnection mc = new MyConnection();
         Connection con = mc.getConnection();
-        User actuser = new User(con);
+        User actuser = new User(con,
+                headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check(con);
 
-        if (actcheck.checkValueMust(user)) {
-            if (actcheck.checkValueMust(password)) {
-                if (actcheck.checkValueMust(acknowledge)) {
+        if (actcheck.checkValueMust(acknowledge)) {
+            ISImM in = new ISImM();
 
-                    IAuth inauth = new IAuth();
-                    OAuth outauth = new OAuth();
-                    inauth.setPW(actuser.base64Decode(password));
-                    inauth.setUN(user);
+            if (contentDispositionHeader != null) {
+                if (fileInputStream != null) {
+                    if (contentDispositionHeader.getFileName() != null
+                            && !contentDispositionHeader.getFileName()
+                                    .isEmpty()) {
 
-                    ISImM in = new ISImM();
-                    in.setPW(actuser.base64Decode(password));
-                    in.setUN(actuser.base64Decode(user));
+                        // Now we save the Image
+                        long currentTime = System.currentTimeMillis() / 1000L;
+                        String filetime = Objects.toString(currentTime, null);
 
-                    /* First check if the User is valid */
-                    actuser.authenticate(inauth, outauth);
+                        String filePath = (new Constants())
+                                .getUploadFolderImage()
+                                + File.separatorChar
+                                + filetime
+                                + contentDispositionHeader.getFileName();
 
-                    if (outauth.getA().equalsIgnoreCase(
-                            Constants.AUTHENTICATE_FALSE)) {
-                        out.setET(outauth.getET());
-                    } else {
-                        if (contentDispositionHeader != null) {
-                            if (fileInputStream != null) {
-                                if (contentDispositionHeader.getFileName() != null
-                                        && !contentDispositionHeader
-                                                .getFileName().isEmpty()) {
+                        // save the file to the server
+                        saveFile(fileInputStream, filePath);
+                        // Insert the New Image Message into the
+                        // Database an set
+                        // the out
+                        // Information.
 
-                                    // Now we save the Image
-                                    long currentTime = System
-                                            .currentTimeMillis() / 1000L;
-                                    String filetime = Objects.toString(
-                                            currentTime, null);
-
-                                    String filePath = (new Constants()).getUploadFolderImage() + File.separatorChar
-                                            + filetime
-                                            + contentDispositionHeader
-                                                    .getFileName();
-
-                                    // save the file to the server
-                                    saveFile(fileInputStream, filePath);
-                                    // Insert the New Image Message into the
-                                    // Database an set
-                                    // the out
-                                    // Information.
-
-                                    HashCode md5 = null;
-                                    try {
-                                        md5 = Files.hash(new File(filePath),
-                                                Hashing.md5());
-                                    } catch (IOException e) {
-                                        LOGGER.error(e);
-                                    }
-                                    String md5Hex = md5.toString();
-
-                                    out.setImF(filetime
-                                            + contentDispositionHeader
-                                                    .getFileName());
-                                    in.setImM(filetime
-                                            + contentDispositionHeader
-                                                    .getFileName());
-                                    in.setImMD5(md5Hex);
-
-                                    if (actuser.base64Decode(acknowledge)
-                                            .equalsIgnoreCase(md5Hex)) {
-                                        actuser.sendImageMessage(in, out);
-                                    } else {
-                                        out.setET(Constants.UPLOAD_FAILED);
-                                    }
-                                } else {
-                                    out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
-                                }
-                            } else {
-                                out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
-                            }
-                        } else {
-                            out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
+                        HashCode md5 = null;
+                        try {
+                            md5 = Files.hash(new File(filePath), Hashing.md5());
+                        } catch (IOException e) {
+                            LOGGER.error(e);
                         }
+                        String md5Hex = md5.toString();
+
+                        out.setImF(filetime
+                                + contentDispositionHeader.getFileName());
+                        in.setImM(filetime
+                                + contentDispositionHeader.getFileName());
+                        in.setImMD5(md5Hex);
+
+                        if (actuser.base64Decode(acknowledge).equalsIgnoreCase(
+                                md5Hex)) {
+                            actuser.sendImageMessage(in, out);
+                        } else {
+                            out.setET(Constants.UPLOAD_FAILED);
+                        }
+                    } else {
+                        out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
                     }
                 } else {
-                    if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.NO_CONTENT_GIVEN)) {
-                        out.setET(Constants.UPLOAD_FAILED);
-                    } else if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.ENCODING_ERROR)) {
-                        out.setET(Constants.ENCODING_ERROR);
-                    }
+                    out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
                 }
             } else {
-                if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.NO_CONTENT_GIVEN)) {
-                    out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-                } else if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.ENCODING_ERROR)) {
-                    out.setET(Constants.ENCODING_ERROR);
-                }
+                out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
             }
         } else {
             if (actcheck.getLastError().equalsIgnoreCase(
                     Constants.NO_CONTENT_GIVEN)) {
-                out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+                out.setET(Constants.UPLOAD_FAILED);
             } else if (actcheck.getLastError().equalsIgnoreCase(
                     Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
@@ -204,64 +165,42 @@ public class ImageImpl implements IImageUtil {
      */
 
     @Override
-    public Response downloadImage(String user, String password, int imageid) {
+    public Response downloadImage(HttpHeaders headers, int imageid) {
 
         MyConnection mc = new MyConnection();
         Connection con = mc.getConnection();
-        User actuser = new User(con);
+        User actuser = new User(con,
+                headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check(con);
         OGImM out = new OGImM();
 
-        if (actcheck.checkValueMust(user)) {
-            if (actcheck.checkValueMust(password)) {
+        IGImM in = new IGImM();
+        in.setIID(imageid);
 
-                IAuth inauth = new IAuth();
-                OAuth outauth = new OAuth();
-                inauth.setPW(actuser.base64Decode(password));
-                inauth.setUN(user);
+        if (!actcheck.checkContenMessageID(imageid, Constants.TYP_IMAGE)) {
+            out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
+        } else {
+            actuser.getImageMessages(in, out);
 
-                IGImM in = new IGImM();
-                in.setUN(actuser.base64Decode(user));
-                in.setPW(actuser.base64Decode(password));
-                in.setIID(imageid);
-
-                actuser.authenticate(inauth, outauth);
-
-                if (outauth.getA().equalsIgnoreCase(
-                        Constants.AUTHENTICATE_FALSE)) {
-                    out.setET(outauth.getET());
-                } else {
-                    if (!actcheck.checkContenMessageID(imageid,
-                            Constants.TYP_IMAGE)) {
-                        out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
-                    } else {
-                        actuser.getImageMessages(in, out);
-
-                        final File file = new File(
-                                (new Constants()).getUploadFolderImage() + File.separatorChar + out.getIM());
-                        if (!file.exists()) {
-                            out.setET(Constants.FILE_NOT_FOUND);
-                        } else {
-                            try {
-                                if (con != null) {
-                                    con.close();
-                                    con = null;
-                                }
-                                return Response
-                                        .ok(FileUtils.readFileToByteArray(file))
-                                        .header("Content-Disposition",
-                                                "attachment")
-                                        .header("filename", out.getIM())
-                                        .build();
-                            } catch (java.io.IOException ex) {
-                                out.setET(Constants.FILE_NOT_FOUND);
-                                LOGGER.error(ex);
-                            } catch (SQLException e) {
-                                out.setET(Constants.DB_ERROR);
-                                LOGGER.error(e);
-                            }
-                        }
+            final File file = new File((new Constants()).getUploadFolderImage()
+                    + File.separatorChar + out.getIM());
+            if (!file.exists()) {
+                out.setET(Constants.FILE_NOT_FOUND);
+            } else {
+                try {
+                    if (con != null) {
+                        con.close();
+                        con = null;
                     }
+                    return Response.ok(FileUtils.readFileToByteArray(file))
+                            .header("Content-Disposition", "attachment")
+                            .header("filename", out.getIM()).build();
+                } catch (java.io.IOException ex) {
+                    out.setET(Constants.FILE_NOT_FOUND);
+                    LOGGER.error(ex);
+                } catch (SQLException e) {
+                    out.setET(Constants.DB_ERROR);
+                    LOGGER.error(e);
                 }
             }
         }
@@ -274,79 +213,39 @@ public class ImageImpl implements IImageUtil {
                 LOGGER.error(e);
             }
         }
-
         return null;
     }
 
     @Override
-    public OGImMMD getImageMetadata(String user, String password, int imageid) {
+    public OGImMMD getImageMetadata(HttpHeaders headers, int imageid) {
 
         MyConnection mc = new MyConnection();
         Connection con = mc.getConnection();
-        User actuser = new User(con);
+        User actuser = new User(con,
+                headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check(con);
         OGImMMD out = new OGImMMD();
 
-        if (actcheck.checkValueMust(user)) {
-            if (actcheck.checkValueMust(password)) {
+        IGImMMD in = new IGImMMD();
+        in.setIID(imageid);
 
-                IAuth inauth = new IAuth();
-                OAuth outauth = new OAuth();
-                inauth.setPW(actuser.base64Decode(password));
-                inauth.setUN(user);
+        IGImM tmpin = new IGImM();
+        tmpin.setIID(imageid);
+        OGImM tmpout = new OGImM();
 
-                IGImMMD in = new IGImMMD();
-                in.setUN(actuser.base64Decode(user));
-                in.setPW(actuser.base64Decode(password));
-                in.setIID(imageid);
-
-                actuser.authenticate(inauth, outauth);
-
-                actuser.authenticate(inauth, outauth);
-
-                if (outauth.getA().equalsIgnoreCase(
-                        Constants.AUTHENTICATE_FALSE)) {
-                    out.setET(outauth.getET());
-                } else {
-                    IGImM tmpin = new IGImM();
-                    tmpin.setUN(user);
-                    tmpin.setPW(password);
-                    tmpin.setIID(imageid);
-                    OGImM tmpout = new OGImM();
-
-                    if (!actcheck.checkContenMessageID(imageid,
-                            Constants.TYP_IMAGE)) {
-                        out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
-                    } else {
-                        actuser.getImageMessages(tmpin, tmpout);
-
-                        final File file = new File(
-                                (new Constants()).getUploadFolderImage() + File.separatorChar + tmpout.getIM());
-                        if (file.exists()) {
-                            out.setIM(tmpout.getIM());
-                            out.setIMD5(tmpout.getIMD5());
-                            out.setIS(file.length());
-                        } else {
-                            out.setET(Constants.FILE_NOT_FOUND);
-                        }
-                    }
-                }
-            } else {
-                if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.NO_CONTENT_GIVEN)) {
-                    out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-                } else if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.ENCODING_ERROR)) {
-                    out.setET(Constants.ENCODING_ERROR);
-                }
-            }
+        if (!actcheck.checkContenMessageID(imageid, Constants.TYP_IMAGE)) {
+            out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
-                out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
-                out.setET(Constants.ENCODING_ERROR);
+            actuser.getImageMessages(tmpin, tmpout);
+
+            final File file = new File((new Constants()).getUploadFolderImage()
+                    + File.separatorChar + tmpout.getIM());
+            if (file.exists()) {
+                out.setIM(tmpout.getIM());
+                out.setIMD5(tmpout.getIMD5());
+                out.setIS(file.length());
+            } else {
+                out.setET(Constants.FILE_NOT_FOUND);
             }
         }
 
@@ -382,133 +281,94 @@ public class ImageImpl implements IImageUtil {
     }
 
     @Override
-    public OSIcM uploadIcon(String user, String password, String acknowledge,
+    public OSIcM uploadIcon(HttpHeaders headers, String acknowledge,
             InputStream fileInputStream,
             FormDataContentDisposition contentDispositionHeader) {
 
         OSIcM out = new OSIcM();
         MyConnection mc = new MyConnection();
         Connection con = mc.getConnection();
-        User actuser = new User(con);
+        User actuser = new User(con,
+                headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check(con);
 
-        if (actcheck.checkValueMust(user)) {
-            if (actcheck.checkValueMust(password)) {
-                if (actcheck.checkValueMust(acknowledge)) {
+        if (actcheck.checkValueMust(acknowledge)) {
+            ISIcM in = new ISIcM();
+            /* First check if the User is valid */
+            if (contentDispositionHeader != null) {
+                if (fileInputStream != null) {
+                    if (contentDispositionHeader.getFileName() != null
+                            && !contentDispositionHeader.getFileName()
+                                    .isEmpty()) {
 
-                    IAuth inauth = new IAuth();
-                    OAuth outauth = new OAuth();
-                    inauth.setPW(actuser.base64Decode(password));
-                    inauth.setUN(user);
+                        // Now we save the Image
+                        long currentTime = System.currentTimeMillis() / 1000L;
+                        String filetime = Objects.toString(currentTime, null);
 
-                    ISIcM in = new ISIcM();
-                    in.setPW(actuser.base64Decode(password));
-                    in.setUN(actuser.base64Decode(user));
+                        String filePath = (new Constants())
+                                .getUploadFolderImage()
+                                + File.separatorChar
+                                + filetime
+                                + contentDispositionHeader.getFileName();
 
-                    /* First check if the User is valid */
-                    actuser.authenticate(inauth, outauth);
+                        // save the file to the server
+                        saveFile(fileInputStream, filePath);
+                        // Insert the New Image Message into the
+                        // Database an set
+                        // the out
+                        // Information.
 
-                    if (outauth.getA().equalsIgnoreCase(
-                            Constants.AUTHENTICATE_FALSE)) {
-                        out.setET(outauth.getET());
-                    } else {
-                        if (contentDispositionHeader != null) {
-                            if (fileInputStream != null) {
-                                if (contentDispositionHeader.getFileName() != null
-                                        && !contentDispositionHeader
-                                                .getFileName().isEmpty()) {
+                        File f = new File(filePath);
 
-                                    // Now we save the Image
-                                    long currentTime = System
-                                            .currentTimeMillis() / 1000L;
-                                    String filetime = Objects.toString(
-                                            currentTime, null);
-
-                                    String filePath = (new Constants()).getUploadFolderImage() + File.separatorChar
-                                            + filetime
-                                            + contentDispositionHeader
-                                                    .getFileName();
-
-                                    // save the file to the server
-                                    saveFile(fileInputStream, filePath);
-                                    // Insert the New Image Message into the
-                                    // Database an set
-                                    // the out
-                                    // Information.
-
-                                    File f = new File(filePath);
-
-                                    BufferedImage img;
-                                    int width = 1;
-                                    int heigth = 0;
-                                    try {
-                                        img = ImageIO.read(f);
-                                        width = img.getWidth();
-                                        heigth = img.getHeight();
-                                    } catch (IOException e1) {
-                                        LOGGER.error(e1);
-                                    }
-
-                                    if (heigth != width) {
-                                        out.setET(Constants.NO_QUADRAT_IMAGE);
-                                    } else {
-                                        HashCode md5 = null;
-                                        try {
-                                            md5 = Files.hash(
-                                                    new File(filePath),
-                                                    Hashing.md5());
-                                        } catch (IOException e) {
-                                            LOGGER.error(e);
-                                        }
-                                        String md5Hex = md5.toString();
-
-                                        out.setIcF(filetime
-                                                + contentDispositionHeader
-                                                        .getFileName());
-                                        in.setIcM(filetime
-                                                + contentDispositionHeader
-                                                        .getFileName());
-                                        in.setIcMD5(md5Hex);
-
-                                        if (actuser.base64Decode(acknowledge)
-                                                .equalsIgnoreCase(md5Hex)) {
-                                            actuser.sendIconMessage(in, out);
-                                        } else {
-                                            out.setET(Constants.UPLOAD_FAILED);
-                                        }
-                                    }
-                                } else {
-                                    out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
-                                }
-                            } else {
-                                out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
-                            }
-                        } else {
-                            out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
+                        BufferedImage img;
+                        int width = 1;
+                        int heigth = 0;
+                        try {
+                            img = ImageIO.read(f);
+                            width = img.getWidth();
+                            heigth = img.getHeight();
+                        } catch (IOException e1) {
+                            LOGGER.error(e1);
                         }
+
+                        if (heigth != width) {
+                            out.setET(Constants.NO_QUADRAT_IMAGE);
+                        } else {
+                            HashCode md5 = null;
+                            try {
+                                md5 = Files.hash(new File(filePath),
+                                        Hashing.md5());
+                            } catch (IOException e) {
+                                LOGGER.error(e);
+                            }
+                            String md5Hex = md5.toString();
+
+                            out.setIcF(filetime
+                                    + contentDispositionHeader.getFileName());
+                            in.setIcM(filetime
+                                    + contentDispositionHeader.getFileName());
+                            in.setIcMD5(md5Hex);
+
+                            if (actuser.base64Decode(acknowledge)
+                                    .equalsIgnoreCase(md5Hex)) {
+                                actuser.sendIconMessage(in, out);
+                            } else {
+                                out.setET(Constants.UPLOAD_FAILED);
+                            }
+                        }
+                    } else {
+                        out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
                     }
                 } else {
-                    if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.NO_CONTENT_GIVEN)) {
-                        out.setET(Constants.UPLOAD_FAILED);
-                    } else if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.ENCODING_ERROR)) {
-                        out.setET(Constants.ENCODING_ERROR);
-                    }
+                    out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
                 }
             } else {
-                if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.NO_CONTENT_GIVEN)) {
-                    out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-                } else if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.ENCODING_ERROR)) {
-                    out.setET(Constants.ENCODING_ERROR);
-                }
+                out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
             }
         } else {
             if (actcheck.getLastError().equalsIgnoreCase(
                     Constants.NO_CONTENT_GIVEN)) {
-                out.setET(Constants.NO_USERNAME_OR_PASSWORD);
+                out.setET(Constants.UPLOAD_FAILED);
             } else if (actcheck.getLastError().equalsIgnoreCase(
                     Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);

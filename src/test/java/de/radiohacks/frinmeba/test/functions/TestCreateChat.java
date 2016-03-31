@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -49,8 +50,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.ICrCh;
-import de.radiohacks.frinmeba.modelshort.OCrCh;
+import de.radiohacks.frinmeba.model.jaxb.ICrCh;
+import de.radiohacks.frinmeba.model.jaxb.OCrCh;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -113,89 +114,38 @@ public class TestCreateChat extends JerseyTest {
         LOGGER.debug("End prepareDB");
     }
 
-    private OCrCh callTarget(ICrCh in) {
+    @Test
+    public void testCreateChatUpNoCredentials() {
+        ICrCh in = new ICrCh();
+
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(TestConfig.URL)
-                    .path(functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
         LOGGER.debug(target);
-        Response response = target.request(MediaType.APPLICATION_XML)
+        Response resp = target.request(MediaType.APPLICATION_XML)
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
-        LOGGER.debug(response);
-        return response.readEntity(OCrCh.class);
-    }
-
-    @Test
-    public void testCreateChatUpNoValues() {
-        ICrCh in = new ICrCh();
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testCreateChatUserPasswordChatname() {
-        ICrCh in = new ICrCh();
-        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setPW(password);
-        in.setUN(username);
-        OCrCh out = callTarget(in);
-        LOGGER.debug(out.getCN());
-        Assert.assertEquals("Testchat", out.getCN());
-    }
-
-    @Test
-    public void testCreateChatUserWrongPasswordChatname() {
-        ICrCh in = new ICrCh();
-        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(username);
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testCreateChatUser() {
-        ICrCh in = new ICrCh();
-        in.setUN(username);
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testCreateChatPassword() {
-        ICrCh in = new ICrCh();
-        in.setPW(password);
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testCreateChatChatname() {
-        ICrCh in = new ICrCh();
-        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+        LOGGER.debug(resp);
+        // OCrCh out = resp.readEntity(OCrCh.class);
+        Assert.assertEquals(resp.getStatus(), 401);
     }
 
     @Test
     public void testCreateChatUserPassword() {
         ICrCh in = new ICrCh();
-        in.setPW(password);
-        in.setUN(username);
-        OCrCh out = callTarget(in);
+        WebTarget target;
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
+        LOGGER.debug(target);
+        Response resp = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username, password).build())
+                .request(MediaType.APPLICATION_XML)
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        LOGGER.debug(resp);
+        OCrCh out = resp.readEntity(OCrCh.class);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.MISSING_CHATNAME, out.getET());
     }
@@ -203,12 +153,22 @@ public class TestCreateChat extends JerseyTest {
     @Test
     public void testCreateChatUserChatname() {
         ICrCh in = new ICrCh();
-        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(username);
-        OCrCh out = callTarget(in);
+        in.setCN("1234$%");
+        WebTarget target;
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
+        LOGGER.debug(target);
+        Response resp = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username, password).build())
+                .request(MediaType.APPLICATION_XML)
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        LOGGER.debug(resp);
+        OCrCh out = resp.readEntity(OCrCh.class);
         LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
     }
 
     @Test
@@ -216,44 +176,19 @@ public class TestCreateChat extends JerseyTest {
         ICrCh in = new ICrCh();
         in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
-        in.setPW(password);
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testCreateChatEncodingErrorUser() {
-        ICrCh in = new ICrCh();
-        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setPW(password);
-        in.setUN("$%&1233");
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testCreateChatEncodingErrorPassword() {
-        ICrCh in = new ICrCh();
-        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setPW("$%&1233");
-        in.setUN(username);
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testCreateChatEncodingErrorChatname() {
-        ICrCh in = new ICrCh();
-        in.setCN("$%&1233");
-        in.setPW(password);
-        in.setUN(username);
-        OCrCh out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+        WebTarget target;
+        target = ClientBuilder.newClient().target(TestConfig.URL)
+                .path(functionurl);
+        LOGGER.debug(target);
+        Response resp = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username, password).build())
+                .request(MediaType.APPLICATION_XML)
+                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        LOGGER.debug(resp);
+        OCrCh out = resp.readEntity(OCrCh.class);
+        Assert.assertEquals("Testchat", out.getCN());
     }
 }

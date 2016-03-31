@@ -30,7 +30,6 @@ package de.radiohacks.frinmeba.test;
 
 public class TestConfig {
 
-    public final static boolean remote = true;
-//    public final static String URL = "http://localhost:8080/FrInMeBa/";
+    // public final static boolean remote = false;
     public final static String URL = "http://localhost:8080/frinmeba/rest/";
 }

@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -49,8 +50,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.IIUIc;
-import de.radiohacks.frinmeba.modelshort.OIUIc;
+import de.radiohacks.frinmeba.model.jaxb.IIUIc;
+import de.radiohacks.frinmeba.model.jaxb.OIUIc;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -120,14 +121,13 @@ public class TestInsertUserIcon extends JerseyTest {
 
     private OIUIc callTarget(IIUIc in) {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
-        Response response = target.request()
+        Response response = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username, password).build())
+                .request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
@@ -135,38 +135,8 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    public void testInsertUserIconUpNoValues() {
-        IIUIc in = new IIUIc();
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconPasswordMessage() {
-        IIUIc in = new IIUIc();
-        in.setPW(password);
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconUserMessage() {
-        IIUIc in = new IIUIc();
-        in.setUN(username);
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testInsertUserIconUserPassword() {
         IIUIc in = new IIUIc();
-        in.setPW(password);
-        in.setUN(username);
         OIUIc out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
@@ -174,19 +144,8 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    public void testInsertUserIconMessage() {
-        IIUIc in = new IIUIc();
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testInsertUserIconUserPasswordMessage() {
         IIUIc in = new IIUIc();
-        in.setPW(password);
-        in.setUN(username);
         in.setIcID(iconid);
         OIUIc out = callTarget(in);
         LOGGER.debug("R=" + out.getR());
@@ -194,87 +153,8 @@ public class TestInsertUserIcon extends JerseyTest {
     }
 
     @Test
-    public void testInsertUserIconUserWrongPasswordMessage() {
-        IIUIc in = new IIUIc();
-        in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(username);
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconWrongUserPasswordMessage() {
-        IIUIc in = new IIUIc();
-        in.setPW(password);
-        in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconWrongUserWrongPasswordMessage() {
-        IIUIc in = new IIUIc();
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconUser() {
-        IIUIc in = new IIUIc();
-        in.setUN(username);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconPassword() {
-        IIUIc in = new IIUIc();
-        in.setPW(password);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconEncodimgErrorUser() {
-        IIUIc in = new IIUIc();
-        in.setPW(password);
-        in.setUN("$%&1234");
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testInsertUserIconEncodimgErrorPassword() {
-        IIUIc in = new IIUIc();
-        in.setPW("$%&1234");
-        in.setUN(username);
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testInsertUserIconEncodimgErrorTextMessage() {
         IIUIc in = new IIUIc();
-        in.setPW(password);
-        in.setUN(username);
         in.setIcID(17);
         OIUIc out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());

@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -49,8 +50,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.IICIc;
-import de.radiohacks.frinmeba.modelshort.OICIc;
+import de.radiohacks.frinmeba.model.jaxb.IICIc;
+import de.radiohacks.frinmeba.model.jaxb.OICIc;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -134,16 +135,15 @@ public class TestInsertChatIcon extends JerseyTest {
         LOGGER.debug("End BeforeClass");
     }
 
-    private OICIc callTarget(IICIc in) {
+    private OICIc callTargetUser1(IICIc in) {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
-        Response response = target.request()
+        Response response = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username1, password1).build())
+                .request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
@@ -151,59 +151,18 @@ public class TestInsertChatIcon extends JerseyTest {
     }
 
     @Test
-    public void testInsertChatIconUpNoValues() {
-        IICIc in = new IICIc();
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconPasswordIcon() {
-        IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setIcID(iconid);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconUserIcon() {
-        IICIc in = new IICIc();
-        in.setUN(username1);
-        in.setIcID(iconid);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testInsertChatIconUserPassword() {
         IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN(username1);
-        OICIc out = callTarget(in);
+        OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
     }
 
     @Test
-    public void testInsertChatIconIcon() {
-        IICIc in = new IICIc();
-        in.setIcID(iconid);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testInsertChatIconUserPasswordIcon() {
         IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN(username1);
         in.setIcID(iconid);
-        OICIc out = callTarget(in);
+        OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(out.getET(), Constants.NONE_EXISTING_CHAT);
     }
@@ -211,105 +170,19 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconUserPasswordChat() {
         IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN(username1);
         in.setCID(chatid1);
-        OICIc out = callTarget(in);
+        OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(out.getET(),
                 Constants.NONE_EXISTING_CONTENT_MESSAGE);
     }
 
     @Test
-    public void testInsertChatIconUserWrongPasswordMessage() {
-        IICIc in = new IICIc();
-        in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(username1);
-        in.setIcID(iconid);
-        in.setCID(chatid1);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconWrongUserPasswordMessage() {
-        IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setIcID(iconid);
-        in.setCID(chatid1);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconWrongUserWrongPasswordIconChat() {
-        IICIc in = new IICIc();
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setIcID(iconid);
-        in.setCID(chatid1);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconUser() {
-        IICIc in = new IICIc();
-        in.setUN(username1);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconPassword() {
-        IICIc in = new IICIc();
-        in.setPW(password1);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconEncodimgErrorUser() {
-        IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN("$%&1234");
-        in.setIcID(iconid);
-        in.setCID(chatid1);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testInsertChatIconEncodimgErrorPassword() {
-        IICIc in = new IICIc();
-        in.setPW("$%&1234");
-        in.setUN(username1);
-        in.setIcID(iconid);
-        in.setCID(chatid1);
-        OICIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testInsertChatIconNoneExistingChat() {
         IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN(username1);
         in.setCID(17);
         in.setIcID(iconid);
-        OICIc out = callTarget(in);
+        OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
     }
@@ -317,11 +190,9 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconNotChatOwner() {
         IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN(username1);
         in.setCID(chatid2);
         in.setIcID(iconid);
-        OICIc out = callTarget(in);
+        OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NOT_CHAT_OWNER, out.getET());
     }
@@ -329,11 +200,9 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconUserPasswordIconChatCorrect() {
         IICIc in = new IICIc();
-        in.setPW(password1);
-        in.setUN(username1);
         in.setIcID(iconid);
         in.setCID(chatid1);
-        OICIc out = callTarget(in);
+        OICIc out = callTargetUser1(in);
         LOGGER.debug("R=" + out.getR());
         Assert.assertEquals(out.getR(), Constants.ICON_ADDED);
     }

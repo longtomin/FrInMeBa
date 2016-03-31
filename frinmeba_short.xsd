@@ -1,33 +1,23 @@
-<!--
-
-    Copyright � 2015, Thomas Schreiner, thomas1.schreiner@googlemail.com
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    1. Redistributions of source code must retain the above copyright notice, this
-       list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice,
-       this list of conditions and the following disclaimer in the documentation
-       and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    The views and conclusions contained in the software and documentation are those
-    of the authors and should not be interpreted as representing official policies,
-    either expressed or implied, of the FreeBSD Project.
-
--->
+<!-- Copyright � 2015, Thomas Schreiner, thomas1.schreiner@googlemail.com 
+	All rights reserved. Redistribution and use in source and binary forms, with 
+	or without modification, are permitted provided that the following conditions 
+	are met: 1. Redistributions of source code must retain the above copyright 
+	notice, this list of conditions and the following disclaimer. 2. Redistributions 
+	in binary form must reproduce the above copyright notice, this list of conditions 
+	and the following disclaimer in the documentation and/or other materials 
+	provided with the distribution. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT 
+	HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, 
+	BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+	OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+	EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
+	OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+	STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+	OF SUCH DAMAGE. The views and conclusions contained in the software and documentation 
+	are those of the authors and should not be interpreted as representing official 
+	policies, either expressed or implied, of the FreeBSD Project. -->
 <!-- Abbreviations: A = Authenticated ACK = Acknowledge C = Chat CID = ChatID 
 	CMID = ContactMsgID CN = Chatname E = Email ET = Errortext FF = FileFilename 
 	FID = FileID FM = FileMessage FMD5 = FileMD5Hash FMID = FileMsgID FS = FileSize 
@@ -93,15 +83,9 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-<!--<xs:element name="CNC">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element type="xs:string" name="CN" />
-				<xs:element type="xs:int" name="CID" />
-				<xs:element ref="OU" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>  -->
+	<!--<xs:element name="CNC"> <xs:complexType> <xs:sequence> <xs:element type="xs:string" 
+		name="CN" /> <xs:element type="xs:int" name="CID" /> <xs:element ref="OU" 
+		/> </xs:sequence> </xs:complexType> </xs:element> -->
 	<xs:element name="CNM">
 		<xs:complexType>
 			<xs:sequence>
@@ -140,28 +124,6 @@
 	</xs:element>
 
 	<!-- below the XSD Schema for each restfunction starts -->
-	<xs:element name="IAuth">
-		<!-- In Authenticate -->
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="OAuth">
-		<!-- Out Authenticate -->
-		<xs:complexType>
-			<xs:choice>
-				<xs:sequence>
-					<xs:element type="xs:string" name="UN" />
-					<xs:element type="xs:int" name="UID" />
-					<xs:element type="xs:string" name="A" />
-				</xs:sequence>
-				<xs:element type="xs:string" name="ET" />
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
 	<!-- Signup Information Input -->
 	<xs:element name="ISiUp">
 		<!-- In Signup User -->
@@ -193,8 +155,6 @@
 		<!-- In Create Chat -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="CN" />
 			</xs:sequence>
 		</xs:complexType>
@@ -216,8 +176,6 @@
 		<!-- In Delete Chat -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="CID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -238,8 +196,6 @@
 		<!-- In Add User to Chat -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="UID" />
 				<xs:element type="xs:int" name="CID" />
 			</xs:sequence>
@@ -260,8 +216,6 @@
 		<!-- In Remove User From Chat -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="UID" />
 				<xs:element type="xs:int" name="CID" />
 			</xs:sequence>
@@ -283,8 +237,6 @@
 		<!-- In List User -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="S" />
 			</xs:sequence>
 		</xs:complexType>
@@ -298,16 +250,6 @@
 				</xs:sequence>
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
-		</xs:complexType>
-	</xs:element>
-	<!-- List Chat -->
-	<xs:element name="ILiCh">
-		<!-- In List Chat -->
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
-			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="OLiCh">
@@ -325,8 +267,6 @@
 		<!-- In Insert Message into Chat -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="CID" />
 				<xs:element type="xs:int" name="MID" />
 				<xs:element type="xs:string" name="MT" />
@@ -349,9 +289,8 @@
 		<!-- In Set Show Timestamp -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
-				<xs:element type="xs:int" name="MID" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element type="xs:int" name="MID" minOccurs="1"
+					maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -370,8 +309,6 @@
 		<!-- In Acknowledge Message Download -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="MID" />
 				<xs:element type="xs:string" name="ACK" />
 			</xs:sequence>
@@ -393,8 +330,6 @@
 		<!-- In Acknowledge Message Download -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="CID" />
 				<xs:element type="xs:string" name="ACK" />
 			</xs:sequence>
@@ -415,8 +350,6 @@
 		<!-- In Get Message Information -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="MID" minOccurs="0"
 					maxOccurs="unbounded" />
 			</xs:sequence>
@@ -435,8 +368,6 @@
 		<!-- In Delte Message from Chat -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="MID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -456,8 +387,6 @@
 		<!-- In Send Location Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="Lat" />
 				<xs:element type="xs:string" name="Lon" />
 			</xs:sequence>
@@ -478,8 +407,6 @@
 		<!-- In Send Text Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="TM" />
 			</xs:sequence>
 		</xs:complexType>
@@ -499,8 +426,6 @@
 		<!-- In Send Image Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="ImM" />
 				<xs:element type="xs:string" name="ImMD5" />
 			</xs:sequence>
@@ -522,8 +447,6 @@
 		<!-- In Send Image Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="IcM" />
 				<xs:element type="xs:string" name="IcMD5" />
 			</xs:sequence>
@@ -545,8 +468,6 @@
 		<!-- In Send Video Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="VM" />
 				<xs:element type="xs:string" name="VMD5" />
 			</xs:sequence>
@@ -568,8 +489,6 @@
 		<!-- In Send Contact Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="ContactMessage" />
 			</xs:sequence>
 		</xs:complexType>
@@ -589,8 +508,6 @@
 		<!-- In Send File Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:string" name="FM" />
 				<xs:element type="xs:string" name="FMD5" />
 			</xs:sequence>
@@ -612,8 +529,6 @@
 		<!-- In Fetch Message From Chat -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="CID" />
 				<xs:element type="xs:long" name="RdT" />
 			</xs:sequence>
@@ -634,8 +549,6 @@
 		<!-- In Get Text Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="TextID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -655,8 +568,6 @@
 		<!-- In Get Location Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="LocationID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -677,8 +588,6 @@
 		<!-- In Get Image Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="IID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -699,8 +608,6 @@
 		<!-- In Get Video Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="VID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -721,8 +628,6 @@
 		<!-- In Get Contact Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="CtID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -742,8 +647,6 @@
 		<!-- In Get File Message -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="FID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -760,14 +663,6 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="ICN">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="OCN">
 		<xs:complexType>
 			<xs:choice>
@@ -779,21 +674,10 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<!-- <xs:element name="InCheckNewMessages"> <xs:complexType> <xs:sequence> 
-		<xs:element type="xs:string" name="UN" /> <xs:element type="xs:string" name="PW" 
-		/> </xs:sequence> </xs:complexType> </xs:element> <xs:element name="OutCheckNewMessages"> 
-		<xs:complexType> <xs:choice> <xs:sequence> <xs:element name="Chats" minOccurs="0" 
-		maxOccurs="unbounded"> <xs:complexType> <xs:sequence> <xs:element type="xs:string" 
-		name="CN" /> <xs:element type="xs:int" name="CID" /> <xs:element type="xs:int" 
-		name="NumberOfMessages" /> </xs:sequence> </xs:complexType> </xs:element> 
-		</xs:sequence> <xs:element type="xs:string" name="ET" /> </xs:choice> </xs:complexType> 
-		</xs:element> -->
 	<xs:element name="IGFiMMD">
 		<!-- In Get File Message Meta Data -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="FID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -815,8 +699,6 @@
 		<!-- In Get Image Message Meta Data -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="IID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -838,8 +720,6 @@
 		<!-- In Get Video Message Meta Data -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="VID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -858,12 +738,11 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="ISU">
-	<!-- In Sync User Data -->
+		<!-- In Sync User Data -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
-				<xs:element type="xs:int" name="UID" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element type="xs:int" name="UID" minOccurs="0"
+					maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -881,8 +760,6 @@
 		<!-- In Insert User Icon -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="IcID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -902,8 +779,6 @@
 		<!-- In Insert Chat Icon -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="UN" />
-				<xs:element type="xs:string" name="PW" />
 				<xs:element type="xs:int" name="IcID" />
 				<xs:element type="xs:int" name="CID" />
 			</xs:sequence>
@@ -920,5 +795,4 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>

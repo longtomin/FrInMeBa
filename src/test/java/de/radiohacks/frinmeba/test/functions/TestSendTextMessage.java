@@ -30,6 +30,7 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -49,8 +51,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.ISTeM;
-import de.radiohacks.frinmeba.modelshort.OSTeM;
+import de.radiohacks.frinmeba.model.jaxb.ISTeM;
+import de.radiohacks.frinmeba.model.jaxb.OSTeM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -120,14 +122,17 @@ public class TestSendTextMessage extends JerseyTest {
 
     private OSTeM callTarget(ISTeM in) {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
-        Response response = target.request()
+        Response response = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(username, password).build())
+                .request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
@@ -135,57 +140,16 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    public void testSendTextMessageUpNoValues() {
-        ISTeM in = new ISTeM();
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessagePasswordMessage() {
-        ISTeM in = new ISTeM();
-        in.setPW(password);
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessageUserMessage() {
-        ISTeM in = new ISTeM();
-        in.setUN(username);
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testSendTextMessageUserPassword() {
         ISTeM in = new ISTeM();
-        in.setPW(password);
-        in.setUN(username);
         OSTeM out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NO_TEXTMESSAGE_GIVEN, out.getET());
     }
 
     @Test
-    public void testSendTextMessageMessage() {
-        ISTeM in = new ISTeM();
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testSendTextMessageUserPasswordMessage() {
         ISTeM in = new ISTeM();
-        in.setPW(password);
-        in.setUN(username);
         in.setTM(textmessage);
         OSTeM out = callTarget(in);
         LOGGER.debug("TID=" + out.getTID());
@@ -193,87 +157,8 @@ public class TestSendTextMessage extends JerseyTest {
     }
 
     @Test
-    public void testSendTextMessageUserWrongPasswordMessage() {
-        ISTeM in = new ISTeM();
-        in.setPW(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(username);
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessageWrongUserPasswordMessage() {
-        ISTeM in = new ISTeM();
-        in.setPW(password);
-        in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessageWrongUserWrongPasswordMessage() {
-        ISTeM in = new ISTeM();
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(Base64.encodeBase64String("ZZZ".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessageUser() {
-        ISTeM in = new ISTeM();
-        in.setUN(username);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessagePassword() {
-        ISTeM in = new ISTeM();
-        in.setPW(password);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessageEncodimgErrorUser() {
-        ISTeM in = new ISTeM();
-        in.setPW(password);
-        in.setUN("$%&1234");
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testSendTextMessageEncodimgErrorPassword() {
-        ISTeM in = new ISTeM();
-        in.setPW("$%&1234");
-        in.setUN(username);
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testSendTextMessageEncodimgErrorTextMessage() {
         ISTeM in = new ISTeM();
-        in.setPW(password);
-        in.setUN(username);
         in.setTM("$%&1234");
         OSTeM out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());

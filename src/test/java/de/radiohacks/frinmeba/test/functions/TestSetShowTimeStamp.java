@@ -30,6 +30,7 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -49,8 +51,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.ISShT;
-import de.radiohacks.frinmeba.modelshort.OSShT;
+import de.radiohacks.frinmeba.model.jaxb.ISShT;
+import de.radiohacks.frinmeba.model.jaxb.OSShT;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -164,12 +166,11 @@ public class TestSetShowTimeStamp extends JerseyTest {
 
     private OSShT callTarget(ISShT in) {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response response = target.request()
                 .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
@@ -179,78 +180,16 @@ public class TestSetShowTimeStamp extends JerseyTest {
     }
 
     @Test
-    public void testSetShowTimeStampUpNoValues() {
-        ISShT in = new ISShT();
-        OSShT out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSetShowTimeStampUser() {
-        ISShT in = new ISShT();
-        in.setUN(username1);
-        OSShT out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSetShowTimeStampPassword() {
-        ISShT in = new ISShT();
-        in.setPW(password1);
-        OSShT out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testSetShowTimeStampUserPassword() {
         ISShT in = new ISShT();
-        in.setUN(username1);
-        in.setPW(password1);
         OSShT out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
     }
 
     @Test
-    public void testSetShowTimeStampUserWrongPassword() {
-        ISShT in = new ISShT();
-        in.setUN(username1);
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        OSShT out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSetShowTimeStampUserEncodeFailureUser() {
-        ISShT in = new ISShT();
-        in.setUN("XXX");
-        in.setPW(password1);
-        in.getMID().add(msg1);
-        OSShT out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testSetShowTimeStampUserEncodeFailurePassword() {
-        ISShT in = new ISShT();
-        in.setUN(username1);
-        in.setPW("XXX");
-        OSShT out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testSetShowTimeStampUserPasswordMsgNotRead1() {
         ISShT in = new ISShT();
-        in.setUN(username1);
-        in.setPW(password1);
         in.getMID().add(msg2);
         OSShT out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
@@ -260,8 +199,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
     @Test
     public void testSetShowTimeStampUserPasswordMsgNotRead() {
         ISShT in = new ISShT();
-        in.setUN(username1);
-        in.setPW(password1);
         in.getMID().add(msg1);
         OSShT out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
@@ -273,8 +210,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
         helperDatabase help = new helperDatabase();
         help.setTimestamp(msg2, 11, "READ");
         ISShT in = new ISShT();
-        in.setUN(username1);
-        in.setPW(password1);
         in.getMID().add(msg2);
         OSShT out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
@@ -287,8 +222,6 @@ public class TestSetShowTimeStamp extends JerseyTest {
         helperDatabase help = new helperDatabase();
         help.setTimestamp(msg1, 11, "READ");
         ISShT in = new ISShT();
-        in.setUN(username1);
-        in.setPW(password1);
         in.getMID().add(msg1);
         OSShT out = callTarget(in);
         LOGGER.debug("ShT=" + out.getShT());

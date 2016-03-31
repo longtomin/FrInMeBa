@@ -30,11 +30,14 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -46,7 +49,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OSU;
+import de.radiohacks.frinmeba.model.jaxb.OSU;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -168,110 +171,24 @@ public class TestSyncUser extends JerseyTest {
     @Test
     public void testSyncUserUpNoValues() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSyncUserUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username1);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username1);
-
-        }
-        LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSyncUserPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1);
-
-        }
-        LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSyncUserUserTextmessage() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username1).queryParam(Constants.QP_USERID, uid2);
-
-        }
-        LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testSyncUserPasswordTextmessage() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(Constants.QP_USERID, uid2);
-
-        }
-        LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+        Response resp = target.request().get();
+        LOGGER.debug("Response = " + resp);
+        Assert.assertEquals(resp.getStatus(), 401);
     }
 
     @Test
     public void testSyncUserUserPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1);
 
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(Constants.QP_USERNAME, username1);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        }
+        target = c.target(TestConfig.URL).path(functionurl);
+        // .queryParam(Constants.QP_PASSWORD, password1)
+        // .queryParam(Constants.QP_USERNAME, username1);
+
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         LOGGER.debug("ET=" + out.getET());
@@ -281,96 +198,59 @@ public class TestSyncUser extends JerseyTest {
     @Test
     public void testSyncUserUserWrongPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        } else {
-            target = target(functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password5));
+        target = c.target(TestConfig.URL).path(functionurl)
+        // .queryParam(
+        // Constants.QP_PASSWORD,
+        // Base64.encodeBase64String("XXX".getBytes(Charset
+        // .forName(Constants.CHARACTERSET))))
+        // .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(Constants.QP_USERID, uid2);
         LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
+
+        // HttpAuthenticationFeature feature = (HttpAuthenticationFeature)
+        // HttpAuthenticationFeature.basic(username1, password1);
+
+        // Response resp = target
+        // .register(
+        // HttpAuthenticationFeature.basicBuilder().credentials(
+        // username1, "XXX")).request().get();
+
+        Response resp = target.request().get();
+
+        LOGGER.debug("Response = " + resp);
+        Assert.assertEquals(resp.getStatus(), 401);
     }
 
     @Test
     public void testSyncUserUserEncodeFailureUser() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "�$%1234")
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "�$%1234")
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic("$%&123", password1));
+        target = c.target(TestConfig.URL).path(functionurl)
+        // .queryParam(Constants.QP_PASSWORD, password1)
+        // .queryParam(Constants.QP_USERNAME, "�$%1234")
+                .queryParam(Constants.QP_USERID, uid2);
         LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testSyncUserUserEncodeFailurePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "�$%1234")
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "�$%1234")
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        }
-        LOGGER.debug(target);
-        OSU out = target.request().get(OSU.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+        Response resp = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder().credentials(
+                                "§$%123", password1)).request().get();
+        LOGGER.debug("Response = " + resp);
+        Assert.assertEquals(resp.getStatus(), 401);
     }
 
     @Test
     public void testSyncUserUserPasswordTextmessage1() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+        target = c.target(TestConfig.URL).path(functionurl)
+        // .queryParam(Constants.QP_PASSWORD, password1)
+        // .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(Constants.QP_USERID, uid2);
 
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        }
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         LOGGER.debug("ET=" + out.getET());
@@ -380,20 +260,13 @@ public class TestSyncUser extends JerseyTest {
     @Test
     public void testSyncUserUserPasswordTextmessage2() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+        target = c.target(TestConfig.URL).path(functionurl)
+        // .queryParam(Constants.QP_PASSWORD, password1)
+        // .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(Constants.QP_USERID, uid2);
 
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2);
-
-        }
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         LOGGER.debug("U (size) =" + out.getU().size());
@@ -403,22 +276,15 @@ public class TestSyncUser extends JerseyTest {
     @Test
     public void testSyncUserUserPasswordMultipleUsers() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2)
-                    .queryParam(Constants.QP_USERID, uid3);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+        target = c.target(TestConfig.URL)
+                .path(functionurl)
+                // .queryParam(Constants.QP_PASSWORD, password1)
+                // .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(Constants.QP_USERID, uid2)
+                .queryParam(Constants.QP_USERID, uid3);
 
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_USERID, uid2)
-                    .queryParam(Constants.QP_USERID, uid3);
-
-        }
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         Assert.assertNotNull(out.getU().size());
@@ -427,22 +293,15 @@ public class TestSyncUser extends JerseyTest {
     @Test
     public void testSyncUserUserPasswordMultipleUsersWrongUserID() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password5)
-                    .queryParam(Constants.QP_USERNAME, username5)
-                    .queryParam(Constants.QP_USERID, uid3)
-                    .queryParam(Constants.QP_USERID, 77);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username5, password5));
+        target = c.target(TestConfig.URL)
+                .path(functionurl)
+                // .queryParam(Constants.QP_PASSWORD, password5)
+                // .queryParam(Constants.QP_USERNAME, username5)
+                .queryParam(Constants.QP_USERID, uid3)
+                .queryParam(Constants.QP_USERID, 77);
 
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password5)
-                    .queryParam(Constants.QP_USERNAME, username5)
-                    .queryParam(Constants.QP_USERID, uid3)
-                    .queryParam(Constants.QP_USERID, 77);
-
-        }
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());

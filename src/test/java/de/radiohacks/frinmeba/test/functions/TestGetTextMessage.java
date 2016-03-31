@@ -30,11 +30,13 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -46,7 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OGTeM;
+import de.radiohacks.frinmeba.model.jaxb.OGTeM;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -124,112 +126,15 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    public void testGetTextMessageUpNoValues() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetTextMessageUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username);
-
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetTextMessagePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password);
-
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetTextMessageUserTextmessage() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_TEXTMESSAGEID, msg1)
-                    .queryParam(Constants.QP_USERNAME, username);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_TEXTMESSAGEID,
-                    msg1).queryParam(Constants.QP_USERNAME, username);
-
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetTextMessagePasswordTextmessage() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_TEXTMESSAGEID, msg1);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_TEXTMESSAGEID, msg1);
-
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testGetTextMessageUserPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
 
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_USERNAME, username);
+        target = c.target(TestConfig.URL + functionurl);
+        // .queryParam(Constants.QP_PASSWORD, password)
+        // .queryParam(Constants.QP_USERNAME, username);
 
-        }
         LOGGER.debug(target);
         OGTeM out = target.request().get(OGTeM.class);
         LOGGER.debug("ET=" + out.getET());
@@ -238,89 +143,16 @@ public class TestGetTextMessage extends JerseyTest {
     }
 
     @Test
-    public void testGetTextMessageUserWrongPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username);
-
-        } else {
-            target = target(functionurl).queryParam(
-                    Constants.QP_PASSWORD,
-                    Base64.encodeBase64String("XXX".getBytes(Charset
-                            .forName(Constants.CHARACTERSET)))).queryParam(
-                    Constants.QP_USERNAME, username);
-
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testGetTextMessageUserEncodeFailureUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, "�$%1234");
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password).queryParam(Constants.QP_USERNAME, "�$%1234");
-
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testGetTextMessageUserEncodeFailurePassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "�$%1234")
-                    .queryParam(Constants.QP_USERNAME, username);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    "�$%1234").queryParam(Constants.QP_USERNAME, username);
-
-        }
-        LOGGER.debug(target);
-        OGTeM out = target.request().get(OGTeM.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testGetTextMessageUserPasswordTextmessage1() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_TEXTMESSAGEID, msg1);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
 
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_TEXTMESSAGEID, msg1);
+        target = c.target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QP_PASSWORD, password)
+        // .queryParam(Constants.QP_USERNAME, username)
+                .queryParam(Constants.QP_TEXTMESSAGEID, msg1);
 
-        }
         LOGGER.debug(target);
         OGTeM out = target.request().get(OGTeM.class);
         LOGGER.debug("TM=" + out.getTM());
@@ -330,18 +162,13 @@ public class TestGetTextMessage extends JerseyTest {
     @Test
     public void testGetTextMessageUserPasswordTextmessage2() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_TEXTMESSAGEID, msg2);
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password)
-                    .queryParam(Constants.QP_USERNAME, username)
-                    .queryParam(Constants.QP_TEXTMESSAGEID, msg2);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+
+        target = c.target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QP_PASSWORD, password)
+        // .queryParam(Constants.QP_USERNAME, username)
+                .queryParam(Constants.QP_TEXTMESSAGEID, msg2);
         LOGGER.debug(target);
         OGTeM out = target.request().get(OGTeM.class);
         LOGGER.debug("TM=" + out.getTM());

@@ -30,6 +30,7 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -51,8 +53,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.IAckCD;
-import de.radiohacks.frinmeba.modelshort.OAckCD;
+import de.radiohacks.frinmeba.model.jaxb.IAckCD;
+import de.radiohacks.frinmeba.model.jaxb.OAckCD;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -130,14 +132,13 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
 
     private OAckCD callTarget(IAckCD in) {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+
+        target = c.target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
-        Response response = target.request()
+        Response response = target
+                .request()
                 .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
@@ -149,42 +150,12 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
         IAckCD in = new IAckCD();
         OAckCD out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testAcknowledgeChatDownloadUser() {
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        OAckCD out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testAcknowledgeChatDownloadPassword() {
-        IAckCD in = new IAckCD();
-        in.setPW(password);
-        OAckCD out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testAcknowledgeChatDownloadUserPassword() {
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
-        OAckCD out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
     }
 
     @Test
-    public void testAcknowledgeChatDownloadUserPasswordNoAcknowledge() {
+    public void testAcknowledgeChatDownloadChatID() {
         IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
         in.setCID(cid);
         OAckCD out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
@@ -192,44 +163,7 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    public void testAcknowledgeChatDownloadUserWrongPassword() {
-        int hashCode = chatname_org.hashCode();
-        String sha1b64 = new String(Base64.encodeBase64(String
-                .valueOf(hashCode).getBytes()),
-                Charset.forName(Constants.CHARACTERSET));
-
-        IAckCD in = new IAckCD();
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setUN(username);
-        in.setACK(sha1b64);
-        OAckCD out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testAcknowledgeChatDownloadUserEncodeFailureUser() {
-        IAckCD in = new IAckCD();
-        in.setUN("XXX");
-        in.setPW(password);
-        OAckCD out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testAcknowledgeChatDownloadUserEncodeFailurePassword() {
-        IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW("XXX");
-        OAckCD out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testAcknowledgeChatDownloadUserPasswordAcknowledgeChat() {
+    public void testAcknowledgeChatDownloadAcknowledgeChat() {
 
         int hashCode = chatname_org.hashCode();
         String sha1b64 = new String(Base64.encodeBase64(String
@@ -237,8 +171,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
                 Charset.forName(Constants.CHARACTERSET));
 
         IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
         in.setCID(cid);
         in.setACK(sha1b64);
         OAckCD out = callTarget(in);
@@ -247,7 +179,7 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
     }
 
     @Test
-    public void testAcknowledgeChatDownloadUserPasswordAcknowledge() {
+    public void testAcknowledgeChatDownloadAcknowledge() {
 
         int hashCode = chatname_org.hashCode();
         String sha1b64 = new String(Base64.encodeBase64(String
@@ -255,8 +187,6 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
                 Charset.forName(Constants.CHARACTERSET));
 
         IAckCD in = new IAckCD();
-        in.setUN(username);
-        in.setPW(password);
         in.setACK(sha1b64);
         OAckCD out = callTarget(in);
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());

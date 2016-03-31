@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -49,8 +50,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.IIMIC;
-import de.radiohacks.frinmeba.modelshort.OIMIC;
+import de.radiohacks.frinmeba.model.jaxb.IIMIC;
+import de.radiohacks.frinmeba.model.jaxb.OIMIC;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -186,16 +187,14 @@ public class TestInserMessageIntoChat extends JerseyTest {
         LOGGER.debug("End prepareDB");
     }
 
-    private OIMIC callTarget(IIMIC in) {
+    private OIMIC callTarget(IIMIC in, String u, String p) {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
+        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
-        Response response = target.request()
+        Response response = target
+                .register(
+                        HttpAuthenticationFeature.basicBuilder()
+                                .credentials(u, p).build()).request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
@@ -203,102 +202,20 @@ public class TestInserMessageIntoChat extends JerseyTest {
     }
 
     @Test
-    public void testInserMessageIntoChatUpNoValues() {
-        IIMIC in = new IIMIC();
-        OIMIC out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInserMessageIntoChatUser() {
-        IIMIC in = new IIMIC();
-        in.setUN(username1);
-        OIMIC out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInserMessageIntoChatPassword() {
-        IIMIC in = new IIMIC();
-        in.setPW(password1);
-        OIMIC out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testInserMessageIntoChatUserPassword() {
         IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW(password1);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username1, password1);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getET());
-    }
-
-    @Test
-    public void testInserMessageIntoChatUserWrongPasswordNoMessageType() {
-        IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        OIMIC out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.INVALID_MESSAGE_TYPE, out.getET());
-    }
-
-    @Test
-    public void testInserMessageIntoChatUserWrongPasswordMessageType() {
-        IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW(Base64.encodeBase64String("XXX".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        OIMIC out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testInserMessageIntoChatUserEncodeFailureUser() {
-        IIMIC in = new IIMIC();
-        in.setUN("XXX");
-        in.setPW(password1);
-        in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setCID(cid);
-        in.setMID(contactmsgid);
-        OIMIC out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testInserMessageIntoChatUserEncodeFailurePassword() {
-        IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW("XXX");
-        in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
-        in.setCID(cid);
-        in.setMID(contactmsgid);
-        OIMIC out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
     }
 
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeChatID() {
         IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW(password1);
         in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setCID(cid);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username1, password1);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
     }
@@ -306,12 +223,10 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgID() {
         IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW(password1);
         in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setMID(contactmsgid);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username1, password1);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
     }
@@ -319,13 +234,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser1() {
         IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW(password1);
         in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(txtmsgid1);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username1, password1);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());
@@ -335,13 +248,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser3() {
         IIMIC in = new IIMIC();
-        in.setUN(username3);
-        in.setPW(password3);
         in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(txtmsgid3);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username3, password3);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());
@@ -351,13 +262,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDUUser2() {
         IIMIC in = new IIMIC();
-        in.setUN(username2);
-        in.setPW(password2);
         in.setMT(Base64.encodeBase64String(Constants.TYP_TEXT.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(txtmsgid2);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username2, password2);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());
@@ -367,13 +276,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDImage() {
         IIMIC in = new IIMIC();
-        in.setUN(username2);
-        in.setPW(password2);
         in.setMT(Base64.encodeBase64String(Constants.TYP_IMAGE.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(imagemsgid);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username2, password2);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());
@@ -383,13 +290,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDVideo() {
         IIMIC in = new IIMIC();
-        in.setUN(username2);
-        in.setPW(password2);
         in.setMT(Base64.encodeBase64String(Constants.TYP_VIDEO.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(videomsgid);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username2, password2);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());
@@ -399,13 +304,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDLocation() {
         IIMIC in = new IIMIC();
-        in.setUN(username2);
-        in.setPW(password2);
         in.setMT(Base64.encodeBase64String(Constants.TYP_LOCATION
                 .getBytes(Charset.forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(locationmsgid);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username2, password2);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());
@@ -415,13 +318,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDFile() {
         IIMIC in = new IIMIC();
-        in.setUN(username2);
-        in.setPW(password2);
         in.setMT(Base64.encodeBase64String(Constants.TYP_FILE.getBytes(Charset
                 .forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(filemsgid);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username2, password2);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());
@@ -431,13 +332,11 @@ public class TestInserMessageIntoChat extends JerseyTest {
     @Test
     public void testInserMessageIntoChatUserPasswordMessageTypeMsgIDChatIDContact() {
         IIMIC in = new IIMIC();
-        in.setUN(username1);
-        in.setPW(password1);
         in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
                 .getBytes(Charset.forName(Constants.CHARACTERSET))));
         in.setCID(cid);
         in.setMID(contactmsgid);
-        OIMIC out = callTarget(in);
+        OIMIC out = callTarget(in, username1, password1);
         LOGGER.debug("MID=" + out.getMID());
         LOGGER.debug("SdT=" + out.getSdT());
         Assert.assertNotNull(out.getMID());

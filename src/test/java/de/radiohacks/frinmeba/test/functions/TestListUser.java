@@ -30,11 +30,13 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -46,7 +48,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.modelshort.OLiUs;
+import de.radiohacks.frinmeba.model.jaxb.OLiUs;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
@@ -142,163 +144,33 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    public void testListUserUpNoValues() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient().target(
-                    TestConfig.URL + functionurl);
-        } else {
-            target = target(functionurl);
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
     public void testListUserUserPasswordSearch() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        }
+        target = c.target(TestConfig.URL).path(functionurl)
+                // .queryParam(Constants.QP_PASSWORD, password1)
+                // .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(
+                        Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(Charset
+                                .forName(Constants.CHARACTERSET))));
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("U (size) =" + out.getU().size());
         Assert.assertNotNull(out.getU());
-    }
-
-    @Test
-    public void testListUserUserWrongPasswordSearch() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        } else {
-            target = target(functionurl)
-                    .queryParam(
-                            Constants.QP_PASSWORD,
-                            Base64.encodeBase64String("XXX".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))))
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.WRONG_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testListUserUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username1);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username1);
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testListUserPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1);
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1);
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testListUserSearch() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        } else {
-            target = target(functionurl).queryParam(
-                    Constants.QP_SEARCH,
-                    Base64.encodeBase64String("Test".getBytes(Charset
-                            .forName(Constants.CHARACTERSET))));
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
     }
 
     @Test
     public void testListUserUserPassword() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(Constants.QP_USERNAME, username1);
-
-        }
+        target = c.target(TestConfig.URL + functionurl);
+        // .queryParam(Constants.QP_PASSWORD, password1)
+        // .queryParam(Constants.QP_USERNAME, username1);
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("U (size) =" + out.getU().size());
@@ -306,136 +178,15 @@ public class TestListUser extends JerseyTest {
     }
 
     @Test
-    public void testListUserUserSearch() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_USERNAME,
-                    username1).queryParam(
-                    Constants.QP_SEARCH,
-                    Base64.encodeBase64String("Test".getBytes(Charset
-                            .forName(Constants.CHARACTERSET))));
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testListUserPasswordSearch() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        } else {
-            target = target(functionurl).queryParam(Constants.QP_PASSWORD,
-                    password1).queryParam(
-                    Constants.QP_SEARCH,
-                    Base64.encodeBase64String("Test".getBytes(Charset
-                            .forName(Constants.CHARACTERSET))));
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
-    }
-
-    @Test
-    public void testListUserEncodingErrorUser() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "$%&1233")
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, "$%&1233")
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
-    public void testListUserEncodingErrorPassword() {
-        WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder
-                    .newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "$%&1233")
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, "$%&1233")
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(
-                            Constants.QP_SEARCH,
-                            Base64.encodeBase64String("Test".getBytes(Charset
-                                    .forName(Constants.CHARACTERSET))));
-
-        }
-        LOGGER.debug(target);
-        OLiUs out = target.request().get(OLiUs.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
-
-    @Test
     public void testListUserEncodingErrorSearch() {
         WebTarget target;
-        if (TestConfig.remote) {
-            target = ClientBuilder.newClient()
-                    .target(TestConfig.URL + functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_SEARCH, "$%&1233");
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        } else {
-            target = target(functionurl)
-                    .queryParam(Constants.QP_PASSWORD, password1)
-                    .queryParam(Constants.QP_USERNAME, username1)
-                    .queryParam(Constants.QP_SEARCH, "$%&1233");
-
-        }
+        target = c.target(TestConfig.URL + functionurl)
+        // .queryParam(Constants.QP_PASSWORD, password1)
+        // .queryParam(Constants.QP_USERNAME, username1)
+                .queryParam(Constants.QP_SEARCH, "$%&1233");
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("ET=" + out.getET());
