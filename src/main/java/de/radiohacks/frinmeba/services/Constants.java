@@ -57,6 +57,7 @@ public class Constants {
     public static final String USER_ALREADY_EXISTS = "USER_ALREADY_EXISTS";
     public static final String NO_ACTIVE_CHATS = "NO_ACTIVE_CHATS";
     public static final String CHAT_OWNER_NOT_ADDED = "CHAT_OWNER_NOT_ADDED";
+    public static final String CHAT_OWNER_NOT_REMOVED = "CHAT_OWNER_NOT_REMOVED";
     public static final String USER_ALREADY_IN_CHAT = "USER_ALREADY_IN_CHAT";
     public static final String ENCODING_ERROR = "ENCODING_ERROR";
     public static final String NO_CONTENT_GIVEN = "NO_CONTENT_GIVEN";

@@ -68,6 +68,7 @@ public class helperDatabase {
     private static final Logger LOGGER = Logger.getLogger(helperDatabase.class);
 
     final static String activate = "UPDATE Users SET ACTIVE = 1 where ID = ?";
+    final static String delUserToChat = "Delete from UserToChats where 1";
     final static String videouploadurl = "video/upload";
     final static String imageuploadurl = "image/upload";
     final static String functionurl = "image/upload";
@@ -84,6 +85,17 @@ public class helperDatabase {
         }
     }
 
+    public void DelUserToChats(){
+        try {
+            Connection con = new MySqlConnection().getMySqlConnection();
+            PreparedStatement pre = con.prepareStatement(delUserToChat);
+            pre.executeUpdate();
+            con.close();
+        } catch (SQLException e) {
+            LOGGER.error(e);
+        }
+    }
+    
     public void CreateActiveUser(String username, String B64username,
             String password, String email, int IconID) {
 

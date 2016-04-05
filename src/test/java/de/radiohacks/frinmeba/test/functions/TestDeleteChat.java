@@ -131,11 +131,11 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    public void testDeleteChatUserPasswordChatid() {
+    public void testDeleteChatChatidOK() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-        target = c.target(TestConfig.URL + functionurl).queryParam(
+        target = c.target(TestConfig.URL).path(functionurl).queryParam(
                 Constants.QP_CHATID, 1);
         LOGGER.debug(target);
 
@@ -151,7 +151,7 @@ public class TestDeleteChat extends JerseyTest {
         Assert.assertEquals("Testchat", out2.getCN());
 
         WebTarget target2;
-        target2 = c.target(TestConfig.URL + functionurl).queryParam(
+        target2 = c.target(TestConfig.URL).path(functionurl).queryParam(
                 Constants.QP_CHATID, out2.getCID());
         LOGGER.debug(target2);
 
@@ -161,11 +161,11 @@ public class TestDeleteChat extends JerseyTest {
     }
 
     @Test
-    public void testDeleteChatUserPassword() {
+    public void testDeleteChatNoneExistingChat() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-        target = c.target(TestConfig.URL + functionurl);
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         ODeCh out = target.request().delete(ODeCh.class);
         LOGGER.debug("ET=" + out.getET());

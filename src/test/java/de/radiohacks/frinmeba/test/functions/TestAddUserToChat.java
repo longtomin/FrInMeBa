@@ -154,23 +154,11 @@ public class TestAddUserToChat extends JerseyTest {
 	}
 
 	@Test
-	public void testAddUserToChatUpNoValues() {
+	public void testAddUserToChatNoValues() {
 		IAdUC in = new IAdUC();
 		OAdUC out = callTarget(in);
 		LOGGER.debug("ET=" + out.getET());
 		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
-	}
-
-	@Test
-	public void testAddUserToChatUserIDChatID() {
-		helperDatabase help = new helperDatabase();
-		userid = help.getUserID(username2_org);
-		IAdUC in = new IAdUC();
-		in.setCID(chatid);
-		in.setUID(userid);
-		OAdUC out = callTarget(in);
-		LOGGER.debug(out.getR());
-		Assert.assertEquals(Constants.USER_ADDED, out.getR());
 	}
 
 	@Test
@@ -191,6 +179,19 @@ public class TestAddUserToChat extends JerseyTest {
 		OAdUC out = callTarget(in);
 		LOGGER.debug("ET=" + out.getET());
 		Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
+	}
+
+	@Test
+	public void testAddUserToChatUserIDChatID() {
+		helperDatabase help = new helperDatabase();
+		help.DelUserToChats();
+		userid = help.getUserID(username2_org);
+		IAdUC in = new IAdUC();
+		in.setCID(chatid);
+		in.setUID(userid);
+		OAdUC out = callTarget(in);
+		LOGGER.debug(out.getR());
+		Assert.assertEquals(Constants.USER_ADDED, out.getR());
 	}
 
 	@Test
@@ -218,6 +219,9 @@ public class TestAddUserToChat extends JerseyTest {
 	@Test
 	public void testAddUserToChatUserIDChatID_Again() {
 		helperDatabase help = new helperDatabase();
+		help.DelUserToChats();
+		userid = help.getUserID(username_org);
+		help.AddUserToChat(userid, chatid);
 		userid = help.getUserID(username2_org);
 		help.AddUserToChat(userid, chatid);
 		IAdUC in = new IAdUC();
