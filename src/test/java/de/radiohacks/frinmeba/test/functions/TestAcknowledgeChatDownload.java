@@ -135,7 +135,7 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
 
-        target = c.target(TestConfig.URL + functionurl);
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response response = target
                 .request()
@@ -176,6 +176,16 @@ public class TestAcknowledgeChatDownload extends JerseyTest {
         OAckCD out = callTarget(in);
         LOGGER.debug(out.getACK());
         Assert.assertEquals(Constants.ACKNOWLEDGE_TRUE, out.getACK());
+    }
+    
+    @Test
+    public void testAcknowledgeChatDownloadAcknowledgeChatEncodingError() {
+        IAckCD in = new IAckCD();
+        in.setCID(cid);
+        in.setACK("XXX");
+        OAckCD out = callTarget(in);
+        LOGGER.debug(out.getET());
+        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
     }
 
     @Test

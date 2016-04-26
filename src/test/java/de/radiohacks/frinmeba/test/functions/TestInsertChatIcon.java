@@ -30,6 +30,7 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -61,149 +62,147 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestInsertChatIcon extends JerseyTest {
 
-    /*
-     * @PUT
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Consumes(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/insertchaticon") public OICIc insertchaticon(IICIc in);
-     */
+	/*
+	 * @PUT
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Consumes(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/insertchaticon") public OICIc insertchaticon(IICIc in);
+	 */
 
-    private static final Logger LOGGER = Logger
-            .getLogger(TestInsertChatIcon.class.getName());
+	private static final Logger LOGGER = Logger
+			.getLogger(TestInsertChatIcon.class.getName());
 
-    // Username welche anzulegen ist
-    final static String username1_org = "Test1";
-    final static String username1 = Base64.encodeBase64String(username1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String username2_org = "Test2";
-    final static String username2 = Base64.encodeBase64String(username2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Username welche anzulegen ist
+	final static String username1_org = "Test1";
+	final static String username1 = Base64.encodeBase64String(username1_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String username2_org = "Test2";
+	final static String username2 = Base64.encodeBase64String(username2_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    // Passwort zum User
-    final static String password1_org = "Test1";
-    final static String password1 = Base64.encodeBase64String(password1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String password2_org = "Test2";
-    final static String password2 = Base64.encodeBase64String(password2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password1_org = "Test1";
+	final static String password1 = Base64.encodeBase64String(password1_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String password2_org = "Test2";
+	final static String password2 = Base64.encodeBase64String(password2_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    // Email Adresse zum User
-    final static String email1_org = "Test1@frinme.org";
-    final static String email1 = Base64.encodeBase64String(email1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String email2_org = "Test2@frinme.org";
-    final static String email2 = Base64.encodeBase64String(email2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email1_org = "Test1@frinme.org";
+	final static String email1 = Base64.encodeBase64String(email1_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String email2_org = "Test2@frinme.org";
+	final static String email2 = Base64.encodeBase64String(email2_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    final static String functionurl = "user/insertchaticon";
+	final static String functionurl = "user/insertchaticon";
 
-    // Text Message
-    static int iconid;
-    static int chatid1;
-    static int chatid2;
+	// Text Message
+	static int iconid;
+	static int chatid1;
+	static int chatid2;
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(
+				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+				.build();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username1_org, username1, password1_org,
-                email1_org, help.InsertFixedImage());
-        help.CreateActiveUser(username2_org, username2, password2_org,
-                email2_org, help.InsertFixedImage());
-        chatid1 = help.CreateChat(username1_org, "Chat_Test1");
-        chatid2 = help.CreateChat(username2_org, "Chat-Test2");
-        iconid = help.InsertFixedImage();
-        LOGGER.debug("End BeforeClass");
-    }
+	@BeforeClass
+	public static void prepareDB() {
+		LOGGER.debug("Start BeforeClass");
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username1_org, username1, password1_org,
+				email1_org, help.InsertFixedImage());
+		help.CreateActiveUser(username2_org, username2, password2_org,
+				email2_org, help.InsertFixedImage());
+		chatid1 = help.CreateChat(username1_org, "Chat_Test1");
+		chatid2 = help.CreateChat(username2_org, "Chat-Test2");
+		iconid = help.InsertFixedImage();
+		LOGGER.debug("End BeforeClass");
+	}
 
-    private OICIc callTargetUser1(IICIc in) {
-        WebTarget target;
-        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
-        LOGGER.debug(target);
-        Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username1, password1).build())
-                .request()
-                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-                .invoke();
-        LOGGER.debug(response);
-        return response.readEntity(OICIc.class);
-    }
+	private OICIc callTargetUser1(IICIc in) {
+		WebTarget target;
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username1, password1));
+		target = c.target(TestConfig.URL + functionurl);
+		LOGGER.debug(target);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		LOGGER.debug(response);
+		return response.readEntity(OICIc.class);
+	}
 
-    @Test
-    public void testInsertChatIconUserPassword() {
-        IICIc in = new IICIc();
-        OICIc out = callTargetUser1(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
-    }
+	@Test
+	public void testInsertChatIconUserPassword() {
+		IICIc in = new IICIc();
+		OICIc out = callTargetUser1(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
+	}
 
-    @Test
-    public void testInsertChatIconUserPasswordIcon() {
-        IICIc in = new IICIc();
-        in.setIcID(iconid);
-        OICIc out = callTargetUser1(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(out.getET(), Constants.NONE_EXISTING_CHAT);
-    }
+	@Test
+	public void testInsertChatIconUserPasswordIcon() {
+		IICIc in = new IICIc();
+		in.setIcID(iconid);
+		OICIc out = callTargetUser1(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(out.getET(), Constants.NONE_EXISTING_CHAT);
+	}
 
-    @Test
-    public void testInsertChatIconUserPasswordChat() {
-        IICIc in = new IICIc();
-        in.setCID(chatid1);
-        OICIc out = callTargetUser1(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(out.getET(),
-                Constants.NONE_EXISTING_CONTENT_MESSAGE);
-    }
+	@Test
+	public void testInsertChatIconUserPasswordChat() {
+		IICIc in = new IICIc();
+		in.setCID(chatid1);
+		OICIc out = callTargetUser1(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(out.getET(),
+				Constants.NONE_EXISTING_CONTENT_MESSAGE);
+	}
 
-    @Test
-    public void testInsertChatIconNoneExistingChat() {
-        IICIc in = new IICIc();
-        in.setCID(17);
-        in.setIcID(iconid);
-        OICIc out = callTargetUser1(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
-    }
+	@Test
+	public void testInsertChatIconNoneExistingChat() {
+		IICIc in = new IICIc();
+		in.setCID(17);
+		in.setIcID(iconid);
+		OICIc out = callTargetUser1(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
+	}
 
-    @Test
-    public void testInsertChatIconNotChatOwner() {
-        IICIc in = new IICIc();
-        in.setCID(chatid2);
-        in.setIcID(iconid);
-        OICIc out = callTargetUser1(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NOT_CHAT_OWNER, out.getET());
-    }
+	@Test
+	public void testInsertChatIconNotChatOwner() {
+		IICIc in = new IICIc();
+		in.setCID(chatid2);
+		in.setIcID(iconid);
+		OICIc out = callTargetUser1(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NOT_CHAT_OWNER, out.getET());
+	}
 
-    @Test
-    public void testInsertChatIconUserPasswordIconChatCorrect() {
-        IICIc in = new IICIc();
-        in.setIcID(iconid);
-        in.setCID(chatid1);
-        OICIc out = callTargetUser1(in);
-        LOGGER.debug("R=" + out.getR());
-        Assert.assertEquals(out.getR(), Constants.ICON_ADDED);
-    }
+	@Test
+	public void testInsertChatIconUserPasswordIconChatCorrect() {
+		IICIc in = new IICIc();
+		in.setIcID(iconid);
+		in.setCID(chatid1);
+		OICIc out = callTargetUser1(in);
+		LOGGER.debug("R=" + out.getR());
+		Assert.assertEquals(out.getR(), Constants.ICON_ADDED);
+	}
 }

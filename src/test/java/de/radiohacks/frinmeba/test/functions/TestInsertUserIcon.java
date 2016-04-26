@@ -30,6 +30,7 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -61,104 +62,102 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestInsertUserIcon extends JerseyTest {
 
-    /*
-     * @PUT
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Consumes(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/insertmessageintochat") public OIMIC insertMessageIntoChat(IIMIC
-     * in);
-     */
+	/*
+	 * @PUT
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Consumes(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/insertmessageintochat") public OIMIC insertMessageIntoChat(IIMIC
+	 * in);
+	 */
 
-    private static final Logger LOGGER = Logger
-            .getLogger(TestInsertUserIcon.class.getName());
+	private static final Logger LOGGER = Logger
+			.getLogger(TestInsertUserIcon.class.getName());
 
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64.encodeBase64String(username_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64.encodeBase64String(password_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    final static String functionurl = "user/insertusericon";
+	final static String functionurl = "user/insertusericon";
 
-    // Text Message
-    static int iconid;
+	// Text Message
+	static int iconid;
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(
+				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+				.build();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-        iconid = help.InsertFixedImage();
-        LOGGER.debug("End BeforeClass");
-    }
+	@BeforeClass
+	public static void prepareDB() {
+		LOGGER.debug("Start BeforeClass");
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org,
+				help.InsertFixedImage());
+		iconid = help.InsertFixedImage();
+		LOGGER.debug("End BeforeClass");
+	}
 
-    private OIUIc callTarget(IIUIc in) {
-        WebTarget target;
-        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
-        LOGGER.debug(target);
-        Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, password).build())
-                .request()
-                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-                .invoke();
-        LOGGER.debug(response);
-        return response.readEntity(OIUIc.class);
-    }
+	private OIUIc callTarget(IIUIc in) {
+		WebTarget target;
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username, password));
+		target = c.target(TestConfig.URL).path(functionurl);
+		LOGGER.debug(target);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		LOGGER.debug(response);
+		return response.readEntity(OIUIc.class);
+	}
 
-    @Test
-    public void testInsertUserIconUserPassword() {
-        IIUIc in = new IIUIc();
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-                out.getET());
-    }
+	@Test
+	public void testInsertUserIconUserPassword() {
+		IIUIc in = new IIUIc();
+		OIUIc out = callTarget(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
+				out.getET());
+	}
 
-    @Test
-    public void testInsertUserIconUserPasswordMessage() {
-        IIUIc in = new IIUIc();
-        in.setIcID(iconid);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("R=" + out.getR());
-        Assert.assertNotNull(out.getR());
-    }
+	@Test
+	public void testInsertUserIconUserPasswordMessage() {
+		IIUIc in = new IIUIc();
+		in.setIcID(iconid);
+		OIUIc out = callTarget(in);
+		LOGGER.debug("R=" + out.getR());
+		Assert.assertNotNull(out.getR());
+	}
 
-    @Test
-    public void testInsertUserIconEncodimgErrorTextMessage() {
-        IIUIc in = new IIUIc();
-        in.setIcID(17);
-        OIUIc out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
-                out.getET());
-    }
+	@Test
+	public void testInsertUserIconEncodimgErrorTextMessage() {
+		IIUIc in = new IIUIc();
+		in.setIcID(17);
+		OIUIc out = callTarget(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NONE_EXISTING_CONTENT_MESSAGE,
+				out.getET());
+	}
 }

@@ -58,246 +58,231 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestGetMessageInformation extends JerseyTest {
 
-    /*
-     * @GET
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/getmessageinformation") public OGMI getMessageInformation(
-     * 
-     * @QueryParam(Constants.QPusername) String User,
-     * 
-     * @QueryParam(Constants.QPpassword) String Password,
-     * 
-     * @QueryParam(Constants.QPmessageid) int MessageID);
-     */
+	/*
+	 * @GET
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/getmessageinformation") public OGMI
+	 * getMessageInformation(@Context HttpHeaders headers,
+	 * 
+	 * @QueryParam(Constants.QP_MESSAGEID) List<Integer> messageID);
+	 */
 
-    private static final Logger LOGGER = Logger
-            .getLogger(TestGetMessageInformation.class.getName());
+	private static final Logger LOGGER = Logger
+			.getLogger(TestGetMessageInformation.class.getName());
 
-    final static String username1_org = "Test1";
-    final static String username1 = Base64.encodeBase64String(username1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String password1_org = "Test1";
-    final static String password1 = Base64.encodeBase64String(password1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String email1_org = "Test1@frinme.org";
-    final static String email1 = Base64.encodeBase64String(email1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String username2_org = "Test2";
-    final static String username2 = Base64.encodeBase64String(username2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String password2_org = "Test2";
-    final static String password2 = Base64.encodeBase64String(password2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String email2_org = "Test2@frinme.org";
-    final static String email2 = Base64.encodeBase64String(email2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String username3_org = "Test3";
-    final static String username3 = Base64.encodeBase64String(username3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String password3_org = "Test3";
-    final static String password3 = Base64.encodeBase64String(password3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String email3_org = "Test3@frinme.org";
-    final static String email3 = Base64.encodeBase64String(email3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String username4_org = "Test4";
-    final static String username4 = Base64.encodeBase64String(username4_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String password4_org = "Test4";
-    final static String password4 = Base64.encodeBase64String(password4_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String email4_org = "Test4@frinme.org";
-    final static String email4 = Base64.encodeBase64String(email4_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String username5_org = "Test5";
-    final static String username5 = Base64.encodeBase64String(username5_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String password5_org = "Test5";
-    final static String password5 = Base64.encodeBase64String(password5_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    final static String email5_org = "Test5@frinme.org";
-    final static String email5 = Base64.encodeBase64String(email5_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String username1_org = "Test1";
+	final static String username1 = Base64.encodeBase64String(username1_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String password1_org = "Test1";
+	final static String password1 = Base64.encodeBase64String(password1_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String email1_org = "Test1@frinme.org";
+	final static String email1 = Base64.encodeBase64String(email1_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String username2_org = "Test2";
+	final static String username2 = Base64.encodeBase64String(username2_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String password2_org = "Test2";
+	final static String password2 = Base64.encodeBase64String(password2_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String email2_org = "Test2@frinme.org";
+	final static String email2 = Base64.encodeBase64String(email2_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String username3_org = "Test3";
+	final static String username3 = Base64.encodeBase64String(username3_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String password3_org = "Test3";
+	final static String password3 = Base64.encodeBase64String(password3_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String email3_org = "Test3@frinme.org";
+	final static String email3 = Base64.encodeBase64String(email3_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String username4_org = "Test4";
+	final static String username4 = Base64.encodeBase64String(username4_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String password4_org = "Test4";
+	final static String password4 = Base64.encodeBase64String(password4_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String email4_org = "Test4@frinme.org";
+	final static String email4 = Base64.encodeBase64String(email4_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String username5_org = "Test5";
+	final static String username5 = Base64.encodeBase64String(username5_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String password5_org = "Test5";
+	final static String password5 = Base64.encodeBase64String(password5_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	final static String email5_org = "Test5@frinme.org";
+	final static String email5 = Base64.encodeBase64String(email5_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    final static String functionurl = "user/getmessageinformation";
+	final static String functionurl = "user/getmessageinformation";
 
-    static int msg1;
-    final static String textmnsg1_org = "Test1 Nachricht ;-) 'o)";
-    final static String textmnsg1 = Base64.encodeBase64String(textmnsg1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    static int msg2;
-    final static String textmnsg2_org = "Nachricht2 von Test1 ä ö ü Ä Ö Ü";
-    final static String textmnsg2 = Base64.encodeBase64String(textmnsg2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	static int msg1;
+	final static String textmnsg1_org = "Test1 Nachricht ;-) 'o)";
+	final static String textmnsg1 = Base64.encodeBase64String(textmnsg1_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	static int msg2;
+	final static String textmnsg2_org = "Nachricht2 von Test1 ä ö ü Ä Ö Ü";
+	final static String textmnsg2 = Base64.encodeBase64String(textmnsg2_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    static int msgid11;
-    static int msgid12;
-    static int msgid13;
-    static int msgid14;
-    static int msgid15;
+	static int msgid11;
+	static int msgid12;
+	static int msgid13;
+	static int msgid14;
+	static int msgid15;
 
-    static int msgid21;
-    static int msgid22;
-    static int msgid23;
-    static int msgid24;
-    static int msgid25;
+	static int msgid21;
+	static int msgid22;
+	static int msgid23;
+	static int msgid24;
+	static int msgid25;
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(
+				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+				.build();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username1_org, username1, password1_org,
-                email1_org, help.InsertFixedImage());
-        help.CreateActiveUser(username2_org, username2, password2_org,
-                email2_org, help.InsertFixedImage());
-        help.CreateActiveUser(username3_org, username3, password3_org,
-                email3_org, help.InsertFixedImage());
-        help.CreateActiveUser(username4_org, username4, password4_org,
-                email4_org, help.InsertFixedImage());
-        help.CreateActiveUser(username5_org, username5, password5_org,
-                email5_org, help.InsertFixedImage());
+	@BeforeClass
+	public static void prepareDB() {
+		LOGGER.debug("Start BeforeClass");
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username1_org, username1, password1_org,
+				email1_org, help.InsertFixedImage());
+		help.CreateActiveUser(username2_org, username2, password2_org,
+				email2_org, help.InsertFixedImage());
+		help.CreateActiveUser(username3_org, username3, password3_org,
+				email3_org, help.InsertFixedImage());
+		help.CreateActiveUser(username4_org, username4, password4_org,
+				email4_org, help.InsertFixedImage());
+		help.CreateActiveUser(username5_org, username5, password5_org,
+				email5_org, help.InsertFixedImage());
 
-        msg1 = help.CreateContentMessage(textmnsg1, Constants.TYP_TEXT);
-        msg2 = help.CreateContentMessage(textmnsg2, Constants.TYP_TEXT);
+		msg1 = help.CreateContentMessage(textmnsg1, Constants.TYP_TEXT);
+		msg2 = help.CreateContentMessage(textmnsg2, Constants.TYP_TEXT);
 
-        int cid = help.CreateChat(username1_org, "Test1 Chat");
-        int u2c1 = help.AddUserToChat(help.getUserID(username1_org), cid);
-        int u2c2 = help.AddUserToChat(help.getUserID(username2_org), cid);
-        int u2c3 = help.AddUserToChat(help.getUserID(username3_org), cid);
-        int u2c4 = help.AddUserToChat(help.getUserID(username4_org), cid);
-        int u2c5 = help.AddUserToChat(help.getUserID(username5_org), cid);
+		int cid = help.CreateChat(username1_org, "Test1 Chat");
+		int u2c1 = help.AddUserToChat(help.getUserID(username1_org), cid);
+		int u2c2 = help.AddUserToChat(help.getUserID(username2_org), cid);
+		int u2c3 = help.AddUserToChat(help.getUserID(username3_org), cid);
+		int u2c4 = help.AddUserToChat(help.getUserID(username4_org), cid);
+		int u2c5 = help.AddUserToChat(help.getUserID(username5_org), cid);
 
-        int cid2 = help.CreateChat(username2_org, "Test1 Chat 2");
-        int u2c12 = help.AddUserToChat(help.getUserID(username1_org), cid2);
-        int u2c22 = help.AddUserToChat(help.getUserID(username2_org), cid2);
-        int u2c32 = help.AddUserToChat(help.getUserID(username3_org), cid2);
-        int u2c42 = help.AddUserToChat(help.getUserID(username4_org), cid2);
+		int cid2 = help.CreateChat(username2_org, "Test1 Chat 2");
+		int u2c12 = help.AddUserToChat(help.getUserID(username1_org), cid2);
+		int u2c22 = help.AddUserToChat(help.getUserID(username2_org), cid2);
+		int u2c32 = help.AddUserToChat(help.getUserID(username3_org), cid2);
+		int u2c42 = help.AddUserToChat(help.getUserID(username4_org), cid2);
 
-        // User2Chat anlegen 3-5 x
+		// User2Chat anlegen 3-5 x
 
-        msgid11 = help.insertMessage(help.getUserID(username1_org), u2c1,
-                Constants.TYP_TEXT, msg1, 0, true);
-        msgid12 = help.insertMessage(help.getUserID(username1_org), u2c2,
-                Constants.TYP_TEXT, msg1, msgid11, false);
-        msgid13 = help.insertMessage(help.getUserID(username1_org), u2c3,
-                Constants.TYP_TEXT, msg1, msgid11, false);
-        msgid14 = help.insertMessage(help.getUserID(username1_org), u2c4,
-                Constants.TYP_TEXT, msg1, msgid11, false);
-        msgid15 = help.insertMessage(help.getUserID(username1_org), u2c5,
-                Constants.TYP_TEXT, msg1, msgid11, false);
+		msgid11 = help.insertMessage(help.getUserID(username1_org), u2c1,
+				Constants.TYP_TEXT, msg1, 0, true);
+		msgid12 = help.insertMessage(help.getUserID(username1_org), u2c2,
+				Constants.TYP_TEXT, msg1, msgid11, false);
+		msgid13 = help.insertMessage(help.getUserID(username1_org), u2c3,
+				Constants.TYP_TEXT, msg1, msgid11, false);
+		msgid14 = help.insertMessage(help.getUserID(username1_org), u2c4,
+				Constants.TYP_TEXT, msg1, msgid11, false);
+		msgid15 = help.insertMessage(help.getUserID(username1_org), u2c5,
+				Constants.TYP_TEXT, msg1, msgid11, false);
 
-        msgid22 = help.insertMessage(help.getUserID(username2_org), u2c22,
-                Constants.TYP_TEXT, msg2, 0, true);
-        msgid21 = help.insertMessage(help.getUserID(username2_org), u2c12,
-                Constants.TYP_TEXT, msg2, msgid22, false);
-        msgid23 = help.insertMessage(help.getUserID(username2_org), u2c32,
-                Constants.TYP_TEXT, msg2, msgid22, false);
-        msgid24 = help.insertMessage(help.getUserID(username2_org), u2c42,
-                Constants.TYP_TEXT, msg2, msgid22, false);
-        LOGGER.debug("End BeforeClass");
-    }
+		msgid22 = help.insertMessage(help.getUserID(username2_org), u2c22,
+				Constants.TYP_TEXT, msg2, 0, true);
+		msgid21 = help.insertMessage(help.getUserID(username2_org), u2c12,
+				Constants.TYP_TEXT, msg2, msgid22, false);
+		msgid23 = help.insertMessage(help.getUserID(username2_org), u2c32,
+				Constants.TYP_TEXT, msg2, msgid22, false);
+		msgid24 = help.insertMessage(help.getUserID(username2_org), u2c42,
+				Constants.TYP_TEXT, msg2, msgid22, false);
+		LOGGER.debug("End BeforeClass");
+	}
 
-    @Test
-    public void testGetMessageInformationUserPassword() {
-        WebTarget target;
-        Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username1, password1));
+	@Test
+	public void testGetMessageInformation() {
+		WebTarget target;
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        target = c.target(TestConfig.URL + functionurl);
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1);
-        LOGGER.debug(target);
-        OGMI out = target.request().get(OGMI.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
-    }
+		target = c.target(TestConfig.URL).path(functionurl);
+		LOGGER.debug(target);
+		OGMI out = target.request().get(OGMI.class);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NONE_EXISTING_MESSAGE, out.getET());
+	}
 
-    @Test
-    public void testGetMessageInformationUserPasswordTextmessage1() {
-        WebTarget target;
-        Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username1, password1));
+	@Test
+	public void testGetMessageInformationUserPasswordTextmessage1() {
+		WebTarget target;
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        target = c.target(TestConfig.URL + functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(Constants.QP_MESSAGEID, msgid11);
-        LOGGER.debug(target);
-        OGMI out = target.request().get(OGMI.class);
-        LOGGER.debug("MIB (size) =" + out.getMIB().size());
-        Assert.assertNotNull(out.getMIB().size());
-        Assert.assertNotNull(out.getMIB().get(0).getMI().size());
-    }
+		target = c.target(TestConfig.URL).path(functionurl)
+				.queryParam(Constants.QP_MESSAGEID, msgid11);
+		LOGGER.debug(target);
+		OGMI out = target.request().get(OGMI.class);
+		LOGGER.debug("MIB (size) =" + out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().get(0).getMI().size());
+	}
 
-    @Test
-    public void testGetMessageInformationUserPasswordTextmessage2() {
-        WebTarget target;
-        Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username1, password1));
+	@Test
+	public void testGetMessageInformationUserPasswordTextmessage2() {
+		WebTarget target;
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        target = c.target(TestConfig.URL + functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(Constants.QP_MESSAGEID, msgid21);
-        LOGGER.debug(target);
-        OGMI out = target.request().get(OGMI.class);
-        LOGGER.debug("MIB (size) =" + out.getMIB().size());
-        Assert.assertNotNull(out.getMIB().size());
-        Assert.assertNotNull(out.getMIB().get(0).getMI().size());
-    }
+		target = c.target(TestConfig.URL).path(functionurl)
+				.queryParam(Constants.QP_MESSAGEID, msgid21);
+		LOGGER.debug(target);
+		OGMI out = target.request().get(OGMI.class);
+		LOGGER.debug("MIB (size) =" + out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().get(0).getMI().size());
+	}
 
-    @Test
-    public void testGetMessageInformationUserPasswordMultipleMessages() {
-        WebTarget target;
-        Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username1, password1));
+	@Test
+	public void testGetMessageInformationUserPasswordMultipleMessages() {
+		WebTarget target;
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username1, password1));
 
-        target = c
-                .target(TestConfig.URL + functionurl)
-                // .queryParam(Constants.QP_PASSWORD, password1)
-                // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(Constants.QP_MESSAGEID, msgid11)
-                .queryParam(Constants.QP_MESSAGEID, msgid21);
-        LOGGER.debug(target);
-        OGMI out = target.request().get(OGMI.class);
-        LOGGER.debug("MIB (size) =" + out.getMIB().size());
-        Assert.assertNotNull(out.getMIB().size());
-        Assert.assertNotNull(out.getMIB().get(1).getMI().size());
-    }
+		target = c.target(TestConfig.URL).path(functionurl)
+				.queryParam(Constants.QP_MESSAGEID, msgid11)
+				.queryParam(Constants.QP_MESSAGEID, msgid21);
+		LOGGER.debug(target);
+		OGMI out = target.request().get(OGMI.class);
+		LOGGER.debug("MIB (size) =" + out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().size());
+		Assert.assertNotNull(out.getMIB().get(1).getMI().size());
+	}
 
-    @Test
-    public void testGetMessageInformationUserPasswordMultipleMessagesNotOwner() {
-        WebTarget target;
-        Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username5, password5));
+	@Test
+	public void testGetMessageInformationUserPasswordMultipleMessagesNotOwner() {
+		WebTarget target;
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username5, password5));
 
-        target = c
-                .target(TestConfig.URL + functionurl)
-                // .queryParam(Constants.QP_PASSWORD, password5)
-                // .queryParam(Constants.QP_USERNAME, username5)
-                .queryParam(Constants.QP_MESSAGEID, msgid15)
-                .queryParam(Constants.QP_MESSAGEID, msgid22);
-        LOGGER.debug(target);
-        OGMI out = target.request().get(OGMI.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
-    }
+		target = c.target(TestConfig.URL).path(functionurl)
+				.queryParam(Constants.QP_MESSAGEID, msgid15)
+				.queryParam(Constants.QP_MESSAGEID, msgid22);
+		LOGGER.debug(target);
+		OGMI out = target.request().get(OGMI.class);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NOT_MESSAGE_OWNER, out.getET());
+	}
 }

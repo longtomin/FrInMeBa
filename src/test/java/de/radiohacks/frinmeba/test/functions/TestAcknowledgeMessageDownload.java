@@ -88,7 +88,7 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 	 * @Consumes(MediaType.APPLICATION_XML)
 	 * 
 	 * @Path("/acknowledgemessagedownload") public OAckMD
-	 * acknowledgeMessageDownload(IAckMD in);
+	 * acknowledgeMessageDownload(@Context HttpHeaders headers, IAckMD in);
 	 */
 
 	private static final Logger LOGGER = Logger
@@ -338,7 +338,27 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 		LOGGER.debug(out.getACK());
 		assertThat(out.getACK(), is(Constants.ACKNOWLEDGE_TRUE));
 	}
-	
+
+	@Test
+	public void testAcknowledgeMessageDownloadAcknowledgeEncodingError() {
+
+		int msgimgid = uploadTextContent();
+
+		helperDatabase help = new helperDatabase();
+		help.CreateChat(username_org, "Test Chat");
+		int u2c = help.AddUserToChat(help.getUserID(username_org),
+				help.getChatID("Test Chat"));
+		int msgid = help.insertMessage(help.getUserID(username_org), u2c,
+				Constants.TYP_TEXT, msgimgid, 0, true);
+
+		IAckMD in = new IAckMD();
+		in.setMID(msgid);
+		in.setACK("XXX");
+		OAckMD out = callTarget(in);
+		LOGGER.debug(out.getET());
+		assertThat(out.getET(), is(Constants.ENCODING_ERROR));
+	}
+
 	@Test
 	public void testAcknowledgeMessageDownloadMessageID() {
 
@@ -357,11 +377,12 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
 		LOGGER.debug(out.getACK());
 		assertThat(out.getET(), is(Constants.NO_CONTENT_GIVEN));
 	}
-	
+
 	@Test
 	public void testAcknowledgeMessageDownloadAcknowledge() {
 
 		helperDatabase help = new helperDatabase();
+		// TODO do not create a chat, create a message
 		help.CreateChat(username_org, "Test Chat");
 
 		int hashCode = textmsg_org.hashCode();

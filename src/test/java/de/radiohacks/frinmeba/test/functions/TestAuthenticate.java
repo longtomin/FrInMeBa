@@ -30,6 +30,7 @@ package de.radiohacks.frinmeba.test.functions;
 
 import java.nio.charset.Charset;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -127,14 +128,12 @@ public class TestAuthenticate extends JerseyTest {
     @Test
     public void testAuthenticateUserPassword() {
         WebTarget target;
-        target = ClientBuilder.newClient().target(TestConfig.URL)
-                .path(functionurl);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
-        Response resp = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, password).build())
-                .request(MediaType.APPLICATION_XML).get();
+        Response resp = target.request(MediaType.APPLICATION_XML).get();
         LOGGER.debug(resp);
         // OAuth out = resp.readEntity(OAuth.class);
         Assert.assertEquals(resp.getStatus(), 404);
@@ -143,14 +142,12 @@ public class TestAuthenticate extends JerseyTest {
     @Test
     public void testAuthenticateUserWrongPassword() {
         WebTarget target;
-        target = ClientBuilder.newClient().target(TestConfig.URL)
-                .path(functionurl);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, "XXX"));
+
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
-        Response resp = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, "XXX").build())
-                .request(MediaType.APPLICATION_XML).get();
+        Response resp = target.request(MediaType.APPLICATION_XML).get();
         LOGGER.debug(resp);
         // OAuth out = resp.readEntity(OAuth.class);
         Assert.assertEquals(resp.getStatus(), 401);
@@ -159,14 +156,12 @@ public class TestAuthenticate extends JerseyTest {
     @Test
     public void testAuthenticateWrongUserPassword() {
         WebTarget target;
-        target = ClientBuilder.newClient().target(TestConfig.URL)
-                .path(functionurl);
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic("XXX", password));
+
+        target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
-        Response resp = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials("XXX", password).build())
-                .request(MediaType.APPLICATION_XML).get();
+        Response resp = target.request(MediaType.APPLICATION_XML).get();
         LOGGER.debug(resp);
         // OAuth out = resp.readEntity(OAuth.class);
         Assert.assertEquals(resp.getStatus(), 401);

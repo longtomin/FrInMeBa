@@ -62,106 +62,102 @@ import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestSendTextMessage extends JerseyTest {
 
-    /*
-     * @PUT
-     * 
-     * @Produces(MediaType.APPLICATION_XML)
-     * 
-     * @Consumes(MediaType.APPLICATION_XML)
-     * 
-     * @Path("/sendtextmessage") public OSTeM sendTextMessage(ISTeM in);
-     */
+	/*
+	 * @PUT
+	 * 
+	 * @Produces(MediaType.APPLICATION_XML)
+	 * 
+	 * @Consumes(MediaType.APPLICATION_XML)
+	 * 
+	 * @Path("/sendtextmessage") public OSTeM sendTextMessage(ISTeM in);
+	 */
 
-    private static final Logger LOGGER = Logger
-            .getLogger(TestSendTextMessage.class.getName());
+	private static final Logger LOGGER = Logger
+			.getLogger(TestSendTextMessage.class.getName());
 
-    // Username welche anzulegen ist
-    final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Passwort zum User
-    final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-    // Email Adresse zum User
-    final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Username welche anzulegen ist
+	final static String username_org = "Test1";
+	final static String username = Base64.encodeBase64String(username_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Passwort zum User
+	final static String password_org = "Test1";
+	final static String password = Base64.encodeBase64String(password_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Email Adresse zum User
+	final static String email_org = "Test1@frinme.org";
+	final static String email = Base64.encodeBase64String(email_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    final static String functionurl = "user/sendtextmessage";
+	final static String functionurl = "user/sendtextmessage";
 
-    // Text Message
-    final static String textmessage_org = "Das+ist+ein+Test!";
-    final static String textmessage = Base64.encodeBase64String(textmessage_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+	// Text Message
+	final static String textmessage_org = "Das+ist+ein+Test!";
+	final static String textmessage = Base64.encodeBase64String(textmessage_org
+			.getBytes(Charset.forName(Constants.CHARACTERSET)));
 
-    @Override
-    protected TestContainerFactory getTestContainerFactory() {
-        return new GrizzlyWebTestContainerFactory();
-    }
+	@Override
+	protected TestContainerFactory getTestContainerFactory() {
+		return new GrizzlyWebTestContainerFactory();
+	}
 
-    @Override
-    protected DeploymentContext configureDeployment() {
-        return ServletDeploymentContext.forServlet(
-                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-                .build();
-    }
+	@Override
+	protected DeploymentContext configureDeployment() {
+		return ServletDeploymentContext.forServlet(
+				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+				.build();
+	}
 
-    @BeforeClass
-    public static void prepareDB() {
-        LOGGER.debug("Start prepareDB");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
-        helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-        LOGGER.debug("End prepareDB");
-    }
+	@BeforeClass
+	public static void prepareDB() {
+		LOGGER.debug("Start prepareDB");
+		dropDatabaseTables drop = new dropDatabaseTables();
+		drop.dropTable();
+		createDatabaseTables create = new createDatabaseTables();
+		create.createTable();
+		helperDatabase help = new helperDatabase();
+		help.CreateActiveUser(username_org, username, password_org, email_org,
+				help.InsertFixedImage());
+		LOGGER.debug("End prepareDB");
+	}
 
-    private OSTeM callTarget(ISTeM in) {
-        WebTarget target;
+	private OSTeM callTarget(ISTeM in) {
+		WebTarget target;
 
-        Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username, password));
+		Client c = ClientBuilder.newClient();
+		c.register(HttpAuthenticationFeature.basic(username, password));
 
-        target = c.target(TestConfig.URL).path(functionurl);
-        LOGGER.debug(target);
-        Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, password).build())
-                .request()
-                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-                .invoke();
-        LOGGER.debug(response);
-        return response.readEntity(OSTeM.class);
-    }
+		target = c.target(TestConfig.URL).path(functionurl);
+		LOGGER.debug(target);
+		Response response = target.request()
+				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+				.invoke();
+		LOGGER.debug(response);
+		return response.readEntity(OSTeM.class);
+	}
 
-    @Test
-    public void testSendTextMessageUserPassword() {
-        ISTeM in = new ISTeM();
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NO_TEXTMESSAGE_GIVEN, out.getET());
-    }
+	@Test
+	public void testSendTextMessage() {
+		ISTeM in = new ISTeM();
+		OSTeM out = callTarget(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.NO_TEXTMESSAGE_GIVEN, out.getET());
+	}
 
-    @Test
-    public void testSendTextMessageUserPasswordMessage() {
-        ISTeM in = new ISTeM();
-        in.setTM(textmessage);
-        OSTeM out = callTarget(in);
-        LOGGER.debug("TID=" + out.getTID());
-        Assert.assertNotNull(out.getTID());
-    }
+	@Test
+	public void testSendTextMessageMessage() {
+		ISTeM in = new ISTeM();
+		in.setTM(textmessage);
+		OSTeM out = callTarget(in);
+		LOGGER.debug("TID=" + out.getTID());
+		Assert.assertNotNull(out.getTID());
+	}
 
-    @Test
-    public void testSendTextMessageEncodimgErrorTextMessage() {
-        ISTeM in = new ISTeM();
-        in.setTM("$%&1234");
-        OSTeM out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-    }
+	@Test
+	public void testSendTextMessageEncodimgErrorTextMessage() {
+		ISTeM in = new ISTeM();
+		in.setTM("$%&1234");
+		OSTeM out = callTarget(in);
+		LOGGER.debug("ET=" + out.getET());
+		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+	}
 }
