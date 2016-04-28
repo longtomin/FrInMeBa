@@ -34,7 +34,7 @@ import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
-import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.database.MyConnection;
 
 public class dropDatabaseTables {
 
@@ -57,8 +57,9 @@ public class dropDatabaseTables {
 
     public void dropTable() {
         Statement st;
+        Connection con = null;
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            con = new MyConnection().getConnection();
             st = con.createStatement();
             st.execute(DropMessages);
             st.execute(DropText);
@@ -73,6 +74,12 @@ public class dropDatabaseTables {
             con.close();
         } catch (SQLException e) {
             LOGGER.error(e);
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

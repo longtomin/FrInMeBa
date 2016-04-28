@@ -57,7 +57,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
-import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.database.MyConnection;
 import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
@@ -75,7 +75,7 @@ public class helperDatabase {
 
     public void ActivateUser(int id) {
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
             PreparedStatement pre = con.prepareStatement(activate);
             pre.setInt(1, id);
             pre.executeUpdate();
@@ -85,9 +85,9 @@ public class helperDatabase {
         }
     }
 
-    public void DelUserToChats(){
+    public void DelUserToChats() {
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
             PreparedStatement pre = con.prepareStatement(delUserToChat);
             pre.executeUpdate();
             con.close();
@@ -95,12 +95,12 @@ public class helperDatabase {
             LOGGER.error(e);
         }
     }
-    
+
     public void CreateActiveUser(String username, String B64username,
             String password, String email, int IconID) {
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             Statement st = con.createStatement();
             long currentTime = System.currentTimeMillis() / 1000L;
@@ -126,7 +126,7 @@ public class helperDatabase {
     public int getUserID(String username) {
 
         int userid = 0;
-        Connection con = new MySqlConnection().getMySqlConnection();
+        Connection con = new MyConnection().getConnection();
 
         Statement st;
         try {
@@ -147,7 +147,7 @@ public class helperDatabase {
     public int getChatID(String chatname) {
 
         int chatid = 0;
-        Connection con = new MySqlConnection().getMySqlConnection();
+        Connection con = new MyConnection().getConnection();
 
         Statement st;
         try {
@@ -168,7 +168,7 @@ public class helperDatabase {
     public int getUser2ChatID(int inUserID, int inChatID) {
 
         int chatid = 0;
-        Connection con = new MySqlConnection().getMySqlConnection();
+        Connection con = new MyConnection().getConnection();
 
         Statement st;
         try {
@@ -192,7 +192,7 @@ public class helperDatabase {
         int userid = 0;
         int chatid = 0;
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             Statement st = con.createStatement();
 
@@ -221,7 +221,7 @@ public class helperDatabase {
         int key = 0;
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             Statement st = con.createStatement();
             if (msgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
@@ -287,7 +287,7 @@ public class helperDatabase {
 
         int key = 0;
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             Statement st = con.createStatement();
 
@@ -314,7 +314,7 @@ public class helperDatabase {
         String SQL = "Update Messages set OriginMsgID = ? where ID = ?";
         int key = 0;
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             Statement st = con.createStatement();
             if (MsgTyp.equalsIgnoreCase(Constants.TYP_TEXT)) {
@@ -511,7 +511,7 @@ public class helperDatabase {
         Statement statement = null;
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
             statement = con.createStatement();
             // TODO first check if Message already exists, idempotent?
             /* First we create a chat room */
@@ -549,7 +549,7 @@ public class helperDatabase {
         Statement statement = null;
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
             statement = con.createStatement();
             statement.executeUpdate("insert into Image (Image) values ('"
                     + filetime + filename + "')",
@@ -585,7 +585,7 @@ public class helperDatabase {
         Statement statement = null;
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
             statement = con.createStatement();
             statement.executeUpdate("insert into Video (Video) values ('"
                     + filetime + filename + "')",
@@ -618,7 +618,7 @@ public class helperDatabase {
         Statement statement = null;
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
             statement = con.createStatement();
 
             resultSet = statement
@@ -662,7 +662,7 @@ public class helperDatabase {
     public void deleteFixedImage(int imgid) {
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             String SQL = "DELETE FROM Image WHERE ID = ? ";
             PreparedStatement pstmt = null;
@@ -679,7 +679,7 @@ public class helperDatabase {
     public void deleteFixedVideo(int vidid) {
 
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             String SQL = "DELETE FROM Video WHERE ID = ? ";
             PreparedStatement pstmt = null;
@@ -697,7 +697,7 @@ public class helperDatabase {
 
         try {
             String SQL;
-            Connection con = new MySqlConnection().getMySqlConnection();
+            Connection con = new MyConnection().getConnection();
 
             if (Type.equalsIgnoreCase("READ")) {
                 SQL = "Update Messages SET ReadTimestamp = ? where ID = ?";

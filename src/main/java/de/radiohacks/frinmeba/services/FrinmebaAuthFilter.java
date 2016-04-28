@@ -29,7 +29,7 @@ public class FrinmebaAuthFilter implements ContainerRequestFilter {
         String path = containerRequest.getUriInfo().getPath(true);
 
         // Allow Signup without credentials
-        if (method.equals("PUT") && path.equals("user/signup")) {
+        if (method.equals("PUT") && path.endsWith("user/signup")) {
             return;
         }
 

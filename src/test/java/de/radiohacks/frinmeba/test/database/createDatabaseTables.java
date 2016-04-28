@@ -34,7 +34,7 @@ import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
-import de.radiohacks.frinmeba.database.MySqlConnection;
+import de.radiohacks.frinmeba.database.MyConnection;
 
 public class createDatabaseTables {
 
@@ -168,8 +168,9 @@ public class createDatabaseTables {
 
     public void createTable() {
         Statement st;
+        Connection con = null;
         try {
-            Connection con = new MySqlConnection().getMySqlConnection();
+            con = new MyConnection().getConnection();
             st = con.createStatement();
             st.execute(CreateVideo);
             st.execute(CreateText);
@@ -196,6 +197,12 @@ public class createDatabaseTables {
             con.close();
         } catch (SQLException e) {
             LOGGER.error(e);
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
