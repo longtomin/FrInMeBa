@@ -50,23 +50,23 @@ import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
 
 public interface IVideoUtil {
-
+    
     @POST
     @Path("/upload")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public OSViM uploadVideo(
             @Context HttpHeaders headers,
             @QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
             @FormDataParam("file") InputStream fileInputStream,
             @FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
-
+    
     @GET
     @Path("/getvideometadata")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public OGViMMD getVideoMetadata(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_VIDEOID) int videoid);
-
+    
     @GET
     @Path("/download/{videoid}")
     @Produces("video/*")

@@ -34,7 +34,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -75,126 +74,126 @@ import de.radiohacks.frinmeba.model.jaxb.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 
 public interface IServiceUtil {
-
-    @PUT
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    
+    @POST
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/signup")
     public OSiUp signUpUser(ISiUp in);
-
-    @PUT
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    
+    @POST
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/createchat")
     public OCrCh createChat(@Context HttpHeaders headers, ICrCh in);
-
+    
     @DELETE
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/deletechat")
     public ODeCh deleteChat(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_CHATID) int chatID);
-
-    @PUT
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    
+    @POST
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/addusertochat")
     public OAdUC addUserToChat(@Context HttpHeaders headers, IAdUC in);
-
+    
     @DELETE
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/removeuserfromchat")
     public OReUC removeUserFromChat(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_USERID) int userID,
             @QueryParam(Constants.QP_CHATID) int chatID);
-
+    
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/listuser")
     public OLiUs listUsers(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_SEARCH) String search);
-
+    
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/listchat")
     public OLiCh listChats(@Context HttpHeaders headers);
-
-    @PUT
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    
+    @POST
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/sendtextmessage")
     public OSTeM sendTextMessage(@Context HttpHeaders headers, ISTeM in);
-
+    
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/gettextmessage")
     public OGTeM getTextMessage(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_TEXTMESSAGEID) int textMessageID);
-
-    @PUT
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    
+    @POST
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/insertmessageintochat")
     public OIMIC insertMessageIntoChat(@Context HttpHeaders headers, IIMIC in);
-
+    
     @DELETE
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/deletemessagefromchat")
     public ODMFC deleteMessageFromChat(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_MESSAGEID) int messageID);
-
+    
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/getmessagefromchat")
     public OFMFC getMessageFromChat(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_CHATID) int chatID,
             @QueryParam(Constants.QP_TIMESTAMP) int timestamp);
-
+    
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/checknew")
     public OCN checkNew(@Context HttpHeaders headers);
-
+    
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/setshowtimestamp")
     public OSShT setShowTimeStamp(@Context HttpHeaders headers, ISShT in);
-
+    
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/getmessageinformation")
     public OGMI getMessageInformation(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_MESSAGEID) List<Integer> messageID);
-
+    
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/acknowledgemessagedownload")
     public OAckMD acknowledgeMessageDownload(@Context HttpHeaders headers,
             IAckMD in);
-
+    
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/acknowledgechatdownload")
     public OAckCD acknowledgeChatDownload(@Context HttpHeaders headers,
             IAckCD in);
-
+    
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/syncuser")
     public OSU syncUser(@Context HttpHeaders headers,
             @QueryParam(Constants.QP_USERID) List<Integer> userID);
-
-    @PUT
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    
+    @POST
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/insertusericon")
     public OIUIc insertUserIcon(@Context HttpHeaders headers, IIUIc in);
-
-    @PUT
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    
+    @POST
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/insertchaticon")
     public OICIc insertChatIcon(@Context HttpHeaders headers, IICIc in);
 }

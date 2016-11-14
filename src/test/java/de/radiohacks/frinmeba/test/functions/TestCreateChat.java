@@ -61,113 +61,114 @@ import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestCreateChat extends JerseyTest {
-
-	/*
-	 * @PUT
-	 * 
-	 * @Produces(MediaType.APPLICATION_XML)
-	 * 
-	 * @Consumes(MediaType.APPLICATION_XML)
-	 * 
-	 * @Path("/createchat") public OCrCh CreateChat(ICrCh in);
-	 */
-
-	private static final Logger LOGGER = Logger.getLogger(TestCreateChat.class
-			.getName());
-
-	// Username welche anzulegen ist
-	final static String username_org = "Test1";
-	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password_org = "Test1";
-	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email_org = "Test1@frinme.org";
-	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-
-	final static String functionurl = "user/createchat";
-
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
-
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
-
-	@BeforeClass
-	public static void prepareDB() {
-		LOGGER.debug("Start prepareDB");
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org,
-				help.InsertFixedImage());
-		LOGGER.debug("End prepareDB");
-	}
-
-	@Test
-	public void testCreateChatMissingChatname() {
-		ICrCh in = new ICrCh();
-		WebTarget target;
-		Client c = ClientBuilder.newClient();
-		c.register(HttpAuthenticationFeature.basic(username, password));
-
-		target = c.target(TestConfig.URL).path(functionurl);
-		LOGGER.debug(target);
-		Response resp = target.request(MediaType.APPLICATION_XML)
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		LOGGER.debug(resp);
-		OCrCh out = resp.readEntity(OCrCh.class);
-		LOGGER.debug("ET=" + out.getET());
-		Assert.assertEquals(Constants.MISSING_CHATNAME, out.getET());
-	}
-
-	@Test
-	public void testCreateChatChatnameEncodingError() {
-		ICrCh in = new ICrCh();
-		in.setCN("1234$%");
-		WebTarget target;
-		Client c = ClientBuilder.newClient();
-		c.register(HttpAuthenticationFeature.basic(username, password));
-
-		target = c.target(TestConfig.URL).path(functionurl);
-		LOGGER.debug(target);
-		Response resp = target.request(MediaType.APPLICATION_XML)
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		LOGGER.debug(resp);
-		OCrCh out = resp.readEntity(OCrCh.class);
-		LOGGER.debug("ET=" + out.getET());
-		Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
-	}
-
-	@Test
-	public void testCreateChatChatnameOK() {
-		ICrCh in = new ICrCh();
-		in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-				.forName(Constants.CHARACTERSET))));
-		WebTarget target;
-		Client c = ClientBuilder.newClient();
-		c.register(HttpAuthenticationFeature.basic(username, password));
-
-		target = c.target(TestConfig.URL).path(functionurl);
-		LOGGER.debug(target);
-		Response resp = target.request(MediaType.APPLICATION_XML)
-				.buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
-				.invoke();
-		LOGGER.debug(resp);
-		OCrCh out = resp.readEntity(OCrCh.class);
-		Assert.assertEquals("Testchat", out.getCN());
-	}
+    
+    /*
+     * @POST
+     * 
+     * @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+     * 
+     * @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+     * 
+     * @Path("/createchat") public OCrCh createChat(@Context HttpHeaders
+     * headers, ICrCh in);
+     */
+    
+    private static final Logger LOGGER = Logger.getLogger(TestCreateChat.class
+            .getName());
+    
+    // Username welche anzulegen ist
+    final static String username_org = "Test1";
+    final static String username = Base64.encodeBase64String(username_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password_org = "Test1";
+    final static String password = Base64.encodeBase64String(password_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email_org = "Test1@frinme.org";
+    final static String email = Base64.encodeBase64String(email_org
+            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
+    final static String functionurl = "user/createchat";
+    
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
+    
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
+    
+    @BeforeClass
+    public static void prepareDB() {
+        LOGGER.debug("Start prepareDB");
+        dropDatabaseTables drop = new dropDatabaseTables();
+        drop.dropTable();
+        createDatabaseTables create = new createDatabaseTables();
+        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.CreateActiveUser(username_org, username, password_org, email_org,
+                help.InsertFixedImage());
+        LOGGER.debug("End prepareDB");
+    }
+    
+    @Test
+    public void testCreateChatMissingChatname() {
+        ICrCh in = new ICrCh();
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        
+        target = c.target(TestConfig.URL).path(functionurl);
+        LOGGER.debug(target);
+        Response resp = target.request(MediaType.APPLICATION_XML)
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        LOGGER.debug(resp);
+        OCrCh out = resp.readEntity(OCrCh.class);
+        LOGGER.debug("ET=" + out.getET());
+        Assert.assertEquals(Constants.MISSING_CHATNAME, out.getET());
+    }
+    
+    @Test
+    public void testCreateChatChatnameEncodingError() {
+        ICrCh in = new ICrCh();
+        in.setCN("1234$%");
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        
+        target = c.target(TestConfig.URL).path(functionurl);
+        LOGGER.debug(target);
+        Response resp = target.request(MediaType.APPLICATION_XML)
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        LOGGER.debug(resp);
+        OCrCh out = resp.readEntity(OCrCh.class);
+        LOGGER.debug("ET=" + out.getET());
+        Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
+    }
+    
+    @Test
+    public void testCreateChatChatnameOK() {
+        ICrCh in = new ICrCh();
+        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
+                .forName(Constants.CHARACTERSET))));
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        
+        target = c.target(TestConfig.URL).path(functionurl);
+        LOGGER.debug(target);
+        Response resp = target.request(MediaType.APPLICATION_XML)
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
+                .invoke();
+        LOGGER.debug(resp);
+        OCrCh out = resp.readEntity(OCrCh.class);
+        Assert.assertEquals("Testchat", out.getCN());
+    }
 }

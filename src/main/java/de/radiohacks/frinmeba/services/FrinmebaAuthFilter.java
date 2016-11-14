@@ -24,45 +24,45 @@ public class FrinmebaAuthFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext containerRequest)
             throws WebApplicationException {
-
+        
         String method = containerRequest.getMethod();
         String path = containerRequest.getUriInfo().getPath(true);
-
+        
         // Allow Signup without credentials
-        if (method.equals("PUT") && path.endsWith("user/signup")) {
+        if (method.equals("POST") && path.endsWith("user/signup")) {
             return;
         }
-
+        
         // Get the authentification passed in HTTP headers parameters
         String auth = containerRequest.getHeaderString("authorization");
-
+        
         if (auth == null || auth.isEmpty()) {
             throw new WebApplicationException(Status.UNAUTHORIZED);
         } else {
             auth = auth.replaceFirst("[B|b]asic ", "");
-
+            
             // Decode the Base64 into byte[]
             byte[] decodedBytes = DatatypeConverter.parseBase64Binary(auth);
-
+            
             // If the decode fails in any case
             if (decodedBytes == null || decodedBytes.length == 0) {
                 throw new WebApplicationException(Status.UNAUTHORIZED);
             }
-
+            
             // Now we can convert the byte[] into a splitted array :
             // - the first one is login,
             // - the second one password
             String[] lap = new String(decodedBytes).split(":", 2);
-
+            
             // If login or password fail
             if (lap == null || lap.length != 2) {
                 throw new WebApplicationException(Status.UNAUTHORIZED);
             }
-
+            
             MyConnection mc = new MyConnection();
             Connection con = mc.getConnection();
             User actuser = new User(con);
-
+            
             if (!actuser.auth(lap[0], lap[1])) {
                 // containerRequest.abortWith(Response
                 // .status(Response.Status.UNAUTHORIZED)

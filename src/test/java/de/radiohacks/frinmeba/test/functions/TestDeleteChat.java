@@ -62,7 +62,7 @@ import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestDeleteChat extends JerseyTest {
-
+    
     /*
      * @DELETE
      * 
@@ -73,10 +73,10 @@ public class TestDeleteChat extends JerseyTest {
      * 
      * @QueryParam(Constants.QP_CHATID) int chatID);
      */
-
+    
     private static final Logger LOGGER = Logger.getLogger(TestDeleteChat.class
             .getName());
-
+    
     // Username welche anzulegen ist
     final static String username_org = "Test1";
     final static String username = Base64.encodeBase64String(username_org
@@ -89,21 +89,21 @@ public class TestDeleteChat extends JerseyTest {
     final static String email_org = "Test1@frinme.org";
     final static String email = Base64.encodeBase64String(email_org
             .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    
     final static String functionurl = "user/deletechat";
-
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start prepareDB");
@@ -116,7 +116,7 @@ public class TestDeleteChat extends JerseyTest {
                 help.InsertFixedImage());
         LOGGER.debug("End prepareDB");
     }
-
+    
     private OCrCh callCreateChat(ICrCh in) {
         WebTarget target;
         Client c = ClientBuilder.newClient();
@@ -124,42 +124,42 @@ public class TestDeleteChat extends JerseyTest {
         target = c.target(TestConfig.URL + "user/createchat");
         LOGGER.debug(target);
         Response response = target.request()
-                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
         return response.readEntity(OCrCh.class);
     }
-
+    
     @Test
     public void testDeleteChatChatidOK() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-        target = c.target(TestConfig.URL).path(functionurl).queryParam(
-                Constants.QP_CHATID, 1);
+        target = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_CHATID, 1);
         LOGGER.debug(target);
-
+        
         ODeCh out = target.request().delete(ODeCh.class);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
-
+        
         ICrCh inCreateChat = new ICrCh();
         inCreateChat.setCN(Base64.encodeBase64String("Testchat"
                 .getBytes(Charset.forName(Constants.CHARACTERSET))));
         OCrCh out2 = callCreateChat(inCreateChat);
-
+        
         Assert.assertEquals("Testchat", out2.getCN());
-
+        
         WebTarget target2;
-        target2 = c.target(TestConfig.URL).path(functionurl).queryParam(
-                Constants.QP_CHATID, out2.getCID());
+        target2 = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_CHATID, out2.getCID());
         LOGGER.debug(target2);
-
+        
         ODeCh out3 = target2.request().delete(ODeCh.class);
         LOGGER.debug(out.getR());
         Assert.assertEquals(Constants.CHAT_DELETED, out3.getR());
     }
-
+    
     @Test
     public void testDeleteChatNoneExistingChat() {
         WebTarget target;

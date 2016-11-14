@@ -52,32 +52,32 @@ import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
 
 public interface IImageUtil {
-
+    
     @POST
     @Path("/upload")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public OSImM uploadImage(
             @Context HttpHeaders headers,
             @QueryParam(Constants.QP_ACKNOWLEDGE) String acknowledge,
             @FormDataParam("file") InputStream fileInputStream,
             @FormDataParam("file") FormDataContentDisposition contentDispositionHeader);
-
+    
     @GET
     @Path("/getimagemetadata")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public OGImMMD getImageMetadata(@Context HttpHeaders headers,
             @QueryParam("imageid") int imageid);
-
+    
     @GET
     @Path("/download/{imageid}")
     @Produces("image/*")
     public Response downloadImage(@Context HttpHeaders headers,
             @PathParam(Constants.QP_IMAGEID) int imageid);
-
+    
     @POST
     @Path("/uploadicon")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public OSIcM uploadIcon(
             @Context HttpHeaders headers,

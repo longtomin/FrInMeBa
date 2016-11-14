@@ -75,10 +75,10 @@ import de.radiohacks.frinmeba.test.database.createDatabaseTables;
 import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 
 public class TestClientOneUserNotActive extends JerseyTest {
-
+    
     private static final Logger LOGGER = Logger
             .getLogger(TestClientOneUserNotActive.class.getName());
-
+    
     // Username welche anzulegen ist
     final static String username_org = "Test1";
     final static String username = Base64.encodeBase64String(username_org
@@ -91,19 +91,19 @@ public class TestClientOneUserNotActive extends JerseyTest {
     final static String email_org = "Test1@frinme.org";
     final static String email = Base64.encodeBase64String(email_org
             .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         dropDatabaseTables drop = new dropDatabaseTables();
@@ -111,13 +111,13 @@ public class TestClientOneUserNotActive extends JerseyTest {
         createDatabaseTables create = new createDatabaseTables();
         create.createTable();
     }
-
+    
     // configure auskommentieren wenn localhost als Ziel gewählt werden soll.
     /*
      * @Override protected Application configure() { ResourceConfig rc = new
      * ResourceConfig(ServiceImpl.class); return rc; }
      */
-
+    
     // Es gibt nur eine Testfunktion, diese muss alle Funktionen in der
     // richtigen Reihenfilge ausführen. Nachdem der Signup durch ist, ist die
     // Reihenfolge egal da immer USER_NOT_ACTIVE zurück kommt
@@ -176,31 +176,31 @@ public class TestClientOneUserNotActive extends JerseyTest {
         // assertThat("Test out18 - USER_NOT_ACTIVE", out18.getET(),
         // is(Constants.USER_NOT_ACTIVE));
     }
-
+    
     private OSiUp callTarget(ISiUp in) {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + "user/signup");
         LOGGER.debug(target);
         Response response = target.request()
                 .accept(MediaType.APPLICATION_XML_TYPE)
-                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
         return response.readEntity(OSiUp.class);
     }
-
+    
     // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
     private OSiUp TestSignUpNoValues() {
         ISiUp in = new ISiUp();
         return callTarget(in);
     }
-
+    
     public OSiUp TestSignUpWithEmail() {
         ISiUp in = new ISiUp();
         in.setE(email);
         return callTarget(in);
     }
-
+    
     // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
     public OSiUp TestSignUpWithEmailUser() {
         ISiUp in = new ISiUp();
@@ -208,7 +208,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
         in.setUN(username);
         return callTarget(in);
     }
-
+    
     // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
     public OSiUp TestSignUpWithEmailPassword() {
         ISiUp in = new ISiUp();
@@ -216,7 +216,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
         in.setPW(password);
         return callTarget(in);
     }
-
+    
     // Test des SignUp ohne Werte = Constants.NO_USERNAME_OR_PASSWORD
     public OSiUp TestSignUpWithEmailUserPassword() {
         ISiUp in = new ISiUp();
@@ -225,7 +225,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
         in.setPW(password);
         return callTarget(in);
     }
-
+    
     public OCrCh TestCreateChatNotActive() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + "user/createchat");
@@ -240,7 +240,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .invoke();
         return response.readEntity(OCrCh.class);
     }
-
+    
     public ODeCh TestDeleteChatNotActive() {
         WebTarget target;
         target = ClientBuilder.newClient()
@@ -252,7 +252,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                                 username, password)).request()
                 .delete(ODeCh.class);
     }
-
+    
     public OAdUC TestAddUserToChatNotActive() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + "user/addusertochat");
@@ -267,7 +267,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .invoke();
         return response.readEntity(OAdUC.class);
     }
-
+    
     public OReUC TestRemoveUserFromChatNotActive() {
         WebTarget target;
         target = ClientBuilder.newClient()
@@ -280,7 +280,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                                 username, password)).request()
                 .delete(OReUC.class);
     }
-
+    
     public OLiUs TestListUserNotActive() {
         WebTarget target;
         target = ClientBuilder
@@ -295,7 +295,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                         HttpAuthenticationFeature.basicBuilder().credentials(
                                 username, password)).request().get(OLiUs.class);
     }
-
+    
     public OLiCh TestListChatNotActive() {
         WebTarget target;
         target = ClientBuilder.newClient().target(
@@ -305,7 +305,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                         HttpAuthenticationFeature.basicBuilder().credentials(
                                 username, password)).request().get(OLiCh.class);
     }
-
+    
     public OSTeM TestSendTextMessageNotActive() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + "user/sendtextmessage");
@@ -320,7 +320,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .invoke();
         return response.readEntity(OSTeM.class);
     }
-
+    
     public OGTeM TestGetTextMessageNotActive() {
         WebTarget target;
         target = ClientBuilder.newClient()
@@ -331,7 +331,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                         HttpAuthenticationFeature.basicBuilder().credentials(
                                 username, password)).request().get(OGTeM.class);
     }
-
+    
     public OIMIC TestInsertMessageIntoChatNotActive() {
         WebTarget target = ClientBuilder.newClient().target(
                 TestConfig.URL + "user/insertmessageintochat");
@@ -340,7 +340,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .getBytes(Charset.forName(Constants.CHARACTERSET))));
         in.setCID(1);
         in.setMID(1);
-
+        
         Response response = target
                 .register(
                         HttpAuthenticationFeature.basicBuilder().credentials(
@@ -349,7 +349,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .invoke();
         return response.readEntity(OIMIC.class);
     }
-
+    
     public OFMFC TestGetMessageFromChatNotActive() {
         WebTarget target;
         target = ClientBuilder.newClient()
@@ -361,7 +361,7 @@ public class TestClientOneUserNotActive extends JerseyTest {
                         HttpAuthenticationFeature.basicBuilder().credentials(
                                 username, password)).request().get(OFMFC.class);
     }
-
+    
     public ODMFC TestDeleMessageFromChatNotActive() {
         WebTarget target;
         target = ClientBuilder.newClient()

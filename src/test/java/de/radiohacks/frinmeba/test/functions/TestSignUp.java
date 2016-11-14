@@ -58,7 +58,7 @@ import de.radiohacks.frinmeba.test.database.createDatabaseTables;
 import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 
 public class TestSignUp extends JerseyTest {
-
+    
     /*
      * @PUT
      * 
@@ -71,13 +71,13 @@ public class TestSignUp extends JerseyTest {
      * 
      * @QueryParam(Constants.QPemail) String Email);
      */
-
+    
     private static final Logger LOGGER = Logger.getLogger(TestSignUp.class
             .getName());
-
+    
     // Username welche anzulegen ist
     final static String functionurl = "user/signup";
-
+    
     final static String username_org = "Thomas Schreiner";
     final static String username = Base64.encodeBase64String(username_org
             .getBytes(Charset.forName(Constants.CHARACTERSET)));
@@ -87,19 +87,19 @@ public class TestSignUp extends JerseyTest {
     final static String email_org = "thomas@frinme.org";
     final static String email = Base64.encodeBase64String(email_org
             .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
@@ -109,123 +109,137 @@ public class TestSignUp extends JerseyTest {
         create.createTable();
         LOGGER.debug("End BeforeClass");
     }
-
-    private OSiUp callTarget(ISiUp in) {
+    
+    private OSiUp callTargetXML(ISiUp in) {
         WebTarget target;
         target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
         Response response = target.request()
-                .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         LOGGER.debug(response);
         return response.readEntity(OSiUp.class);
     }
-
+    
+    private OSiUp callTargetJSON(ISiUp in) {
+        WebTarget target;
+        target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
+        LOGGER.debug(target);
+        Response response = target.request()
+                .buildPost(Entity.entity(in, MediaType.APPLICATION_JSON))
+                .invoke();
+        LOGGER.debug(response);
+        return response.readEntity(OSiUp.class);
+    }
+    
     @Test
     public void testSignUpNoValues() {
         ISiUp in = new ISiUp();
-        OSiUp out = callTarget(in);
-        LOGGER.debug("ET=" + out.getET());
+        OSiUp out = callTargetXML(in);
+        LOGGER.debug("ET_XML=" + out.getET());
         Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
+        OSiUp out2 = callTargetJSON(in);
+        LOGGER.debug("ET_JSON=" + out2.getET());
+        Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out2.getET());
     }
-
+    
     @Test
     public void testSignUpEmail() {
         ISiUp in = new ISiUp();
         in.setE(email);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
     }
-
+    
     @Test
     public void testSignUpUsername() {
         ISiUp in = new ISiUp();
         in.setUN(username);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
     }
-
+    
     @Test
     public void testSignUpPassword() {
         ISiUp in = new ISiUp();
         in.setPW(password);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
     }
-
+    
     @Test
     public void testSignUpEmailUsername() {
         ISiUp in = new ISiUp();
         in.setE(email);
         in.setUN(username);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
     }
-
+    
     @Test
     public void testSignUpEmailPassword() {
         ISiUp in = new ISiUp();
         in.setPW(password);
         in.setE(email);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NO_USERNAME_OR_PASSWORD, out.getET());
     }
-
+    
     @Test
     public void testSignUpUserPassword() {
         ISiUp in = new ISiUp();
         in.setUN(username);
         in.setPW(password);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.INVALID_EMAIL_ADRESS, out.getET());
     }
-
+    
     @Test
     public void testSignUpEmailUserPassword() {
         ISiUp in = new ISiUp();
         in.setE(email);
         in.setPW(password);
         in.setUN(username);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("SU=" + out.getSU());
         Assert.assertEquals("SUCCESSFUL", out.getSU());
     }
-
+    
     @Test
     public void testSignUpEncodingErrorEmail() {
         ISiUp in = new ISiUp();
         in.setPW(password);
         in.setUN(username);
         in.setE("$%&");
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
     }
-
+    
     @Test
     public void testSignUpEncodingErrorUser() {
         ISiUp in = new ISiUp();
         in.setPW(password);
         in.setE(email);
         in.setUN("$%&1234");
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
     }
-
+    
     @Test
     public void testSignUpEncodingErrorPassword() {
         ISiUp in = new ISiUp();
         in.setPW("$%&XASD");
         in.setE(email);
         in.setUN(username);
-        OSiUp out = callTarget(in);
+        OSiUp out = callTargetXML(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
     }
