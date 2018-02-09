@@ -33,8 +33,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Objects;
 
 import javax.ws.rs.Path;
@@ -50,7 +48,6 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
-import de.radiohacks.frinmeba.database.MyConnection;
 import de.radiohacks.frinmeba.model.jaxb.IGViM;
 import de.radiohacks.frinmeba.model.jaxb.IGViMMD;
 import de.radiohacks.frinmeba.model.jaxb.ISViM;
@@ -64,48 +61,44 @@ public class VideoImpl implements IVideoUtil {
     /**
      * Upload a File
      */
-
-    private static final Logger LOGGER = Logger.getLogger(VideoImpl.class
-            .getName());
-
+    
+    private static final Logger LOGGER = Logger
+            .getLogger(VideoImpl.class.getName());
+    
     @Override
     public OSViM uploadVideo(HttpHeaders headers, String acknowldge,
             InputStream fileInputStream,
             FormDataContentDisposition contentDispositionHeader) {
-
+        
         OSViM out = new OSViM();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkValueMust(acknowldge)) {
-
+            
             ISViM in = new ISViM();
             if (contentDispositionHeader != null) {
                 if (fileInputStream != null) {
                     if (contentDispositionHeader.getFileName() != null
                             && !contentDispositionHeader.getFileName()
                                     .isEmpty()) {
-
+                        
                         // Now we save the Image
                         long currentTime = System.currentTimeMillis() / 1000L;
                         String filetime = Objects.toString(currentTime, null);
-
+                        
                         String filePath = (new Constants())
-                                .getUploadFolderVideo()
-                                + File.separatorChar
+                                .getUploadFolderVideo() + File.separatorChar
                                 + filetime
                                 + contentDispositionHeader.getFileName();
-
+                        
                         // save the file to the server
                         saveFile(fileInputStream, filePath);
                         // Insert the New Image Message into the
                         // Database an set
                         // the out
                         // Information.
-
+                        
                         HashCode md5 = null;
                         try {
                             md5 = Files.hash(new File(filePath), Hashing.md5());
@@ -113,14 +106,14 @@ public class VideoImpl implements IVideoUtil {
                             LOGGER.error(e);
                         }
                         String md5Hex = md5.toString();
-
+                        
                         out.setVF(filetime
                                 + contentDispositionHeader.getFileName());
                         in.setVM(filetime
                                 + contentDispositionHeader.getFileName());
                         in.setVMD5(md5Hex);
-                        if (actuser.base64Decode(acknowldge).equalsIgnoreCase(
-                                md5Hex)) {
+                        if (actuser.base64Decode(acknowldge)
+                                .equalsIgnoreCase(md5Hex)) {
                             actuser.sendVideoMessage(in, out);
                         } else {
                             out.setET(Constants.UPLOAD_FAILED);
@@ -135,101 +128,75 @@ public class VideoImpl implements IVideoUtil {
                 out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
             }
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.UPLOAD_FAILED);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
-            }
-        }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
             }
         }
         return out;
     }
-
+    
     /*
      * Download a File with the given Name in the Path
      */
-
+    
     @Override
     public Response downloadVideo(HttpHeaders headers, int videoid) {
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OGViM out = new OGViM();
-
+        
         IGViM in = new IGViM();
         in.setVID(videoid);
-
+        
         if (!actcheck.checkContenMessageID(videoid, Constants.TYP_VIDEO)) {
             out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
         } else {
             actuser.getVideoMessages(in, out);
-
+            
             final File file = new File((new Constants()).getUploadFolderVideo()
                     + File.separatorChar + out.getVM());
             if (!file.exists()) {
                 LOGGER.error("file not found : " + file.getAbsolutePath());
             }
             try {
-                if (con != null) {
-                    con.close();
-                    con = null;
-                }
                 return Response.ok(FileUtils.readFileToByteArray(file))
                         .header("Content-Disposition", "attachment")
                         .header("filename", out.getVM()).build();
             } catch (java.io.IOException ex) {
                 LOGGER.error(ex);
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 LOGGER.error(e);
             }
         }
         return null;
     }
-
+    
     @Override
     public OGViMMD getVideoMetadata(HttpHeaders headers, int videoid) {
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OGViMMD out = new OGViMMD();
-
+        
         IGViMMD in = new IGViMMD();
         in.setVID(videoid);
-
+        
         IGViM tmpin = new IGViM();
         tmpin.setVID(videoid);
         OGViM tmpout = new OGViM();
-
+        
         if (!actcheck.checkContenMessageID(videoid, Constants.TYP_VIDEO)) {
             out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
         } else {
             actuser.getVideoMessages(tmpin, tmpout);
-
-            final File file = new File((new Constants()).getUploadFolderVideo()
-                    + tmpout.getVM());
+            
+            final File file = new File(
+                    (new Constants()).getUploadFolderVideo() + tmpout.getVM());
             if (file.exists()) {
                 out.setVM(tmpout.getVM());
                 out.setVMD5(tmpout.getVMD5());
@@ -238,26 +205,19 @@ public class VideoImpl implements IVideoUtil {
                 out.setET(Constants.FILE_NOT_FOUND);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
         return out;
     }
-
+    
     // save uploaded file to a defined location on the server
-    private void saveFile(InputStream uploadedInputStream, String serverLocation) {
-
+    private void saveFile(InputStream uploadedInputStream,
+            String serverLocation) {
+        
         try {
-            OutputStream outpuStream = new FileOutputStream(new File(
-                    serverLocation));
+            OutputStream outpuStream = new FileOutputStream(
+                    new File(serverLocation));
             int read = 0;
             byte[] bytes = new byte[1024];
-
+            
             outpuStream = new FileOutputStream(new File(serverLocation));
             while ((read = uploadedInputStream.read(bytes)) != -1) {
                 outpuStream.write(bytes, 0, read);

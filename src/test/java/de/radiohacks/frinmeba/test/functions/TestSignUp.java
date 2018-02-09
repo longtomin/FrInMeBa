@@ -45,6 +45,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,10 +53,10 @@ import org.junit.Test;
 import de.radiohacks.frinmeba.model.jaxb.ISiUp;
 import de.radiohacks.frinmeba.model.jaxb.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
+import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestSignUp extends JerseyTest {
     
@@ -72,21 +73,21 @@ public class TestSignUp extends JerseyTest {
      * @QueryParam(Constants.QPemail) String Email);
      */
     
-    private static final Logger LOGGER = Logger.getLogger(TestSignUp.class
-            .getName());
+    private static final Logger LOGGER = Logger
+            .getLogger(TestSignUp.class.getName());
     
     // Username welche anzulegen ist
     final static String functionurl = "user/signup";
     
     final static String username_org = "Thomas Schreiner";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String password_org = "d38681074467c0bc147b17a9a12b9efa8cc10bcf545f5b0bccccf5a93c4a2b79";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String email_org = "thomas@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
@@ -103,10 +104,12 @@ public class TestSignUp extends JerseyTest {
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End BeforeClass");
     }
     

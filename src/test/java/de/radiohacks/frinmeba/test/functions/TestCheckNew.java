@@ -43,20 +43,25 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbMessages;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbText;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUserToChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.OCN;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestCheckNew extends JerseyTest {
-
+    
     /*
      * @GET
      * 
@@ -67,69 +72,93 @@ public class TestCheckNew extends JerseyTest {
      * 
      * @QueryParam(Constants.QPpassword) String Password);
      */
-
-    private static final Logger LOGGER = Logger.getLogger(TestCheckNew.class
-            .getName());
-
+    
+    private static final Logger LOGGER = Logger
+            .getLogger(TestCheckNew.class.getName());
+    
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
     final static String functionurl = "user/checknew";
-
+    
+    private static FrinmeDbUsers u = new FrinmeDbUsers();
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u.setActive(true);
+        u.setB64username(username);
+        u.setUsername(username_org);
+        u.setPassword(password_org);
+        u.setEmail(email_org);
+        session.save(u);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End BeforeClass");
     }
-
+    
     @Test
     public void testCheckNewMessagesUserPassword() {
-        helperDatabase help = new helperDatabase();
-        int TxtmsgID = help.CreateContentMessage("Test Nachricht",
-                Constants.TYP_TEXT);
-        int ChatID = help.CreateChat(username_org, "TestChat");
-        int UserID = help.getUserID(username_org);
-        int User2ChatID = help.AddUserToChat(UserID, ChatID);
-        help.insertMessage(UserID, User2ChatID, Constants.TYP_TEXT, TxtmsgID,
-                0, true);
-
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbText t = new FrinmeDbText();
+        t.setText("Test Nachricht");
+        session.save(t);
+        FrinmeDbChats c = new FrinmeDbChats();
+        c.setChatname("TestChat");
+        c.setFrinmeDbUsers(u);
+        session.save(c);
+        FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+        u2c.setFrinmeDbChats(c);
+        u2c.setFrinmeDbUsers(u);
+        session.save(u2c);
+        FrinmeDbMessages m = new FrinmeDbMessages();
+        m.setFrinmeDbUsers(u);
+        m.setFrinmeDbUserToChats(u2c);
+        m.setMessageTyp(de.radiohacks.frinmeba.services.Constants.TYP_TEXT);
+        m.setFrinmeDbText(t);
+        m.setReadTimestamp(0);
+        m.setTempReadTimestamp(0);
+        session.save(m);
+        m.setOriginMsgId(m.getId());
+        session.saveOrUpdate(m);
+        
+        session.getTransaction().commit();
+        session.close();
+        
         WebTarget target;
-
+        
         target = ClientBuilder.newClient().target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
         OCN out = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, password).build())
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password).build())
                 .request().get(OCN.class);
         LOGGER.debug(out.getC());
         Assert.assertNotNull(out.getC());

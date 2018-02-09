@@ -71,8 +71,7 @@ import de.radiohacks.frinmeba.model.jaxb.OSTeM;
 import de.radiohacks.frinmeba.model.jaxb.OSiUp;
 import de.radiohacks.frinmeba.services.Constants;
 import de.radiohacks.frinmeba.services.ServiceImpl;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
+import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestClientOneUserNotActive extends JerseyTest {
     
@@ -81,16 +80,16 @@ public class TestClientOneUserNotActive extends JerseyTest {
     
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
@@ -106,10 +105,13 @@ public class TestClientOneUserNotActive extends JerseyTest {
     
     @BeforeClass
     public static void prepareDB() {
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
+        helperDatabase help = new helperDatabase();
+        help.emptyDatabase();
+        
+        // Session session = HibernateUtil.getSessionFactory().openSession();
+        // session.beginTransaction();
+        // session.getTransaction().commit();
+        // session.close();
     }
     
     // configure auskommentieren wenn localhost als Ziel gewählt werden soll.
@@ -136,50 +138,51 @@ public class TestClientOneUserNotActive extends JerseyTest {
         assertThat("Test out4 - NO_USERNAME_OR_PASSWORD", out4.getET(),
                 is(Constants.NO_USERNAME_OR_PASSWORD));
         OSiUp out5 = TestSignUpWithEmailUserPassword();
-        assertThat("Test out5 - SUCCESSFUL", out5.getSU(), is("SUCCESSFUL"));
+        assertThat("Test out5 - SUCCESSFUL", out5.getR(),
+                is(Constants.SIGNUP_SUCCESSFUL));
         OSiUp out5a = TestSignUpWithEmailUserPassword();
         assertThat("Test out5a - USER_ALREADY_EXISTS", out5a.getET(),
                 is(Constants.USER_ALREADY_EXISTS));
-        // OCrCh out7 = TestCreateChatNotActive();
-        // assertThat("Test out7 - USER_NOT_ACTIVE", out7.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // ODeCh out8 = TestDeleteChatNotActive();
-        // assertThat("Test out8 - USER_NOT_ACTIVE", out8.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OAdUC out9 = TestAddUserToChatNotActive();
-        // assertThat("Test out8 - USER_NOT_ACTIVE", out9.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OReUC out10 = TestRemoveUserFromChatNotActive();
-        // assertThat("Test out10 - USER_NOT_ACTIVE", out10.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OLiUs out11 = TestListUserNotActive();
-        // assertThat("Test out11 - USER_NOT_ACTIVE", out11.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OLiCh out12 = TestListChatNotActive();
-        // assertThat("Test out12 - USER_NOT_ACTIVE", out12.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OSTeM out13 = TestSendTextMessageNotActive();
-        // assertThat("Test out13 - USER_NOT_ACTIVE", out13.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OGTeM out14 = TestGetTextMessageNotActive();
-        // assertThat("Test out14 - USER_NOT_ACTIVE", out14.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OIMIC out15 = TestInsertMessageIntoChatNotActive();
-        // assertThat("Test out15 - USER_NOT_ACTIVE", out15.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // OFMFC out16 = TestGetMessageFromChatNotActive();
-        // assertThat("Test out16 - USER_NOT_ACTIVE", out16.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
-        // // OutCheckNewMessages out17 = TestCheckNewMessagesNotActive();
-        // // Assert.assertEquals(Constants.USER_NOT_ACTIVE, out17.getET());
-        // ODMFC out18 = TestDeleMessageFromChatNotActive();
-        // assertThat("Test out18 - USER_NOT_ACTIVE", out18.getET(),
-        // is(Constants.USER_NOT_ACTIVE));
+        OCrCh out7 = TestCreateChatNotActive();
+        assertThat("Test out7 - USER_NOT_ACTIVE", out7.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        ODeCh out8 = TestDeleteChatNotActive();
+        assertThat("Test out8 - USER_NOT_ACTIVE", out8.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OAdUC out9 = TestAddUserToChatNotActive();
+        assertThat("Test out8 - USER_NOT_ACTIVE", out9.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OReUC out10 = TestRemoveUserFromChatNotActive();
+        assertThat("Test out10 - USER_NOT_ACTIVE", out10.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OLiUs out11 = TestListUserNotActive();
+        assertThat("Test out11 - USER_NOT_ACTIVE", out11.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OLiCh out12 = TestListChatNotActive();
+        assertThat("Test out12 - USER_NOT_ACTIVE", out12.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OSTeM out13 = TestSendTextMessageNotActive();
+        assertThat("Test out13 - USER_NOT_ACTIVE", out13.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OGTeM out14 = TestGetTextMessageNotActive();
+        assertThat("Test out14 - USER_NOT_ACTIVE", out14.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OIMIC out15 = TestInsertMessageIntoChatNotActive();
+        assertThat("Test out15 - USER_NOT_ACTIVE", out15.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        OFMFC out16 = TestGetMessageFromChatNotActive();
+        assertThat("Test out16 - USER_NOT_ACTIVE", out16.getET(),
+                is(Constants.USER_NOT_ACTIVE));
+        // OutCheckNewMessages out17 = TestCheckNewMessagesNotActive();
+        // Assert.assertEquals(Constants.USER_NOT_ACTIVE, out17.getET());
+        ODMFC out18 = TestDeleMessageFromChatNotActive();
+        assertThat("Test out18 - USER_NOT_ACTIVE", out18.getET(),
+                is(Constants.USER_NOT_ACTIVE));
     }
     
     private OSiUp callTarget(ISiUp in) {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/signup");
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + "user/signup");
         LOGGER.debug(target);
         Response response = target.request()
                 .accept(MediaType.APPLICATION_XML_TYPE)
@@ -227,15 +230,15 @@ public class TestClientOneUserNotActive extends JerseyTest {
     }
     
     public OCrCh TestCreateChatNotActive() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/createchat");
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + "user/createchat");
         ICrCh in = new ICrCh();
-        in.setCN(Base64.encodeBase64String("Testchat".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
+        in.setCN(Base64.encodeBase64String(
+                "Testchat".getBytes(Charset.forName(Constants.CHARACTERSET))));
         Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request()
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         return response.readEntity(OCrCh.class);
@@ -247,22 +250,21 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .target(TestConfig.URL + "user/deletechat")
                 .queryParam(Constants.QP_CHATID, 1);
         return target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request()
-                .delete(ODeCh.class);
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request().delete(ODeCh.class);
     }
     
     public OAdUC TestAddUserToChatNotActive() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/addusertochat");
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + "user/addusertochat");
         IAdUC in = new IAdUC();
         in.setCID(1);
         in.setUID(1);
         Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request()
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         return response.readEntity(OAdUC.class);
@@ -275,47 +277,44 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .queryParam(Constants.QP_USERID, 1)
                 .queryParam(Constants.QP_CHATID, 1);
         return target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request()
-                .delete(OReUC.class);
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request().delete(OReUC.class);
     }
     
     public OLiUs TestListUserNotActive() {
         WebTarget target;
-        target = ClientBuilder
-                .newClient()
+        target = ClientBuilder.newClient()
                 .target(TestConfig.URL + "user/listuser")
-                .queryParam(
-                        Constants.QP_SEARCH,
-                        Base64.encodeBase64String("Test".getBytes(Charset
-                                .forName(Constants.CHARACTERSET))));
+                .queryParam(Constants.QP_SEARCH,
+                        Base64.encodeBase64String("Test".getBytes(
+                                Charset.forName(Constants.CHARACTERSET))));
         return target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request().get(OLiUs.class);
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request().get(OLiUs.class);
     }
     
     public OLiCh TestListChatNotActive() {
         WebTarget target;
-        target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/listchat");
+        target = ClientBuilder.newClient()
+                .target(TestConfig.URL + "user/listchat");
         return target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request().get(OLiCh.class);
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request().get(OLiCh.class);
     }
     
     public OSTeM TestSendTextMessageNotActive() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/sendtextmessage");
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + "user/sendtextmessage");
         ISTeM in = new ISTeM();
-        in.setTM(Base64.encodeBase64String("Text Message".getBytes(Charset
-                .forName(Constants.CHARACTERSET))));
+        in.setTM(Base64.encodeBase64String("Text Message"
+                .getBytes(Charset.forName(Constants.CHARACTERSET))));
         Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request()
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         return response.readEntity(OSTeM.class);
@@ -327,14 +326,14 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .target(TestConfig.URL + "user/gettextmessage")
                 .queryParam(Constants.QP_TEXTMESSAGEID, 1);
         return target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request().get(OGTeM.class);
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request().get(OGTeM.class);
     }
     
     public OIMIC TestInsertMessageIntoChatNotActive() {
-        WebTarget target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/insertmessageintochat");
+        WebTarget target = ClientBuilder.newClient()
+                .target(TestConfig.URL + "user/insertmessageintochat");
         IIMIC in = new IIMIC();
         in.setMT(Base64.encodeBase64String(Constants.TYP_CONTACT
                 .getBytes(Charset.forName(Constants.CHARACTERSET))));
@@ -342,9 +341,9 @@ public class TestClientOneUserNotActive extends JerseyTest {
         in.setMID(1);
         
         Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request()
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request()
                 .buildPut(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         return response.readEntity(OIMIC.class);
@@ -357,9 +356,9 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .queryParam(Constants.QP_CHATID, 1)
                 .queryParam(Constants.QP_TIMESTAMP, 0);
         return target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request().get(OFMFC.class);
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request().get(OFMFC.class);
     }
     
     public ODMFC TestDeleMessageFromChatNotActive() {
@@ -368,9 +367,8 @@ public class TestClientOneUserNotActive extends JerseyTest {
                 .target(TestConfig.URL + "user/deletemessagefromchat")
                 .queryParam(Constants.QP_MESSAGEID, 1);
         return target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                username, password)).request()
-                .delete(ODMFC.class);
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password))
+                .request().delete(ODMFC.class);
     }
 }

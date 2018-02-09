@@ -44,20 +44,21 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.OLiUs;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestListUser extends JerseyTest {
-
+    
     /*
      * @GET
      * 
@@ -70,122 +71,131 @@ public class TestListUser extends JerseyTest {
      * 
      * @QueryParam(Constants.QPsearch) String search);
      */
-
-    private static final Logger LOGGER = Logger.getLogger(TestListUser.class
-            .getName());
-
+    
+    private static final Logger LOGGER = Logger
+            .getLogger(TestListUser.class.getName());
+    
     // Username welche anzulegen ist
     final static String username1_org = "Test1";
-    final static String username1 = Base64.encodeBase64String(username1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username1 = Base64.encodeBase64String(
+            username1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password1_org = "Test1";
-    final static String password1 = Base64.encodeBase64String(password1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password1 = Base64.encodeBase64String(
+            password1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email1_org = "Test1@frinme.org";
-    final static String email1 = Base64.encodeBase64String(email1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    final static String email1 = Base64.encodeBase64String(
+            email1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
     // Username welche anzulegen ist
     final static String username2_org = "User1 mit Nachnamen";
-    final static String username2 = Base64.encodeBase64String(username2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username2 = Base64.encodeBase64String(
+            username2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password2_org = "Test2";
-    final static String password2 = Base64.encodeBase64String(password2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password2 = Base64.encodeBase64String(
+            password2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email2_org = "User2@frinme.org";
-    final static String email2 = Base64.encodeBase64String(email2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email2 = Base64.encodeBase64String(
+            email2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Username welche anzulegen ist
     final static String username3_org = "Andreas will mitspielen";
-    final static String username3 = Base64.encodeBase64String(username3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username3 = Base64.encodeBase64String(
+            username3_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password3_org = "Test3";
-    final static String password3 = Base64.encodeBase64String(password3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password3 = Base64.encodeBase64String(
+            password3_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email3_org = "andreas@frinme.org";
-    final static String email3 = Base64.encodeBase64String(email3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    final static String email3 = Base64.encodeBase64String(
+            email3_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
     final static String functionurl = "user/listuser";
-
+    
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u2 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u3 = new FrinmeDbUsers();
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start prepareDB");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username1_org, username1, password1_org,
-                email1_org, help.InsertFixedImage());
-        help.CreateActiveUser(username2_org, username2, password2_org,
-                email2_org, help.InsertFixedImage());
-        help.CreateActiveUser(username3_org, username3, password3_org,
-                email3_org, help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username1);
+        u1.setUsername(username1_org);
+        u1.setPassword(password1_org);
+        u1.setEmail(email1_org);
+        session.save(u1);
+        u2.setActive(true);
+        u2.setB64username(username2);
+        u2.setUsername(username2_org);
+        u2.setPassword(password2_org);
+        u2.setEmail(email2_org);
+        session.save(u2);
+        u3.setActive(true);
+        u3.setB64username(username3);
+        u3.setUsername(username3_org);
+        u3.setPassword(password3_org);
+        u3.setEmail(email3_org);
+        session.save(u3);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End prepareDB");
     }
-
+    
     @Test
     public void testListUserUserPasswordSearch() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
-
-        target = c.target(TestConfig.URL).path(functionurl)
-                // .queryParam(Constants.QP_PASSWORD, password1)
-                // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(
-                        Constants.QP_SEARCH,
-                        Base64.encodeBase64String("Test".getBytes(Charset
-                                .forName(Constants.CHARACTERSET))));
+        
+        target = c.target(TestConfig.URL).path(functionurl).queryParam(
+                Constants.QP_SEARCH, Base64.encodeBase64String("Test"
+                        .getBytes(Charset.forName(Constants.CHARACTERSET))));
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("U (size) =" + out.getU().size());
         Assert.assertNotNull(out.getU());
     }
-
+    
     @Test
     public void testListUserUserPassword() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
-
+        
         target = c.target(TestConfig.URL + functionurl);
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1);
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("U (size) =" + out.getU().size());
         Assert.assertNotNull(out.getU());
     }
-
+    
     @Test
     public void testListUserEncodingErrorSearch() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
-
+        
         target = c.target(TestConfig.URL + functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1)
                 .queryParam(Constants.QP_SEARCH, "$%&1233");
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);

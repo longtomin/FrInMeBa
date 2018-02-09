@@ -28,8 +28,6 @@
  */
 package de.radiohacks.frinmeba.services;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.ws.rs.Path;
@@ -38,7 +36,6 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.log4j.Logger;
 
 import de.radiohacks.frinmeba.database.Check;
-import de.radiohacks.frinmeba.database.MyConnection;
 import de.radiohacks.frinmeba.model.jaxb.IAckCD;
 import de.radiohacks.frinmeba.model.jaxb.IAckMD;
 import de.radiohacks.frinmeba.model.jaxb.IAdUC;
@@ -81,28 +78,25 @@ import de.radiohacks.frinmeba.util.IServiceUtil;
 
 @Path("/user")
 public class ServiceImpl implements IServiceUtil {
-
-    private static final Logger LOGGER = Logger.getLogger(ServiceImpl.class
-            .getName());
-
+    
+    private static final Logger LOGGER = Logger
+            .getLogger(ServiceImpl.class.getName());
+    
     @Override
     public OIMIC insertMessageIntoChat(HttpHeaders headers, IIMIC in) {
-
+        
         LOGGER.debug("Start insertMessageIntoChat with ChatID = " + in.getCID()
                 + " MessageID = " + in.getMID() + " MessageType = "
                 + in.getMT());
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OIMIC out = new OIMIC();
-
+        
         if (actcheck.checkValueMust(in.getMT())) {
-
+            
             String tmp = actuser.base64Decode(in.getMT());
             in.setMT(tmp);
-
+            
             /* Check if Chat exists */
             if (!actcheck.checkChatID(in.getCID())) {
                 out.setET(Constants.NONE_EXISTING_CHAT);
@@ -121,78 +115,54 @@ public class ServiceImpl implements IServiceUtil {
             }
             /* Messagetype check failed */
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.INVALID_MESSAGE_TYPE);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
             }
         }
-        /* Password check failed */
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End insertMessageIntoChat with ChatID = " + in.getCID()
                 + " MessageID = " + in.getMID() + " MessageType = "
                 + in.getMT());
         return out;
     }
-
+    
     @Override
     public OSTeM sendTextMessage(HttpHeaders headers, ISTeM in) {
-
+        
         LOGGER.debug("Start sendTextMessage with TextMessage = " + in.getTM());
-
+        
         OSTeM out = new OSTeM();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkValueMust(in.getTM())) {
             actuser.sendTextMessage(in, out);
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.NO_TEXTMESSAGE_GIVEN);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End sendTextMessage with TextMessage = " + in.getTM());
         return out;
     }
-
+    
     @Override
     public OSiUp signUpUser(ISiUp in) {
-
+        
         LOGGER.debug("Start SingUpUser with User = " + in.getUN()
                 + " Password = " + in.getPW() + " Email = " + in.getE());
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con);
-        Check actcheck = new Check(con);
+        
+        User actuser = new User();
+        Check actcheck = new Check();
         OSiUp out = new OSiUp();
-
+        
         if (actcheck.checkValueMust(in.getUN())) {
             if (actcheck.checkValueMust(in.getPW())) {
                 if (actcheck.checkValueMust(in.getE())) {
@@ -200,106 +170,81 @@ public class ServiceImpl implements IServiceUtil {
                     in.setPW(tmp);
                     tmp = actuser.base64Decode(in.getE());
                     in.setE(tmp);
-
+                    
                     if (!actcheck.checkEmail(in.getE())) {
                         out.setET(Constants.INVALID_EMAIL_ADRESS);
                     } else {
                         actuser.signUp(in, out);
                     }
                 } else {
-                    if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.NO_CONTENT_GIVEN)) {
+                    if (actcheck.getLastError()
+                            .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                         out.setET(Constants.INVALID_EMAIL_ADRESS);
-                    } else if (actcheck.getLastError().equalsIgnoreCase(
-                            Constants.ENCODING_ERROR)) {
+                    } else if (actcheck.getLastError()
+                            .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                         out.setET(Constants.ENCODING_ERROR);
                     }
                 }
                 /* Password check failed */
             } else {
-                if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.NO_CONTENT_GIVEN)) {
+                if (actcheck.getLastError()
+                        .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                     out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-                } else if (actcheck.getLastError().equalsIgnoreCase(
-                        Constants.ENCODING_ERROR)) {
+                } else if (actcheck.getLastError()
+                        .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                     out.setET(Constants.ENCODING_ERROR);
                 }
             }
             /* User check failed */
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.NO_USERNAME_OR_PASSWORD);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
-        LOGGER.debug("End SingUpUser with User = " + in.getUN()
-                + " Password = " + in.getPW() + " Email = " + in.getE());
-
+        LOGGER.debug("End SingUpUser with User = " + in.getUN() + " Password = "
+                + in.getPW() + " Email = " + in.getE());
         return out;
     }
-
+    
     @Override
     public OCrCh createChat(HttpHeaders headers, ICrCh in) {
-
+        
         LOGGER.debug("Start CreateChat with Chatname = " + in.getCN());
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
         OCrCh out = new OCrCh();
-        Check actcheck = new Check(con);
-
+        Check actcheck = new Check();
+        
         if (actcheck.checkValueMust(in.getCN())) {
             String tmp = actuser.base64Decode(in.getCN());
             in.setCN(tmp);
             actuser.createChat(in, out,
                     headers.getHeaderString(Constants.USERNAME));
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.MISSING_CHATNAME);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End CreateChat with Chatname = " + in.getCN());
         return out;
     }
-
+    
     @Override
     public ODeCh deleteChat(HttpHeaders headers, int chatID) {
         LOGGER.debug("Start DeleteChat with ChatID = " + chatID);
-
+        
         ODeCh out = new ODeCh();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         /* Check if Chat exists */
         if (!actcheck.checkChatID(chatID)) {
             out.setET(Constants.NONE_EXISTING_CHAT);
@@ -308,31 +253,19 @@ public class ServiceImpl implements IServiceUtil {
             in.setCID(chatID);
             actuser.deleteChat(in, out);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End DeleteChat with ChatID = " + chatID);
         return out;
     }
-
+    
     @Override
     public OAdUC addUserToChat(HttpHeaders headers, IAdUC in) {
         LOGGER.debug("Start AddUserToChat with ChatID = " + in.getCID()
                 + "UserID = " + in.getUID());
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OAdUC out = new OAdUC();
-
+        
         /* Check if Chat exists */
         if (!actcheck.checkChatID(in.getCID())) {
             out.setET(Constants.NONE_EXISTING_CHAT);
@@ -344,33 +277,23 @@ public class ServiceImpl implements IServiceUtil {
                 actuser.addUserToChat(in, out);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
+        
         LOGGER.debug("End AddUserToChat with ChatID = " + in.getCID()
                 + "UserID = " + in.getUID());
         return out;
     }
-
+    
     @Override
-    public OReUC removeUserFromChat(HttpHeaders headers, int userID, int chatID) {
-
+    public OReUC removeUserFromChat(HttpHeaders headers, int userID,
+            int chatID) {
+        
         LOGGER.debug("Start RemoveUserFromChat with ChatID = " + chatID
                 + "UserID = " + userID);
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OReUC out = new OReUC();
-
+        
         /* Check if Chat exists */
         if (!actcheck.checkChatID(chatID)) {
             out.setET(Constants.NONE_EXISTING_CHAT);
@@ -385,31 +308,19 @@ public class ServiceImpl implements IServiceUtil {
                 actuser.removeUserFromChat(in, out);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End RemoveUserFromChat with ChatID = " + chatID
                 + "UserID = " + userID);
         return out;
     }
-
+    
     @Override
     public OLiUs listUsers(HttpHeaders headers, String search) {
         LOGGER.debug("Start ListUsers with Search = " + search);
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OLiUs out = new OLiUs();
-
+        
         if (actcheck.checkValueCan(search)) {
             ILiUs in = new ILiUs();
             if (search != null && !search.isEmpty()) {
@@ -420,95 +331,59 @@ public class ServiceImpl implements IServiceUtil {
             actuser.listUser(in, out);
             /* Search check failed */
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End ListUsers with Search = " + search);
         return out;
     }
-
+    
     @Override
     public OLiCh listChats(HttpHeaders headers) {
         LOGGER.debug("Start ListChats");
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
         OLiCh out = new OLiCh();
-
+        
         actuser.listChat(out);
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End ListChats");
         return out;
     }
-
+    
     @Override
     public OFMFC getMessageFromChat(HttpHeaders headers, int chatID,
             int timestamp) {
         LOGGER.debug("Start getMessageFromChat with ChatID = " + chatID);
-
+        
         OFMFC out = new OFMFC();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         IFMFC in = new IFMFC();
         in.setCID(chatID);
         in.setRdT(timestamp);
-
+        
         /* Check if Chat exists */
         if (!actcheck.checkChatID(in.getCID())) {
             out.setET(Constants.NONE_EXISTING_CHAT);
         } else {
             actuser.getMessagesFromChat(in, out);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End getMessageFromChat with ChatID = " + chatID);
         return out;
     }
-
+    
     @Override
     public OGTeM getTextMessage(HttpHeaders headers, int textMessageID) {
-        LOGGER.debug("Start getTextMessage with TextMessageID = "
-                + textMessageID);
-
+        LOGGER.debug(
+                "Start getTextMessage with TextMessageID = " + textMessageID);
+        
         OGTeM out = new OGTeM();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         IGTeM in = new IGTeM();
         in.setTextID(textMessageID);
         /* Check if Chat exists */
@@ -517,58 +392,34 @@ public class ServiceImpl implements IServiceUtil {
         } else {
             actuser.getTextMessages(in, out);
         }
-        /* Password check failed */
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
-        LOGGER.debug("End getTextMessage with TextMessageID = " + textMessageID);
+        LOGGER.debug(
+                "End getTextMessage with TextMessageID = " + textMessageID);
         return out;
     }
-
+    
     @Override
     public OCN checkNew(HttpHeaders headers) {
         LOGGER.debug("Start checkNewMessages");
-
+        
         OCN out = new OCN();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        
         /* Check if Chat exists */
         actuser.checkNew(out);
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End checkNewMessages");
         return out;
     }
-
+    
     @Override
     public ODMFC deleteMessageFromChat(HttpHeaders headers, int messageID) {
-
-        LOGGER.debug("Start deleteMessageFromChat with MessageID = "
-                + messageID);
-
+        
+        LOGGER.debug(
+                "Start deleteMessageFromChat with MessageID = " + messageID);
+        
         ODMFC out = new ODMFC();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (messageID > 0) {
             if (actcheck.checkMessageID(messageID)) {
                 // actuser.fillUserinfo(actuser.base64Decode(headers
@@ -586,31 +437,18 @@ public class ServiceImpl implements IServiceUtil {
         } else {
             out.setET(Constants.NONE_EXISTING_MESSAGE);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-                /* e.printStackTrace(); */
-            }
-        }
-
         LOGGER.debug("End checkNewMessages with MessageID = " + messageID);
         return out;
     }
-
+    
     @Override
     public OSShT setShowTimeStamp(HttpHeaders headers, ISShT in) {
         LOGGER.debug("Start setShowTimeStamp with MessageID = " + in.getMID());
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OSShT out = new OSShT();
-
+        
         boolean abort = false;
         // if (!in.getMID().isEmpty() && in.getMID().size() > 0) {
         if (!in.getMID().isEmpty()) {
@@ -620,16 +458,16 @@ public class ServiceImpl implements IServiceUtil {
                     out.setET(Constants.NONE_EXISTING_MESSAGE);
                     abort = true;
                 } else {
-                    if (!actcheck.checkMessageIDReadTimestamp(in.getMID()
-                            .get(i))) {
+                    if (!actcheck
+                            .checkMessageIDReadTimestamp(in.getMID().get(i))) {
                         out.setET(Constants.MESSAGE_NOT_READ);
                         abort = true;
                     } else {
                         /* Check if it is your own Message. Do not */
                         /* update */
                         /* ShowTimeStamps for other people */
-                        if (!actcheck.checkOwnMessage(actuser.getID(), in
-                                .getMID().get(i))) {
+                        if (!actcheck.checkOwnMessage(actuser.getID(),
+                                in.getMID().get(i))) {
                             out.setET(Constants.NOT_MESSAGE_OWNER);
                             abort = true;
                         }
@@ -642,32 +480,20 @@ public class ServiceImpl implements IServiceUtil {
         } else {
             out.setET(Constants.NONE_EXISTING_MESSAGE);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End setShowTimeStamp with MessageID = " + in.getMID());
         return out;
     }
-
+    
     @Override
     public OGMI getMessageInformation(HttpHeaders headers,
             List<Integer> messageID) {
         LOGGER.debug("Start getMessageInformation with Messagelist.size = "
                 + messageID.size());
-
+        
         OGMI out = new OGMI();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         IGMI in = new IGMI();
         boolean abort = false;
         // if (!messageID.isEmpty() && messageID.size() > 0) {
@@ -687,32 +513,20 @@ public class ServiceImpl implements IServiceUtil {
         if (!abort) {
             actuser.getMessageInformation(in, out);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End getMessageInformation with messagelist.size = "
                 + messageID.size());
         return out;
     }
-
+    
     @Override
     public OAckMD acknowledgeMessageDownload(HttpHeaders headers, IAckMD in) {
         LOGGER.debug("Start acknowledgeMessageDownload with MessageID = "
                 + in.getMID() + " Acknowledge = " + in.getACK());
-
+        
         OAckMD out = new OAckMD();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkValueMust(in.getACK())) {
             if (in.getMID() > 0) {
                 if (actcheck.checkMessageID(in.getMID())) {
@@ -726,40 +540,28 @@ public class ServiceImpl implements IServiceUtil {
                 out.setET(Constants.NONE_EXISTING_MESSAGE);
             }
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.NO_CONTENT_GIVEN);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End acknowledgeMessageDownload with MesageID = "
                 + in.getMID() + " Acknowledge = " + in.getACK());
         return out;
     }
-
+    
     @Override
     public OAckCD acknowledgeChatDownload(HttpHeaders headers, IAckCD in) {
         LOGGER.debug("Start acknowledgeChatDownload with ChatID = "
                 + in.getCID() + " Acknowledge = " + in.getACK());
-
+        
         OAckCD out = new OAckCD();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkValueMust(in.getACK())) {
             if (in.getCID() > 0) {
                 if (actcheck.checkChatID(in.getCID())) {
@@ -771,39 +573,27 @@ public class ServiceImpl implements IServiceUtil {
                 out.setET(Constants.NONE_EXISTING_CHAT);
             }
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.NO_CONTENT_GIVEN);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End acknowledgeChatDownload with ChatID = " + in.getCID()
                 + " Acknowledge = " + in.getACK());
         return out;
     }
-
+    
     @Override
     public OSU syncUser(HttpHeaders headers, List<Integer> userID) {
         LOGGER.debug("Start syncuser with Userlist.size =" + userID.size());
-
+        
         OSU out = new OSU();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         ISU in = new ISU();
         boolean abort = false;
         // if (!userID.isEmpty() && userID.size() > 0) {
@@ -823,65 +613,41 @@ public class ServiceImpl implements IServiceUtil {
         if (!abort) {
             actuser.syncUser(in, out);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End getMessageInformation with Userlist.size = "
                 + userID.size());
         return out;
     }
-
+    
     @Override
     public OIUIc insertUserIcon(HttpHeaders headers, IIUIc in) {
         LOGGER.debug("Start insertusericon with IconID = " + in.getIcID());
-
+        
         OIUIc out = new OIUIc();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkContenMessageID(in.getIcID(), Constants.TYP_IMAGE)) {
             actuser.insertUserIcon(in, out);
         } else {
             /* Icon not found */
             out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End insertchaticon with Icon = " + in.getIcID());
         return out;
     }
-
+    
     @Override
     public OICIc insertChatIcon(HttpHeaders headers, IICIc in) {
         LOGGER.debug("Start insertchaticon with Icon = " + in.getIcID()
                 + "ChatID = " + in.getCID());
-
+        
         OICIc out = new OICIc();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkChatID(in.getCID())) {
-            if (actcheck
-                    .checkContenMessageID(in.getIcID(), Constants.TYP_IMAGE)) {
+            if (actcheck.checkContenMessageID(in.getIcID(),
+                    Constants.TYP_IMAGE)) {
                 actuser.insertChatIcon(in, out);
             } else {
                 /* Icon not found */
@@ -891,18 +657,9 @@ public class ServiceImpl implements IServiceUtil {
             /* Chat not found */
             out.setET(Constants.NONE_EXISTING_CHAT);
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-            }
-        }
-
         LOGGER.debug("End insertchaticon with Icon = " + in.getIcID()
                 + "ChatID = " + in.getCID());
         return out;
     }
-
+    
 }

@@ -46,19 +46,20 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestAuthenticate extends JerseyTest {
-
+    
     /*
      * @GET
      * 
@@ -69,50 +70,57 @@ public class TestAuthenticate extends JerseyTest {
      * 
      * @QueryParam(Constants.QPpassword) String Password);
      */
-
+    
     private static final Logger LOGGER = Logger
             .getLogger(TestAuthenticate.class.getName());
-
+    
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
     final static String functionurl = "user/authenticate";
-
+    
+    private static FrinmeDbUsers u = new FrinmeDbUsers();
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start prepareDB");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u.setActive(true);
+        u.setB64username(username);
+        u.setUsername(username_org);
+        u.setPassword(password_org);
+        u.setEmail(email_org);
+        session.save(u);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End prepareDB");
     }
-
+    
     @Test
     public void testAuthenticateUpNoCredentials() {
         WebTarget target;
@@ -121,49 +129,45 @@ public class TestAuthenticate extends JerseyTest {
         LOGGER.debug(target);
         Response resp = target.request(MediaType.APPLICATION_XML).get();
         LOGGER.debug(resp);
-        // OAuth out = resp.readEntity(OAuth.class);
         Assert.assertEquals(resp.getStatus(), 401);
     }
-
+    
     @Test
     public void testAuthenticateUserPassword() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response resp = target.request(MediaType.APPLICATION_XML).get();
         LOGGER.debug(resp);
-        // OAuth out = resp.readEntity(OAuth.class);
         Assert.assertEquals(resp.getStatus(), 404);
     }
-
+    
     @Test
     public void testAuthenticateUserWrongPassword() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, "XXX"));
-
+        
         target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response resp = target.request(MediaType.APPLICATION_XML).get();
         LOGGER.debug(resp);
-        // OAuth out = resp.readEntity(OAuth.class);
         Assert.assertEquals(resp.getStatus(), 401);
     }
-
+    
     @Test
     public void testAuthenticateWrongUserPassword() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic("XXX", password));
-
+        
         target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response resp = target.request(MediaType.APPLICATION_XML).get();
         LOGGER.debug(resp);
-        // OAuth out = resp.readEntity(OAuth.class);
         Assert.assertEquals(resp.getStatus(), 401);
     }
 }

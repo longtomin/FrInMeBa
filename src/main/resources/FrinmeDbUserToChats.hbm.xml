@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.01.2018 21:05:20 by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="de.radiohacks.frinmeba.model.hibernate.FrinmeDbUserToChats" table="FRINME_DB_UserToChats" catalog="frinme_db">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="frinmeDbUsers" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers" fetch="select">
+            <column name="UserID" not-null="true" />
+        </many-to-one>
+        <many-to-one name="frinmeDbChats" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats" fetch="select">
+            <column name="ChatID" not-null="true" />
+        </many-to-one>
+        <property name="readTimestamp" type="long">
+            <column name="ReadTimestamp" not-null="true" />
+        </property>
+        <property name="tempReadTimestamp" type="long">
+            <column name="TempReadTimestamp" not-null="true" />
+        </property>
+        <set name="frinmeDbMessageses" table="FRINME_DB_Messages" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="UsertoChatID" not-null="true" />
+            </key>
+            <one-to-many class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbMessages" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -47,17 +47,20 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbImage;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.IICIc;
 import de.radiohacks.frinmeba.model.jaxb.OICIc;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestInsertChatIcon extends JerseyTest {
@@ -86,34 +89,35 @@ public class TestInsertChatIcon extends JerseyTest {
     
     // Username welche anzulegen ist
     final static String username1_org = "Test1";
-    final static String username1 = Base64.encodeBase64String(username1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username1 = Base64.encodeBase64String(
+            username1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String username2_org = "Test2";
-    final static String username2 = Base64.encodeBase64String(username2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username2 = Base64.encodeBase64String(
+            username2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     // Passwort zum User
     final static String password1_org = "Test1";
-    final static String password1 = Base64.encodeBase64String(password1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password1 = Base64.encodeBase64String(
+            password1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String password2_org = "Test2";
-    final static String password2 = Base64.encodeBase64String(password2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password2 = Base64.encodeBase64String(
+            password2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     // Email Adresse zum User
     final static String email1_org = "Test1@frinme.org";
-    final static String email1 = Base64.encodeBase64String(email1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email1 = Base64.encodeBase64String(
+            email1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String email2_org = "Test2@frinme.org";
-    final static String email2 = Base64.encodeBase64String(email2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email2 = Base64.encodeBase64String(
+            email2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     final static String functionurl = "user/insertchaticon";
     
-    // Text Message
-    static int iconid;
-    static int chatid1;
-    static int chatid2;
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u2 = new FrinmeDbUsers();
+    private static FrinmeDbChats c1 = new FrinmeDbChats();
+    private static FrinmeDbChats c2 = new FrinmeDbChats();
+    private static FrinmeDbImage i1 = new FrinmeDbImage();
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
@@ -130,18 +134,38 @@ public class TestInsertChatIcon extends JerseyTest {
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username1_org, username1, password1_org,
-                email1_org, help.InsertFixedImage());
-        help.CreateActiveUser(username2_org, username2, password2_org,
-                email2_org, help.InsertFixedImage());
-        chatid1 = help.CreateChat(username1_org, "Chat_Test1");
-        chatid2 = help.CreateChat(username2_org, "Chat-Test2");
-        iconid = help.InsertFixedImage();
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username1);
+        u1.setUsername(username1_org);
+        u1.setPassword(password1_org);
+        u1.setEmail(email1_org);
+        session.save(u1);
+        
+        u2.setActive(true);
+        u2.setB64username(username2);
+        u2.setUsername(username2_org);
+        u2.setPassword(password2_org);
+        u2.setEmail(email2_org);
+        session.save(u2);
+        
+        i1.setImage("Testimage.jpg");
+        i1.setMd5sum("Test");
+        session.save(i1);
+        
+        c1.setChatname("Chat-Test1");
+        c1.setFrinmeDbUsers(u1);
+        session.save(c1);
+        
+        c2.setChatname("Chat-Test2");
+        c2.setFrinmeDbUsers(u2);
+        session.save(c2);
+        
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End BeforeClass");
     }
     
@@ -169,7 +193,7 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconUserPasswordIcon() {
         IICIc in = new IICIc();
-        in.setIcID(iconid);
+        in.setIcID(i1.getId());
         OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(out.getET(), Constants.NONE_EXISTING_CHAT);
@@ -178,7 +202,7 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconUserPasswordChat() {
         IICIc in = new IICIc();
-        in.setCID(chatid1);
+        in.setCID(c1.getId());
         OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(out.getET(),
@@ -188,8 +212,8 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconNoneExistingChat() {
         IICIc in = new IICIc();
-        in.setCID(17);
-        in.setIcID(iconid);
+        in.setCID(853);
+        in.setIcID(i1.getId());
         OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
@@ -198,8 +222,8 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconNotChatOwner() {
         IICIc in = new IICIc();
-        in.setCID(chatid2);
-        in.setIcID(iconid);
+        in.setCID(c2.getId());
+        in.setIcID(i1.getId());
         OICIc out = callTargetUser1(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NOT_CHAT_OWNER, out.getET());
@@ -208,8 +232,8 @@ public class TestInsertChatIcon extends JerseyTest {
     @Test
     public void testInsertChatIconUserPasswordIconChatCorrect() {
         IICIc in = new IICIc();
-        in.setIcID(iconid);
-        in.setCID(chatid1);
+        in.setIcID(i1.getId());
+        in.setCID(c1.getId());
         OICIc out = callTargetUser1(in);
         LOGGER.debug("R=" + out.getR());
         Assert.assertEquals(out.getR(), Constants.ICON_ADDED);

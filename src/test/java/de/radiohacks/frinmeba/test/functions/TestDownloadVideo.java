@@ -48,19 +48,20 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestDownloadVideo extends JerseyTest {
-
+    
     /*
      * @GET
      * 
@@ -71,118 +72,99 @@ public class TestDownloadVideo extends JerseyTest {
      * 
      * @PathParam(Constants.QP_VIDEOID) int videoid);
      */
-
+    
     private static final Logger LOGGER = Logger
             .getLogger(TestDownloadVideo.class.getName());
-
+    
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
     final static String functionurl = "video/download";
-
+    
+    final static String videouploadurl = "video/upload";
+    
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username);
+        u1.setUsername(username_org);
+        u1.setPassword(password_org);
+        u1.setEmail(email_org);
+        session.save(u1);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End BeforeClass");
     }
-
-    private int insertVideo() {
-        // Insert new Image in DB an Filesystem
-        helperDatabase helper = new helperDatabase();
-        /*
-         * Works only if a local server is used; URL url =
-         * this.getClass().getResource("/test.jpg"); File in = new
-         * File(url.getFile()); return helper.InsertAndSaveImage(in);
-         */
-
-        /*
-         * Else use a static unixtime which is 1010101010 and a static filename
-         * which is test.jpg insert it into the db, the copy must be done
-         * outside.
-         */
-        // return helper.InsertFixedVideo();
-        OSViM o = helper.insertVideoContent(username, password);
-        if ((o.getET() == null || o.getET().isEmpty()) && o.getVID() > 0) {
-            return o.getVID();
-        } else {
-            return 0;
-        }
-    }
-
-    private void deleteVideo(int in) {
-        helperDatabase helper = new helperDatabase();
-        /*
-         * If the File was inserted and created by the the then use this
-         */
-        // helper.deleteAndDropImage(in);
-        /*
-         * Otherwise just delete the DB Entry and let the file delete be done
-         * outside.
-         */
-        helper.deleteFixedVideo(in);
-    }
-
+    
     @Test
     public void testDownloadVideoUpNoValues() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response rsp = target.request("video/mp4").accept("video/mp4").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(404));
     }
-
+    
     @Test
     public void testDownloadVideoVideoID() {
-        int videoid = insertVideo();
+        helperDatabase help = new helperDatabase();
+        
+        OSViM videodata = help.insertVideoContent(username, password);
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
         target = c.target(TestConfig.URL).path(functionurl)
-                .path(String.valueOf(videoid));
+                .path(String.valueOf(videodata.getVID()));
         LOGGER.debug(target);
         Response rsp = target.request("video/mp4").accept("video/mp4").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(200));
-        deleteVideo(videoid);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery("delete from FrinmeDbVideo where ID = '"
+                + videodata.getVID() + "'").executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+        
     }
-
+    
     @Test
     public void testDownloadVideoUserPasswordWrongImageID() {
         WebTarget target;
@@ -194,7 +176,7 @@ public class TestDownloadVideo extends JerseyTest {
         Response rsp = target.request("video/mp4").accept("video/mp4").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(204));
     }
 }

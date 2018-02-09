@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.01.2018 21:05:20 by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers" table="FRINME_DB_Users" catalog="frinme_db">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="frinmeDbImage" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbImage" fetch="select">
+            <column name="IconID" />
+        </many-to-one>
+        <property name="username" type="string">
+            <column name="Username" length="45" not-null="true" />
+        </property>
+        <property name="b64username" type="string">
+            <column name="B64Username" length="55" not-null="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="Password" length="64" not-null="true" />
+        </property>
+        <property name="email" type="string">
+            <column name="Email" length="100" not-null="true" />
+        </property>
+        <property name="signupDate" type="long">
+            <column name="SignupDate" not-null="true" />
+        </property>
+        <property name="status" type="java.lang.Byte">
+            <column name="Status" />
+        </property>
+        <property name="authenticationTime" type="long">
+            <column name="AuthenticationTime" not-null="true" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="Active" not-null="true" />
+        </property>
+        <set name="frinmeDbUserToChatses" table="FRINME_DB_UserToChats" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="UserID" not-null="true" />
+            </key>
+            <one-to-many class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbUserToChats" />
+        </set>
+        <set name="frinmeDbChatses" table="FRINME_DB_Chats" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="OwningUserID" not-null="true" />
+            </key>
+            <one-to-many class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats" />
+        </set>
+        <set name="frinmeDbMessageses" table="FRINME_DB_Messages" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="OwningUserID" not-null="true" />
+            </key>
+            <one-to-many class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbMessages" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -51,161 +51,145 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.OGImMMD;
 import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestGetImageMetaData extends JerseyTest {
-
-	/*
-	 * @GET
-	 * 
-	 * @Path("/getimagemetadata")
-	 * 
-	 * @Produces(MediaType.APPLICATION_XML) public OGImMMD getImageMetadata(
-	 * 
-	 * @QueryParam(Constants.QP_USERNAME) String user,
-	 * 
-	 * @QueryParam(Constants.QP_PASSWORD) String password,
-	 * 
-	 * @QueryParam("imageid") int imageid);
-	 */
-
-	private static final Logger LOGGER = Logger
-			.getLogger(TestGetImageMetaData.class.getName());
-
-	// Username welche anzulegen ist
-	final static String username_org = "Test1";
-	final static String username = Base64.encodeBase64String(username_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Passwort zum User
-	final static String password_org = "Test1";
-	final static String password = Base64.encodeBase64String(password_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-	// Email Adresse zum User
-	final static String email_org = "Test1@frinme.org";
-	final static String email = Base64.encodeBase64String(email_org
-			.getBytes(Charset.forName(Constants.CHARACTERSET)));
-
-	final static String functionurl = "image/getimagemetadata";
-
-	final static String md5Sum = "e36ba04dd1ad642a6e8c74c72a4aab8c";
-
-	@Override
-	protected TestContainerFactory getTestContainerFactory() {
-		return new GrizzlyWebTestContainerFactory();
-	}
-
-	@Override
-	protected DeploymentContext configureDeployment() {
-		return ServletDeploymentContext.forServlet(
-				new ServletContainer(new ResourceConfig(ServiceImpl.class)))
-				.build();
-	}
-
-	/*
-	 * @Override protected void configureClient(ClientConfig config) {
-	 * config.register(MultiPartFeature.class); }
-	 */
-
-	@BeforeClass
-	public static void prepareDB() {
-		LOGGER.debug("Start BeforeClass");
-		dropDatabaseTables drop = new dropDatabaseTables();
-		drop.dropTable();
-		createDatabaseTables create = new createDatabaseTables();
-		create.createTable();
-		helperDatabase help = new helperDatabase();
-		help.CreateActiveUser(username_org, username, password_org, email_org,
-				help.InsertFixedImage());
-		LOGGER.debug("End BeforeClass");
-	}
-
-	private int insertImage() {
-		// Insert new Image in DB an Filesystem
-		helperDatabase helper = new helperDatabase();
-		/*
-		 * Works only if a local server is used; URL url =
-		 * this.getClass().getResource("/test.jpg"); File in = new
-		 * File(url.getFile()); return helper.InsertAndSaveImage(in);
-		 */
-
-		/*
-		 * Else use a static unixtime which is 1010101010 and a static filename
-		 * which is test.jpg insert it into the db, the copy must be done
-		 * outside.
-		 */
-		// return helper.InsertFixedImage();
-		OSImM o = helper.insertImageContent(username, password);
-		if ((o.getET() == null || o.getET().isEmpty()) && o.getImID() > 0) {
-			return o.getImID();
-		} else {
-			return 0;
-		}
-	}
-
-	private void deleteImage(int in) {
-		helperDatabase helper = new helperDatabase();
-		/*
-		 * If the File was inserted and created by the the then use this
-		 */
-		// helper.deleteAndDropImage(in);
-		/*
-		 * Otherwise just delete the DB Entry and let the file delete be done
-		 * outside.
-		 */
-		helper.deleteFixedImage(in);
-	}
-
-	@Test
-	public void testGetImageMetaDataUserPassword() {
-		WebTarget target;
-		Client c = ClientBuilder.newClient();
-		c.register(HttpAuthenticationFeature.basic(username, password));
-
-		target = c.target(TestConfig.URL).path(functionurl);
-		LOGGER.debug(target);
-		OGImMMD out = target.request().get(OGImMMD.class);
-		LOGGER.debug("ET=" + out.getET());
-		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
-	}
-
-	@Test
-	public void testGetImageMetaDataUserPasswordImageID() {
-		int imageid = insertImage();
-		WebTarget target;
-		Client c = ClientBuilder.newClient();
-		c.register(HttpAuthenticationFeature.basic(username, password));
-
-		target = c.target(TestConfig.URL).path(functionurl)
-				.queryParam(Constants.QP_IMAGEID, imageid);
-		LOGGER.debug(target);
-		OGImMMD out = target.request().get(OGImMMD.class);
-		LOGGER.debug("ET=" + out.getET());
-		assertThat(out.getIS(), is(not(nullValue())));
-		deleteImage(imageid);
-	}
-
-	@Test
-	public void testGetImageMetaDataUserPasswordWrongImageID() {
-		WebTarget target;
-		Client c = ClientBuilder.newClient();
-		c.register(HttpAuthenticationFeature.basic(username, password));
-
-		target = c.target(TestConfig.URL).path(functionurl)
-				.queryParam(Constants.QP_IMAGEID, 107365);
-		LOGGER.debug(target);
-		OGImMMD out = target.request().get(OGImMMD.class);
-		LOGGER.debug("ET=" + out.getET());
-		assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
-	}
-
+    
+    /*
+     * @GET
+     * 
+     * @Path("/getimagemetadata")
+     * 
+     * @Produces(MediaType.APPLICATION_XML) public OGImMMD getImageMetadata(
+     * 
+     * @QueryParam(Constants.QP_USERNAME) String user,
+     * 
+     * @QueryParam(Constants.QP_PASSWORD) String password,
+     * 
+     * @QueryParam("imageid") int imageid);
+     */
+    
+    private static final Logger LOGGER = Logger
+            .getLogger(TestGetImageMetaData.class.getName());
+    
+    // Username welche anzulegen ist
+    final static String username_org = "Test1";
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Passwort zum User
+    final static String password_org = "Test1";
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    // Email Adresse zum User
+    final static String email_org = "Test1@frinme.org";
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
+    final static String functionurl = "image/getimagemetadata";
+    
+    final static String md5Sum = "e36ba04dd1ad642a6e8c74c72a4aab8c";
+    
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    
+    @Override
+    protected TestContainerFactory getTestContainerFactory() {
+        return new GrizzlyWebTestContainerFactory();
+    }
+    
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(
+                new ServletContainer(new ResourceConfig(ServiceImpl.class)))
+                .build();
+    }
+    
+    @BeforeClass
+    public static void prepareDB() {
+        LOGGER.debug("Start BeforeClass");
+        helperDatabase help = new helperDatabase();
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username);
+        u1.setUsername(username_org);
+        u1.setPassword(password_org);
+        u1.setEmail(email_org);
+        session.save(u1);
+        session.getTransaction().commit();
+        session.close();
+        LOGGER.debug("End BeforeClass");
+    }
+    
+    private int insertImage() {
+        // Insert new Image in DB an Filesystem
+        helperDatabase helper = new helperDatabase();
+        OSImM o = helper.insertImageContent(username, password);
+        if ((o.getET() == null || o.getET().isEmpty()) && o.getImID() > 0) {
+            return o.getImID();
+        } else {
+            return 0;
+        }
+    }
+    
+    @Test
+    public void testGetImageMetaDataUserPassword() {
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        
+        target = c.target(TestConfig.URL).path(functionurl);
+        LOGGER.debug(target);
+        OGImMMD out = target.request().get(OGImMMD.class);
+        LOGGER.debug("ET=" + out.getET());
+        assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
+    }
+    
+    @Test
+    public void testGetImageMetaDataUserPasswordImageID() {
+        int imageid = insertImage();
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        
+        target = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_IMAGEID, imageid);
+        LOGGER.debug(target);
+        OGImMMD out = target.request().get(OGImMMD.class);
+        LOGGER.debug("ET=" + out.getET());
+        assertThat(out.getIS(), is(not(nullValue())));
+        
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery(
+                "delete from FrinmeDbImage where ID = '" + imageid + "'")
+                .executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+    }
+    
+    @Test
+    public void testGetImageMetaDataUserPasswordWrongImageID() {
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username, password));
+        
+        target = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_IMAGEID, 107365);
+        LOGGER.debug(target);
+        OGImMMD out = target.request().get(OGImMMD.class);
+        LOGGER.debug("ET=" + out.getET());
+        assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
+    }
 }

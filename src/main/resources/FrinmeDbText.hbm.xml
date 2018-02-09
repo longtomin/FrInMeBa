@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.01.2018 21:05:20 by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="de.radiohacks.frinmeba.model.hibernate.FrinmeDbText" table="FRINME_DB_Text" catalog="frinme_db">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="identity" />
+        </id>
+        <property name="text" type="string">
+            <column name="Text" length="10000" not-null="true" />
+        </property>
+        <set name="frinmeDbMessageses" table="FRINME_DB_Messages" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="TextMsgID" />
+            </key>
+            <one-to-many class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbMessages" />
+        </set>
+    </class>
+</hibernate-mapping>

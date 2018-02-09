@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.01.2018 21:05:20 by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="de.radiohacks.frinmeba.model.hibernate.FrinmeDbMessages" table="FRINME_DB_Messages" catalog="frinme_db">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="frinmeDbUserToChats" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbUserToChats" fetch="select">
+            <column name="UsertoChatID" not-null="true" />
+        </many-to-one>
+        <many-to-one name="frinmeDbText" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbText" fetch="select">
+            <column name="TextMsgID" />
+        </many-to-one>
+        <many-to-one name="frinmeDbContact" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbContact" fetch="select">
+            <column name="ContactMsgID" />
+        </many-to-one>
+        <many-to-one name="frinmeDbFile" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbFile" fetch="select">
+            <column name="FileMsgID" />
+        </many-to-one>
+        <many-to-one name="frinmeDbVideo" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbVideo" fetch="select">
+            <column name="VideoMsgID" />
+        </many-to-one>
+        <many-to-one name="frinmeDbLocation" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbLocation" fetch="select">
+            <column name="LocationMsgID" />
+        </many-to-one>
+        <many-to-one name="frinmeDbImage" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbImage" fetch="select">
+            <column name="ImageMsgID" />
+        </many-to-one>
+        <many-to-one name="frinmeDbUsers" class="de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers" fetch="select">
+            <column name="OwningUserID" not-null="true" />
+        </many-to-one>
+        <property name="messageTyp" type="string">
+            <column name="MessageTyp" length="10" not-null="true" />
+        </property>
+        <property name="sendTimestamp" type="long">
+            <column name="SendTimestamp" not-null="true" />
+        </property>
+        <property name="readTimestamp" type="long">
+            <column name="ReadTimestamp" not-null="true" />
+        </property>
+        <property name="tempReadTimestamp" type="long">
+            <column name="TempReadTimestamp" not-null="true" />
+        </property>
+        <property name="showTimestamp" type="long">
+            <column name="ShowTimestamp" not-null="true" />
+        </property>
+        <property name="originMsgId" type="java.lang.Integer">
+            <column name="OriginMsgID" />
+        </property>
+    </class>
+</hibernate-mapping>

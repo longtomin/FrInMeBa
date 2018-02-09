@@ -50,19 +50,20 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestDownloadImage extends JerseyTest {
-
+    
     /*
      * @GET
      * 
@@ -73,175 +74,176 @@ public class TestDownloadImage extends JerseyTest {
      * 
      * @PathParam(Constants.QP_IMAGEID) int imageid);
      */
-
+    
     private static final Logger LOGGER = Logger
             .getLogger(TestDownloadImage.class.getName());
-
+    
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
     final static String functionurl = "image/download";
-
+    
+    private static FrinmeDbUsers u = new FrinmeDbUsers();
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     /*
      * @Override protected void configureClient(ClientConfig config) {
      * config.register(MultiPartFeature.class); }
      */
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u.setActive(true);
+        u.setB64username(username);
+        u.setUsername(username_org);
+        u.setPassword(password_org);
+        u.setEmail(email_org);
+        session.save(u);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End BeforeClass");
     }
-
+    
     public int insertImage() {
         // Insert new Image in DB an Filesystem
         helperDatabase helper = new helperDatabase();
-        /*
-         * Works only if a local server is used; URL url =
-         * this.getClass().getResource("/test.jpg"); File in = new
-         * File(url.getFile()); return helper.InsertAndSaveImage(in);
-         */
-
-        /*
-         * Else use a static unixtime which is 1010101010 and a static filename
-         * which is test.jpg insert it into the db, the copy must be done
-         * outside.
-         */
-        // return helper.InsertFixedImage();
         OSImM o = helper.insertImageContent(username, password);
         return o.getImID();
     }
-
-    public void deleteImage(int in) {
-        helperDatabase helper = new helperDatabase();
-        /*
-         * If the File was inserted and created by the the then use this
-         */
-        // helper.deleteAndDropImage(in);
-        /*
-         * Otherwise just delete the DB Entry and let the file delete be done
-         * outside.
-         */
-        helper.deleteFixedImage(in);
-    }
-
+    
     @Test
     public void testDownloadImageUpNoValues() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL).path(functionurl);
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(404));
     }
-
+    
     @Test
     public void testDownloadImageImageID() {
         int imageid = insertImage();
         WebTarget target;
-
+        
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL).path(functionurl)
                 .path(String.valueOf(imageid));
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(200));
-        deleteImage(imageid);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery(
+                "delete from FrinmeDbImage where ID = '" + imageid + "'")
+                .executeUpdate();
+        session.getTransaction().commit();
+        session.close();
     }
-
+    
     @Test
     public void testDownloadImageEncodingErrorUser() {
         int imageid = insertImage();
         WebTarget target;
-
+        
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, "1234$"));
-
+        
         target = c.target(TestConfig.URL).path(functionurl)
                 .path(String.valueOf(imageid));
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(401));
-        deleteImage(imageid);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery(
+                "delete from FrinmeDbImage where ID = '" + imageid + "'")
+                .executeUpdate();
+        session.getTransaction().commit();
+        session.close();
+        
     }
-
+    
     @Test
     public void testDownloadImageUserWrongPasswordImageID() {
         int imageid = insertImage();
         WebTarget target;
-
+        
         Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username, Base64
-                .encodeBase64String("XXX".getBytes(Charset
-                        .forName(Constants.CHARACTERSET)))));
-
+        c.register(HttpAuthenticationFeature.basic(username,
+                Base64.encodeBase64String("XXX"
+                        .getBytes(Charset.forName(Constants.CHARACTERSET)))));
+        
         target = c.target(TestConfig.URL).path(functionurl)
                 .path(String.valueOf(imageid));
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(401));
-        deleteImage(imageid);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery(
+                "delete from FrinmeDbImage where ID = '" + imageid + "'")
+                .executeUpdate();
+        session.getTransaction().commit();
+        session.close();
     }
-
+    
     @Test
     public void testDownloadImageUserPasswordWrongImageID() {
         WebTarget target;
-
+        
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL).path(functionurl)
                 .path(String.valueOf(14325));
         LOGGER.debug(target);
         Response rsp = target.request("image/jpeg").accept("image/jpeg").head();
         LOGGER.debug(rsp);
         int status = rsp.getStatus();
-
+        
         assertThat(status, is(204));
     }
 }

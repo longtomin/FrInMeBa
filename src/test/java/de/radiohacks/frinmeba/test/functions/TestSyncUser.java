@@ -45,20 +45,21 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.OSU;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestSyncUser extends JerseyTest {
-
+    
     /*
      * @GET
      * 
@@ -71,103 +72,118 @@ public class TestSyncUser extends JerseyTest {
      * 
      * @QueryParam(Constants.QPuserid) List<Integer> UserID);
      */
-
-    private static final Logger LOGGER = Logger.getLogger(TestSyncUser.class
-            .getName());
-
+    
+    private static final Logger LOGGER = Logger
+            .getLogger(TestSyncUser.class.getName());
+    
     final static String username1_org = "Test1";
-    final static String username1 = Base64.encodeBase64String(username1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username1 = Base64.encodeBase64String(
+            username1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String password1_org = "Test1";
-    final static String password1 = Base64.encodeBase64String(password1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password1 = Base64.encodeBase64String(
+            password1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String email1_org = "Test1@frinme.org";
-    final static String email1 = Base64.encodeBase64String(email1_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email1 = Base64.encodeBase64String(
+            email1_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String username2_org = "Test2";
-    final static String username2 = Base64.encodeBase64String(username2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username2 = Base64.encodeBase64String(
+            username2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String password2_org = "Test2";
-    final static String password2 = Base64.encodeBase64String(password2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password2 = Base64.encodeBase64String(
+            password2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String email2_org = "Test2@frinme.org";
-    final static String email2 = Base64.encodeBase64String(email2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email2 = Base64.encodeBase64String(
+            email2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String username3_org = "Test3";
-    final static String username3 = Base64.encodeBase64String(username3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username3 = Base64.encodeBase64String(
+            username3_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String password3_org = "Test3";
-    final static String password3 = Base64.encodeBase64String(password3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password3 = Base64.encodeBase64String(
+            password3_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String email3_org = "Test3@frinme.org";
-    final static String email3 = Base64.encodeBase64String(email3_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email3 = Base64.encodeBase64String(
+            email3_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String username4_org = "Test4";
-    final static String username4 = Base64.encodeBase64String(username4_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username4 = Base64.encodeBase64String(
+            username4_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String password4_org = "Test4";
-    final static String password4 = Base64.encodeBase64String(password4_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password4 = Base64.encodeBase64String(
+            password4_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String email4_org = "Test4@frinme.org";
-    final static String email4 = Base64.encodeBase64String(email4_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email4 = Base64.encodeBase64String(
+            email4_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String username5_org = "Test5";
-    final static String username5 = Base64.encodeBase64String(username5_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username5 = Base64.encodeBase64String(
+            username5_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String password5_org = "Test5";
-    final static String password5 = Base64.encodeBase64String(password5_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password5 = Base64.encodeBase64String(
+            password5_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String email5_org = "Test5@frinme.org";
-    final static String email5 = Base64.encodeBase64String(email5_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
-
+    final static String email5 = Base64.encodeBase64String(
+            email5_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
     final static String functionurl = "user/syncuser";
-
-    static int uid1 = 0;
-    static int uid2 = 0;
-    static int uid3 = 0;
-    static int uid4 = 0;
-    static int uid5 = 0;
-
+    
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u2 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u3 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u4 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u5 = new FrinmeDbUsers();
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start prepareDB");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username1_org, username1, password1_org,
-                email1_org, help.InsertFixedImage());
-        uid1 = help.getUserID(username1);
-        help.CreateActiveUser(username2_org, username2, password2_org,
-                email2_org, help.InsertFixedImage());
-        uid2 = help.getUserID(username2);
-        help.CreateActiveUser(username3_org, username3, password3_org,
-                email3_org, help.InsertFixedImage());
-        uid3 = help.getUserID(username3);
-        help.CreateActiveUser(username4_org, username4, password4_org,
-                email4_org, help.InsertFixedImage());
-        uid4 = help.getUserID(username4);
-        help.CreateActiveUser(username5_org, username5, password5_org,
-                email5_org, help.InsertFixedImage());
-        uid5 = help.getUserID(username5);
-        help.InsertFixedImage();
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username1);
+        u1.setUsername(username1_org);
+        u1.setPassword(password1_org);
+        u1.setEmail(email1_org);
+        session.save(u1);
+        u2.setActive(true);
+        u2.setB64username(username2);
+        u2.setUsername(username2_org);
+        u2.setPassword(password2_org);
+        u2.setEmail(email2_org);
+        session.save(u2);
+        u3.setActive(true);
+        u3.setB64username(username3);
+        u3.setUsername(username3_org);
+        u3.setPassword(password3_org);
+        u3.setEmail(email3_org);
+        session.save(u3);
+        u4.setActive(true);
+        u4.setB64username(username4);
+        u4.setUsername(username4_org);
+        u4.setPassword(password4_org);
+        u4.setEmail(email4_org);
+        session.save(u4);
+        u5.setActive(true);
+        u5.setB64username(username5);
+        u5.setUsername(username5_org);
+        u5.setPassword(password5_org);
+        u5.setEmail(email5_org);
+        session.save(u5);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End prepareDB");
     }
-
+    
     @Test
     public void testSyncUserUpNoValues() {
         WebTarget target;
@@ -177,131 +193,102 @@ public class TestSyncUser extends JerseyTest {
         LOGGER.debug("Response = " + resp);
         Assert.assertEquals(resp.getStatus(), 401);
     }
-
+    
     @Test
     public void testSyncUserUserPassword() {
         WebTarget target;
-
+        
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
-
+        
         target = c.target(TestConfig.URL).path(functionurl);
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1);
-
+        
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
     }
-
+    
     @Test
     public void testSyncUserUserWrongPassword() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password5));
         target = c.target(TestConfig.URL).path(functionurl)
-        // .queryParam(
-        // Constants.QP_PASSWORD,
-        // Base64.encodeBase64String("XXX".getBytes(Charset
-        // .forName(Constants.CHARACTERSET))))
-        // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(Constants.QP_USERID, uid2);
+                .queryParam(Constants.QP_USERID, u2.getId());
         LOGGER.debug(target);
-
-        // HttpAuthenticationFeature feature = (HttpAuthenticationFeature)
-        // HttpAuthenticationFeature.basic(username1, password1);
-
-        // Response resp = target
-        // .register(
-        // HttpAuthenticationFeature.basicBuilder().credentials(
-        // username1, "XXX")).request().get();
-
+        
         Response resp = target.request().get();
-
+        
         LOGGER.debug("Response = " + resp);
         Assert.assertEquals(resp.getStatus(), 401);
     }
-
+    
     @Test
     public void testSyncUserUserEncodeFailureUser() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic("$%&123", password1));
         target = c.target(TestConfig.URL).path(functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, "�$%1234")
-                .queryParam(Constants.QP_USERID, uid2);
+                .queryParam(Constants.QP_USERID, u2.getId());
         LOGGER.debug(target);
-        Response resp = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder().credentials(
-                                "§$%123", password1)).request().get();
+        Response resp = target.register(HttpAuthenticationFeature.basicBuilder()
+                .credentials("§$%123", password1)).request().get();
         LOGGER.debug("Response = " + resp);
         Assert.assertEquals(resp.getStatus(), 401);
     }
-
+    
     @Test
     public void testSyncUserUserPasswordTextmessage1() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
         target = c.target(TestConfig.URL).path(functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(Constants.QP_USERID, uid2);
-
+                .queryParam(Constants.QP_USERID, u2.getId());
+        
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertNotNull(out.getU().size());
     }
-
+    
     @Test
     public void testSyncUserUserPasswordTextmessage2() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
         target = c.target(TestConfig.URL).path(functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password1)
-        // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(Constants.QP_USERID, uid2);
-
+                .queryParam(Constants.QP_USERID, u2.getId());
+        
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         LOGGER.debug("U (size) =" + out.getU().size());
         Assert.assertNotNull(out.getU().size());
     }
-
+    
     @Test
     public void testSyncUserUserPasswordMultipleUsers() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
-        target = c.target(TestConfig.URL)
-                .path(functionurl)
-                // .queryParam(Constants.QP_PASSWORD, password1)
-                // .queryParam(Constants.QP_USERNAME, username1)
-                .queryParam(Constants.QP_USERID, uid2)
-                .queryParam(Constants.QP_USERID, uid3);
-
+        target = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_USERID, u2.getId())
+                .queryParam(Constants.QP_USERID, u3.getId());
+        
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         Assert.assertNotNull(out.getU().size());
     }
-
+    
     @Test
     public void testSyncUserUserPasswordMultipleUsersWrongUserID() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username5, password5));
-        target = c.target(TestConfig.URL)
-                .path(functionurl)
-                // .queryParam(Constants.QP_PASSWORD, password5)
-                // .queryParam(Constants.QP_USERNAME, username5)
-                .queryParam(Constants.QP_USERID, uid3)
-                .queryParam(Constants.QP_USERID, 77);
-
+        target = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_USERID, u3.getId())
+                .queryParam(Constants.QP_USERID, 1154785623);
+        
         LOGGER.debug(target);
         OSU out = target.request().get(OSU.class);
         Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());

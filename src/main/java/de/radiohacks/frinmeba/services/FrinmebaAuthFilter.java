@@ -1,7 +1,5 @@
 package de.radiohacks.frinmeba.services;
 
-import java.sql.Connection;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -9,8 +7,6 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.DatatypeConverter;
-
-import de.radiohacks.frinmeba.database.MyConnection;
 
 @Provider
 @PreMatching
@@ -59,9 +55,9 @@ public class FrinmebaAuthFilter implements ContainerRequestFilter {
                 throw new WebApplicationException(Status.UNAUTHORIZED);
             }
             
-            MyConnection mc = new MyConnection();
-            Connection con = mc.getConnection();
-            User actuser = new User(con);
+            // MyConnection mc = new MyConnection();
+            // Connection con = mc.getConnection();
+            User actuser = new User();
             
             if (!actuser.auth(lap[0], lap[1])) {
                 // containerRequest.abortWith(Response

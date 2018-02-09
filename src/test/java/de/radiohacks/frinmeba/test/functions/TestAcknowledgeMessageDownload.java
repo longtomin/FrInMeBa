@@ -58,6 +58,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -65,6 +66,13 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbImage;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbMessages;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbText;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUserToChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbVideo;
 import de.radiohacks.frinmeba.model.jaxb.IAckMD;
 import de.radiohacks.frinmeba.model.jaxb.ISTeM;
 import de.radiohacks.frinmeba.model.jaxb.OAckMD;
@@ -72,10 +80,9 @@ import de.radiohacks.frinmeba.model.jaxb.OSImM;
 import de.radiohacks.frinmeba.model.jaxb.OSTeM;
 import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestAcknowledgeMessageDownload extends JerseyTest {
@@ -96,32 +103,34 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     final static String functionurl = "user/acknowledgemessagedownload";
     
     final static String textmsg_org = "Test Nachnricht fuer Acknowledge";
-    final static String textmsg = Base64.encodeBase64String(textmsg_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String textmsg = Base64.encodeBase64String(
+            textmsg_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     final static String md5sumimg_org = "e36ba04dd1ad642a6e8c74c72a4aab8c";
-    final static String md5sumimg = Base64.encodeBase64String(md5sumimg_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String md5sumimg = Base64.encodeBase64String(
+            md5sumimg_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String md5sumvid_org = "ba0623b8c7a7520092ee1ff71da0bbea";
-    final static String md5sumvid = Base64.encodeBase64String(md5sumvid_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String md5sumvid = Base64.encodeBase64String(
+            md5sumvid_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     final static String md5sumtxt_org = "[B@2e41b2e9";
-    final static String md5sumtxt = Base64.encodeBase64String(md5sumtxt_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String md5sumtxt = Base64.encodeBase64String(
+            md5sumtxt_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
+    
+    private static FrinmeDbUsers u = new FrinmeDbUsers();
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
@@ -142,13 +151,18 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     
     @BeforeClass
     public static void prepareDB() {
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u.setActive(true);
+        u.setB64username(username);
+        u.setUsername(username_org);
+        u.setPassword(password_org);
+        u.setEmail(email_org);
+        session.save(u);
+        session.getTransaction().commit();
+        session.close();
     }
     
     private OAckMD callTarget(IAckMD in) {
@@ -165,42 +179,36 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
         return response.readEntity(OAckMD.class);
     }
     
-    private int uploadImageContent(String url) {
+    private FrinmeDbImage uploadImageContent(String url) {
         WebTarget target;
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
         
         target = client.target(TestConfig.URL + url);
         LOGGER.debug(target);
-        System.err.println("==> " + target);
         
         final FormDataMultiPart mp = new FormDataMultiPart();
-        System.err.println("==> " + mp);
         
         InputStream data = this.getClass().getResourceAsStream("/test.jpg");
-        System.err.println("==> " + data);
         final FormDataContentDisposition dispo = FormDataContentDisposition
                 .name("file").fileName("test.jpg").size(1).build();
-        System.err.println("==> " + dispo);
         
         final FormDataBodyPart fdp2 = new FormDataBodyPart(dispo, data,
                 MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        System.err.println("==> " + fdp2);
         mp.bodyPart(fdp2);
-        System.err.println(mp);
         
         OSImM x = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, password).build())
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password).build())
                 .request()
                 .post(Entity.entity(mp, mp.getMediaType()), OSImM.class);
-        System.err.println("==> " + x);
-        System.err.println("==> " + x.getImID());
-        return x.getImID();
+        FrinmeDbImage i = new FrinmeDbImage();
+        i.setId(x.getImID());
+        i.setImage(x.getImF());
+        return i;
     }
     
-    private int uploadVideoContent(String url) {
+    private FrinmeDbVideo uploadVideoContent(String url) {
         WebTarget target;
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
@@ -218,30 +226,33 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
         mp.bodyPart(fdp2);
         
         OSViM x = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, password).build())
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password).build())
                 .request()
                 .post(Entity.entity(mp, mp.getMediaType()), OSViM.class);
-        return x.getVID();
+        FrinmeDbVideo v = new FrinmeDbVideo();
+        v.setId(x.getVID());
+        v.setVideo(x.getVF());
+        return v;
     }
     
-    private int uploadTextContent() {
+    private FrinmeDbText uploadTextContent() {
         ISTeM in = new ISTeM();
         in.setTM(textmsg);
         WebTarget target;
-        target = ClientBuilder.newClient().target(
-                TestConfig.URL + "user/sendtextmessage");
+        target = ClientBuilder.newClient()
+                .target(TestConfig.URL + "user/sendtextmessage");
         LOGGER.debug(target);
         Response response = target
-                .register(
-                        HttpAuthenticationFeature.basicBuilder()
-                                .credentials(username, password).build())
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username, password).build())
                 .request()
                 .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
                 .invoke();
         OSTeM x = response.readEntity(OSTeM.class);
-        return x.getTID();
+        FrinmeDbText t = new FrinmeDbText();
+        t.setId(x.getTID());
+        return t;
     }
     
     @Test
@@ -255,28 +266,46 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     @Test
     public void testAcknowledgeMessageDownloadAcknowledgeImage() {
         
-        int msgimgid = uploadImageContent("image/upload?"
-                + Constants.QP_ACKNOWLEDGE + "=" + md5sumimg);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbImage msgimg = uploadImageContent(
+                "image/upload?" + Constants.QP_ACKNOWLEDGE + "=" + md5sumimg);
+        msgimg.setMd5sum(md5sumimg_org);
+        session.save(msgimg);
+        FrinmeDbChats c = new FrinmeDbChats();
+        c.setChatname("Test Chat Image");
+        c.setFrinmeDbUsers(u);
+        session.save(c);
+        FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+        u2c.setFrinmeDbChats(c);
+        u2c.setFrinmeDbUsers(u);
+        session.save(u2c);
+        FrinmeDbMessages m = new FrinmeDbMessages();
+        m.setFrinmeDbUsers(u);
+        m.setMessageTyp(Constants.TYP_IMAGE);
+        m.setSendTimestamp(10);
+        m.setFrinmeDbUserToChats(u2c);
+        m.setFrinmeDbImage(msgimg);
+        session.save(m);
         
-        helperDatabase help = new helperDatabase();
-        help.CreateChat(username_org, "Test Chat");
-        int u2c = help.AddUserToChat(help.getUserID(username_org),
-                help.getChatID("Test Chat"));
-        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-                Constants.TYP_IMAGE, msgimgid, 0, true);
+        session.getTransaction().commit();
+        session.close();
         
         HashCode md5 = null;
         try {
-            md5 = Files.hash(new File(this.getClass().getResource("/test.jpg")
-                    .getFile()), Hashing.md5());
+            md5 = Files.hash(
+                    new File(
+                            this.getClass().getResource("/test.jpg").getFile()),
+                    Hashing.md5());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String md5sumimg = new String(Base64.encodeBase64(md5.toString()
-                .getBytes()), Charset.forName(Constants.CHARACTERSET));
+        String md5sumimg = new String(
+                Base64.encodeBase64(md5.toString().getBytes()),
+                Charset.forName(Constants.CHARACTERSET));
         
         IAckMD in = new IAckMD();
-        in.setMID(msgid);
+        in.setMID(m.getId());
         in.setACK(md5sumimg);
         OAckMD out = callTarget(in);
         LOGGER.debug(out.getACK());
@@ -286,28 +315,45 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     @Test
     public void testAcknowledgeMessageDownloadAcknowledgeVideo() {
         
-        int msgvidid = uploadVideoContent("video/upload?"
-                + Constants.QP_ACKNOWLEDGE + "=" + md5sumvid);
-        
-        helperDatabase help = new helperDatabase();
-        help.CreateChat(username_org, "Test Chat");
-        int u2c = help.AddUserToChat(help.getUserID(username_org),
-                help.getChatID("Test Chat"));
-        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-                Constants.TYP_VIDEO, msgvidid, 0, true);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbVideo msgvid = uploadVideoContent(
+                "video/upload?" + Constants.QP_ACKNOWLEDGE + "=" + md5sumvid);
+        msgvid.setMd5sum(md5sumvid_org);
+        session.save(msgvid);
+        FrinmeDbChats c = new FrinmeDbChats();
+        c.setChatname("Test Chat Video");
+        c.setFrinmeDbUsers(u);
+        session.save(c);
+        FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+        u2c.setFrinmeDbChats(c);
+        u2c.setFrinmeDbUsers(u);
+        session.save(u2c);
+        FrinmeDbMessages m = new FrinmeDbMessages();
+        m.setFrinmeDbUsers(u);
+        m.setMessageTyp(Constants.TYP_VIDEO);
+        m.setSendTimestamp(10);
+        m.setFrinmeDbUserToChats(u2c);
+        m.setFrinmeDbVideo(msgvid);
+        session.save(m);
+        session.getTransaction().commit();
+        session.close();
         
         HashCode md5 = null;
         try {
-            md5 = Files.hash(new File(this.getClass().getResource("/test.mp4")
-                    .getFile()), Hashing.md5());
+            md5 = Files.hash(
+                    new File(
+                            this.getClass().getResource("/test.mp4").getFile()),
+                    Hashing.md5());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String md5sumimg = new String(Base64.encodeBase64(md5.toString()
-                .getBytes()), Charset.forName(Constants.CHARACTERSET));
+        String md5sumimg = new String(
+                Base64.encodeBase64(md5.toString().getBytes()),
+                Charset.forName(Constants.CHARACTERSET));
         
         IAckMD in = new IAckMD();
-        in.setMID(msgid);
+        in.setMID(m.getId());
         in.setACK(md5sumimg);
         OAckMD out = callTarget(in);
         LOGGER.debug(out.getACK());
@@ -317,22 +363,37 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     @Test
     public void testAcknowledgeMessageDownloadAcknowledgeText() {
         
-        int msgimgid = uploadTextContent();
-        
-        helperDatabase help = new helperDatabase();
-        help.CreateChat(username_org, "Test Chat");
-        int u2c = help.AddUserToChat(help.getUserID(username_org),
-                help.getChatID("Test Chat"));
-        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-                Constants.TYP_TEXT, msgimgid, 0, true);
+        // FrinmeDbText msgtext = uploadTextContent();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbText msgtext = new FrinmeDbText();
+        msgtext.setText(textmsg_org);
+        session.save(msgtext);
+        FrinmeDbChats c = new FrinmeDbChats();
+        c.setChatname("Test Chat Text");
+        c.setFrinmeDbUsers(u);
+        session.save(c);
+        FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+        u2c.setFrinmeDbChats(c);
+        u2c.setFrinmeDbUsers(u);
+        session.save(u2c);
+        FrinmeDbMessages m = new FrinmeDbMessages();
+        m.setFrinmeDbUsers(u);
+        m.setMessageTyp(Constants.TYP_TEXT);
+        m.setSendTimestamp(10);
+        m.setFrinmeDbUserToChats(u2c);
+        m.setFrinmeDbText(msgtext);
+        session.save(m);
+        session.getTransaction().commit();
+        session.close();
         
         int hashCode = textmsg_org.hashCode();
-        String sha1b64 = new String(Base64.encodeBase64(String
-                .valueOf(hashCode).getBytes()),
+        String sha1b64 = new String(
+                Base64.encodeBase64(String.valueOf(hashCode).getBytes()),
                 Charset.forName(Constants.CHARACTERSET));
         
         IAckMD in = new IAckMD();
-        in.setMID(msgid);
+        in.setMID(m.getId());
         in.setACK(sha1b64);
         OAckMD out = callTarget(in);
         LOGGER.debug(out.getACK());
@@ -342,17 +403,30 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     @Test
     public void testAcknowledgeMessageDownloadAcknowledgeEncodingError() {
         
-        int msgimgid = uploadTextContent();
+        FrinmeDbText msgtext = uploadTextContent();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbChats c = new FrinmeDbChats();
+        c.setChatname("Test Chat Text2");
+        c.setFrinmeDbUsers(u);
+        session.save(c);
+        FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+        u2c.setFrinmeDbChats(c);
+        u2c.setFrinmeDbUsers(u);
+        session.save(u2c);
+        FrinmeDbMessages m = new FrinmeDbMessages();
+        m.setFrinmeDbUsers(u);
+        m.setMessageTyp(Constants.TYP_TEXT);
+        m.setSendTimestamp(10);
+        m.setFrinmeDbUserToChats(u2c);
+        m.setFrinmeDbText(msgtext);
+        session.save(m);
         
-        helperDatabase help = new helperDatabase();
-        help.CreateChat(username_org, "Test Chat");
-        int u2c = help.AddUserToChat(help.getUserID(username_org),
-                help.getChatID("Test Chat"));
-        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-                Constants.TYP_TEXT, msgimgid, 0, true);
+        session.getTransaction().commit();
+        session.close();
         
         IAckMD in = new IAckMD();
-        in.setMID(msgid);
+        in.setMID(m.getId());
         in.setACK("XXX");
         OAckMD out = callTarget(in);
         LOGGER.debug(out.getET());
@@ -362,17 +436,30 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     @Test
     public void testAcknowledgeMessageDownloadMessageID() {
         
-        int msgimgid = uploadTextContent();
+        FrinmeDbText msgtext = uploadTextContent();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbChats c = new FrinmeDbChats();
+        c.setChatname("Test Chat Text 3");
+        c.setFrinmeDbUsers(u);
+        session.save(c);
+        FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+        u2c.setFrinmeDbChats(c);
+        u2c.setFrinmeDbUsers(u);
+        session.save(u2c);
+        FrinmeDbMessages m = new FrinmeDbMessages();
+        m.setFrinmeDbUsers(u);
+        m.setMessageTyp(Constants.TYP_TEXT);
+        m.setSendTimestamp(10);
+        m.setFrinmeDbUserToChats(u2c);
+        m.setFrinmeDbText(msgtext);
+        session.save(m);
         
-        helperDatabase help = new helperDatabase();
-        help.CreateChat(username_org, "Test Chat");
-        int u2c = help.AddUserToChat(help.getUserID(username_org),
-                help.getChatID("Test Chat"));
-        int msgid = help.insertMessage(help.getUserID(username_org), u2c,
-                Constants.TYP_TEXT, msgimgid, 0, true);
+        session.getTransaction().commit();
+        session.close();
         
         IAckMD in = new IAckMD();
-        in.setMID(msgid);
+        in.setMID(m.getId());
         OAckMD out = callTarget(in);
         LOGGER.debug(out.getACK());
         assertThat(out.getET(), is(Constants.NO_CONTENT_GIVEN));
@@ -381,13 +468,18 @@ public class TestAcknowledgeMessageDownload extends JerseyTest {
     @Test
     public void testAcknowledgeMessageDownloadAcknowledge() {
         
-        helperDatabase help = new helperDatabase();
-        // TODO do not create a chat, create a message
-        help.CreateChat(username_org, "Test Chat");
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbChats c = new FrinmeDbChats();
+        c.setChatname("Test Chat");
+        c.setFrinmeDbUsers(u);
+        session.save(c);
+        session.getTransaction().commit();
+        session.close();
         
         int hashCode = textmsg_org.hashCode();
-        String sha1b64 = new String(Base64.encodeBase64(String
-                .valueOf(hashCode).getBytes()),
+        String sha1b64 = new String(
+                Base64.encodeBase64(String.valueOf(hashCode).getBytes()),
                 Charset.forName(Constants.CHARACTERSET));
         
         IAckMD in = new IAckMD();

@@ -47,17 +47,19 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbImage;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.IIUIc;
 import de.radiohacks.frinmeba.model.jaxb.OIUIc;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestInsertUserIcon extends JerseyTest {
@@ -86,21 +88,21 @@ public class TestInsertUserIcon extends JerseyTest {
     
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     final static String functionurl = "user/insertusericon";
     
-    // Text Message
-    static int iconid;
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    private static FrinmeDbImage i1 = new FrinmeDbImage();
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
@@ -117,14 +119,22 @@ public class TestInsertUserIcon extends JerseyTest {
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-        iconid = help.InsertFixedImage();
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username);
+        u1.setUsername(username_org);
+        u1.setPassword(password_org);
+        u1.setEmail(email_org);
+        i1.setImage("Testimage.jpg");
+        i1.setMd5sum("TEST");
+        session.save(i1);
+        u1.setFrinmeDbImage(i1);
+        session.save(u1);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End BeforeClass");
     }
     
@@ -153,7 +163,7 @@ public class TestInsertUserIcon extends JerseyTest {
     @Test
     public void testInsertUserIconUserPasswordMessage() {
         IIUIc in = new IIUIc();
-        in.setIcID(iconid);
+        in.setIcID(i1.getId());
         OIUIc out = callTarget(in);
         LOGGER.debug("R=" + out.getR());
         Assert.assertNotNull(out.getR());

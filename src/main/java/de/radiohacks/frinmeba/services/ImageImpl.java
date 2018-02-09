@@ -34,8 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Objects;
 
 import javax.imageio.ImageIO;
@@ -52,7 +50,6 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 import de.radiohacks.frinmeba.database.Check;
-import de.radiohacks.frinmeba.database.MyConnection;
 import de.radiohacks.frinmeba.model.jaxb.IGImM;
 import de.radiohacks.frinmeba.model.jaxb.IGImMMD;
 import de.radiohacks.frinmeba.model.jaxb.ISIcM;
@@ -65,51 +62,47 @@ import de.radiohacks.frinmeba.util.IImageUtil;
 
 @Path("/image")
 public class ImageImpl implements IImageUtil {
-    private static final Logger LOGGER = Logger.getLogger(ImageImpl.class
-            .getName());
-
+    private static final Logger LOGGER = Logger
+            .getLogger(ImageImpl.class.getName());
+    
     /**
      * Upload a File
      */
-
+    
     @Override
     public OSImM uploadImage(HttpHeaders headers, String acknowledge,
             InputStream fileInputStream,
             FormDataContentDisposition contentDispositionHeader) {
-
+        
         OSImM out = new OSImM();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkValueMust(acknowledge)) {
             ISImM in = new ISImM();
-
+            
             if (contentDispositionHeader != null) {
                 if (fileInputStream != null) {
                     if (contentDispositionHeader.getFileName() != null
                             && !contentDispositionHeader.getFileName()
                                     .isEmpty()) {
-
+                        
                         // Now we save the Image
                         long currentTime = System.currentTimeMillis() / 1000L;
                         String filetime = Objects.toString(currentTime, null);
-
+                        
                         String filePath = (new Constants())
-                                .getUploadFolderImage()
-                                + File.separatorChar
+                                .getUploadFolderImage() + File.separatorChar
                                 + filetime
                                 + contentDispositionHeader.getFileName();
-
+                        
                         // save the file to the server
                         saveFile(fileInputStream, filePath);
                         // Insert the New Image Message into the
                         // Database an set
                         // the out
                         // Information.
-
+                        
                         HashCode md5 = null;
                         try {
                             md5 = Files.hash(new File(filePath), Hashing.md5());
@@ -117,15 +110,15 @@ public class ImageImpl implements IImageUtil {
                             LOGGER.error(e);
                         }
                         String md5Hex = md5.toString();
-
+                        
                         out.setImF(filetime
                                 + contentDispositionHeader.getFileName());
                         in.setImM(filetime
                                 + contentDispositionHeader.getFileName());
                         in.setImMD5(md5Hex);
-
-                        if (actuser.base64Decode(acknowledge).equalsIgnoreCase(
-                                md5Hex)) {
+                        
+                        if (actuser.base64Decode(acknowledge)
+                                .equalsIgnoreCase(md5Hex)) {
                             actuser.sendImageMessage(in, out);
                         } else {
                             out.setET(Constants.UPLOAD_FAILED);
@@ -140,104 +133,76 @@ public class ImageImpl implements IImageUtil {
                 out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
             }
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.UPLOAD_FAILED);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
-            }
-        }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                out.setET(Constants.DB_ERROR);
-                LOGGER.error(e);
             }
         }
         return out;
     }
-
+    
     /*
      * Download a File with the given Name in the Path
      */
-
+    
     @Override
     public Response downloadImage(HttpHeaders headers, int imageid) {
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OGImM out = new OGImM();
-
+        
         IGImM in = new IGImM();
         in.setIID(imageid);
-
+        
         if (!actcheck.checkContenMessageID(imageid, Constants.TYP_IMAGE)) {
             out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
         } else {
             actuser.getImageMessages(in, out);
-
+            
             final File file = new File((new Constants()).getUploadFolderImage()
                     + File.separatorChar + out.getIM());
             if (!file.exists()) {
                 out.setET(Constants.FILE_NOT_FOUND);
             } else {
                 try {
-                    if (con != null) {
-                        con.close();
-                        con = null;
-                    }
                     return Response.ok(FileUtils.readFileToByteArray(file))
                             .header("Content-Disposition", "attachment")
                             .header("filename", out.getIM()).build();
                 } catch (java.io.IOException ex) {
                     out.setET(Constants.FILE_NOT_FOUND);
                     LOGGER.error(ex);
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     out.setET(Constants.DB_ERROR);
                     LOGGER.error(e);
                 }
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                out.setET(Constants.DB_ERROR);
-                LOGGER.error(e);
-            }
-        }
         return null;
     }
-
+    
     @Override
     public OGImMMD getImageMetadata(HttpHeaders headers, int imageid) {
-
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
+        
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
         OGImMMD out = new OGImMMD();
-
+        
         IGImMMD in = new IGImMMD();
         in.setIID(imageid);
-
+        
         IGImM tmpin = new IGImM();
         tmpin.setIID(imageid);
         OGImM tmpout = new OGImM();
-
+        
         if (!actcheck.checkContenMessageID(imageid, Constants.TYP_IMAGE)) {
             out.setET(Constants.NONE_EXISTING_CONTENT_MESSAGE);
         } else {
             actuser.getImageMessages(tmpin, tmpout);
-
+            
             final File file = new File((new Constants()).getUploadFolderImage()
                     + File.separatorChar + tmpout.getIM());
             if (file.exists()) {
@@ -248,27 +213,19 @@ public class ImageImpl implements IImageUtil {
                 out.setET(Constants.FILE_NOT_FOUND);
             }
         }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                out.setET(Constants.DB_ERROR);
-                LOGGER.error(e);
-            }
-        }
         return out;
     }
-
+    
     // save uploaded file to a defined location on the server
-    private void saveFile(InputStream uploadedInputStream, String serverLocation) {
-
+    private void saveFile(InputStream uploadedInputStream,
+            String serverLocation) {
+        
         try {
-            OutputStream outpuStream = new FileOutputStream(new File(
-                    serverLocation));
+            OutputStream outpuStream = new FileOutputStream(
+                    new File(serverLocation));
             int read = 0;
             byte[] bytes = new byte[1024];
-
+            
             outpuStream = new FileOutputStream(new File(serverLocation));
             while ((read = uploadedInputStream.read(bytes)) != -1) {
                 outpuStream.write(bytes, 0, read);
@@ -279,19 +236,16 @@ public class ImageImpl implements IImageUtil {
             LOGGER.error(e);
         }
     }
-
+    
     @Override
     public OSIcM uploadIcon(HttpHeaders headers, String acknowledge,
             InputStream fileInputStream,
             FormDataContentDisposition contentDispositionHeader) {
-
+        
         OSIcM out = new OSIcM();
-        MyConnection mc = new MyConnection();
-        Connection con = mc.getConnection();
-        User actuser = new User(con,
-                headers.getHeaderString(Constants.USERNAME));
-        Check actcheck = new Check(con);
-
+        User actuser = new User(headers.getHeaderString(Constants.USERNAME));
+        Check actcheck = new Check();
+        
         if (actcheck.checkValueMust(acknowledge)) {
             ISIcM in = new ISIcM();
             /* First check if the User is valid */
@@ -300,26 +254,25 @@ public class ImageImpl implements IImageUtil {
                     if (contentDispositionHeader.getFileName() != null
                             && !contentDispositionHeader.getFileName()
                                     .isEmpty()) {
-
+                        
                         // Now we save the Image
                         long currentTime = System.currentTimeMillis() / 1000L;
                         String filetime = Objects.toString(currentTime, null);
-
+                        
                         String filePath = (new Constants())
-                                .getUploadFolderImage()
-                                + File.separatorChar
+                                .getUploadFolderImage() + File.separatorChar
                                 + filetime
                                 + contentDispositionHeader.getFileName();
-
+                        
                         // save the file to the server
                         saveFile(fileInputStream, filePath);
                         // Insert the New Image Message into the
                         // Database an set
                         // the out
                         // Information.
-
+                        
                         File f = new File(filePath);
-
+                        
                         BufferedImage img;
                         int width = 1;
                         int heigth = 0;
@@ -330,7 +283,7 @@ public class ImageImpl implements IImageUtil {
                         } catch (IOException e1) {
                             LOGGER.error(e1);
                         }
-
+                        
                         if (heigth != width) {
                             out.setET(Constants.NO_QUADRAT_IMAGE);
                         } else {
@@ -342,13 +295,13 @@ public class ImageImpl implements IImageUtil {
                                 LOGGER.error(e);
                             }
                             String md5Hex = md5.toString();
-
+                            
                             out.setIcF(filetime
                                     + contentDispositionHeader.getFileName());
                             in.setIcM(filetime
                                     + contentDispositionHeader.getFileName());
                             in.setIcMD5(md5Hex);
-
+                            
                             if (actuser.base64Decode(acknowledge)
                                     .equalsIgnoreCase(md5Hex)) {
                                 actuser.sendIconMessage(in, out);
@@ -366,21 +319,12 @@ public class ImageImpl implements IImageUtil {
                 out.setET(Constants.NO_IMAGEMESSAGE_GIVEN);
             }
         } else {
-            if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.NO_CONTENT_GIVEN)) {
+            if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.NO_CONTENT_GIVEN)) {
                 out.setET(Constants.UPLOAD_FAILED);
-            } else if (actcheck.getLastError().equalsIgnoreCase(
-                    Constants.ENCODING_ERROR)) {
+            } else if (actcheck.getLastError()
+                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
                 out.setET(Constants.ENCODING_ERROR);
-            }
-        }
-
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                out.setET(Constants.DB_ERROR);
-                LOGGER.error(e);
             }
         }
         return out;

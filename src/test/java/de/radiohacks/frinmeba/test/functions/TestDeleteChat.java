@@ -32,10 +32,7 @@ import java.nio.charset.Charset;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -47,18 +44,19 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.radiohacks.frinmeba.model.jaxb.ICrCh;
-import de.radiohacks.frinmeba.model.jaxb.OCrCh;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUserToChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.ODeCh;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestDeleteChat extends JerseyTest {
@@ -74,23 +72,25 @@ public class TestDeleteChat extends JerseyTest {
      * @QueryParam(Constants.QP_CHATID) int chatID);
      */
     
-    private static final Logger LOGGER = Logger.getLogger(TestDeleteChat.class
-            .getName());
+    private static final Logger LOGGER = Logger
+            .getLogger(TestDeleteChat.class.getName());
     
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     final static String functionurl = "user/deletechat";
+    
+    private static FrinmeDbUsers u = new FrinmeDbUsers();
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
@@ -107,56 +107,51 @@ public class TestDeleteChat extends JerseyTest {
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start prepareDB");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u.setActive(true);
+        u.setB64username(username);
+        u.setUsername(username_org);
+        u.setPassword(password_org);
+        u.setEmail(email_org);
+        session.save(u);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End prepareDB");
-    }
-    
-    private OCrCh callCreateChat(ICrCh in) {
-        WebTarget target;
-        Client c = ClientBuilder.newClient();
-        c.register(HttpAuthenticationFeature.basic(username, password));
-        target = c.target(TestConfig.URL + "user/createchat");
-        LOGGER.debug(target);
-        Response response = target.request()
-                .buildPost(Entity.entity(in, MediaType.APPLICATION_XML))
-                .invoke();
-        LOGGER.debug(response);
-        return response.readEntity(OCrCh.class);
     }
     
     @Test
     public void testDeleteChatChatidOK() {
+        
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbChats c1 = new FrinmeDbChats();
+        c1.setChatname("TestChat");
+        c1.setFrinmeDbUsers(u);
+        session.save(c1);
+        FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+        u2c.setFrinmeDbChats(c1);
+        u2c.setFrinmeDbUsers(u);
+        session.save(u2c);
+        session.getTransaction().commit();
+        session.close();
+        
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
         target = c.target(TestConfig.URL).path(functionurl)
-                .queryParam(Constants.QP_CHATID, 1);
+                .queryParam(Constants.QP_CHATID, c1.getId());
         LOGGER.debug(target);
-        
-        ODeCh out = target.request().delete(ODeCh.class);
-        LOGGER.debug("ET=" + out.getET());
-        Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
-        
-        ICrCh inCreateChat = new ICrCh();
-        inCreateChat.setCN(Base64.encodeBase64String("Testchat"
-                .getBytes(Charset.forName(Constants.CHARACTERSET))));
-        OCrCh out2 = callCreateChat(inCreateChat);
-        
-        Assert.assertEquals("Testchat", out2.getCN());
         
         WebTarget target2;
         target2 = c.target(TestConfig.URL).path(functionurl)
-                .queryParam(Constants.QP_CHATID, out2.getCID());
+                .queryParam(Constants.QP_CHATID, c1.getId());
         LOGGER.debug(target2);
         
         ODeCh out3 = target2.request().delete(ODeCh.class);
-        LOGGER.debug(out.getR());
+        LOGGER.debug(out3.getR());
         Assert.assertEquals(Constants.CHAT_DELETED, out3.getR());
     }
     

@@ -47,17 +47,20 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUserToChats;
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.IAdUC;
 import de.radiohacks.frinmeba.model.jaxb.OAdUC;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestAddUserToChat extends JerseyTest {
@@ -78,39 +81,42 @@ public class TestAddUserToChat extends JerseyTest {
     
     // Username welche anzulegen ist
     final static String username_org = "Test1";
-    final static String username = Base64.encodeBase64String(username_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password_org = "Test1";
-    final static String password = Base64.encodeBase64String(password_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email_org = "Test1@frinme.org";
-    final static String email = Base64.encodeBase64String(email_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email = Base64.encodeBase64String(
+            email_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     final static String functionurl = "user/addusertochat";
     
     // Username welche anzulegen ist
     final static String username2_org = "Test2";
-    final static String username2 = Base64.encodeBase64String(username2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String username2 = Base64.encodeBase64String(
+            username2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     final static String password2_org = "Test2";
-    final static String password2 = Base64.encodeBase64String(password2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String password2 = Base64.encodeBase64String(
+            password2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     final static String email2_org = "Test2@frinme.org";
-    final static String email2 = Base64.encodeBase64String(email2_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String email2 = Base64.encodeBase64String(
+            email2_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
     // Chatname
     final static String chatname_org = "Chat1";
-    final static String chatname = Base64.encodeBase64String(chatname_org
-            .getBytes(Charset.forName(Constants.CHARACTERSET)));
+    final static String chatname = Base64.encodeBase64String(
+            chatname_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     
-    static int chatid;
-    private int userid;
+    // static int chatid;
+    // private int userid;
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    private static FrinmeDbUsers u2 = new FrinmeDbUsers();
+    private static FrinmeDbChats c = new FrinmeDbChats();
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
@@ -127,16 +133,27 @@ public class TestAddUserToChat extends JerseyTest {
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start prepareDB");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
-        help.CreateActiveUser(username2_org, username2, password2_org,
-                email2_org, help.InsertFixedImage());
-        chatid = help.CreateChat(username_org, chatname_org);
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username);
+        u1.setUsername(username_org);
+        u1.setPassword(password_org);
+        u1.setEmail(email_org);
+        u2.setActive(true);
+        u2.setB64username(username2);
+        u2.setUsername(username2_org);
+        u2.setPassword(password2_org);
+        u2.setEmail(email2_org);
+        session.save(u1);
+        session.save(u2);
+        c.setChatname(chatname_org);
+        c.setFrinmeDbUsers(u1);
+        session.save(c);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End prepareDB");
     }
     
@@ -164,10 +181,8 @@ public class TestAddUserToChat extends JerseyTest {
     
     @Test
     public void testAddUserToChatUserID() {
-        helperDatabase help = new helperDatabase();
-        userid = help.getUserID(username2_org);
         IAdUC in = new IAdUC();
-        in.setUID(userid);
+        in.setUID(u2.getId());
         OAdUC out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
@@ -176,7 +191,7 @@ public class TestAddUserToChat extends JerseyTest {
     @Test
     public void testAddUserToChatChatID() {
         IAdUC in = new IAdUC();
-        in.setCID(chatid);
+        in.setCID(c.getId());
         OAdUC out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
@@ -184,12 +199,14 @@ public class TestAddUserToChat extends JerseyTest {
     
     @Test
     public void testAddUserToChatUserIDChatID() {
-        helperDatabase help = new helperDatabase();
-        help.DelUserToChats();
-        userid = help.getUserID(username2_org);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery("delete from FrinmeDbUserToChats").executeUpdate();
+        session.getTransaction().commit();
+        session.close();
         IAdUC in = new IAdUC();
-        in.setCID(chatid);
-        in.setUID(userid);
+        in.setCID(c.getId());
+        in.setUID(u2.getId());
         OAdUC out = callTarget(in);
         LOGGER.debug(out.getR());
         Assert.assertEquals(Constants.USER_ADDED, out.getR());
@@ -198,8 +215,8 @@ public class TestAddUserToChat extends JerseyTest {
     @Test
     public void testAddUserToChatWrongUserIDChatID() {
         IAdUC in = new IAdUC();
-        in.setCID(chatid);
-        in.setUID(47);
+        in.setCID(c.getId());
+        in.setUID(-1);
         OAdUC out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_USER, out.getET());
@@ -207,11 +224,9 @@ public class TestAddUserToChat extends JerseyTest {
     
     @Test
     public void testAddUserToChatUserIDWrongChatID() {
-        helperDatabase help = new helperDatabase();
-        userid = help.getUserID(username2_org);
         IAdUC in = new IAdUC();
-        in.setCID(47);
-        in.setUID(userid);
+        in.setCID(-1);
+        in.setUID(u2.getId());
         OAdUC out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NONE_EXISTING_CHAT, out.getET());
@@ -219,15 +234,21 @@ public class TestAddUserToChat extends JerseyTest {
     
     @Test
     public void testAddUserToChatUserIDChatID_Again() {
-        helperDatabase help = new helperDatabase();
-        help.DelUserToChats();
-        userid = help.getUserID(username_org);
-        help.AddUserToChat(userid, chatid);
-        userid = help.getUserID(username2_org);
-        help.AddUserToChat(userid, chatid);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbUserToChats u2c1 = new FrinmeDbUserToChats();
+        u2c1.setFrinmeDbUsers(u1);
+        u2c1.setFrinmeDbChats(c);
+        FrinmeDbUserToChats u2c2 = new FrinmeDbUserToChats();
+        u2c2.setFrinmeDbChats(c);
+        u2c2.setFrinmeDbUsers(u2);
+        session.save(u2c1);
+        session.save(u2c2);
+        session.getTransaction().commit();
+        session.close();
         IAdUC in = new IAdUC();
-        in.setCID(chatid);
-        in.setUID(userid);
+        in.setCID(c.getId());
+        in.setUID(u2.getId());
         OAdUC out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.USER_ALREADY_IN_CHAT, out.getET());
@@ -235,12 +256,17 @@ public class TestAddUserToChat extends JerseyTest {
     
     @Test
     public void testAddUserToChatUserIDChatID_foreignChat() {
-        helperDatabase help = new helperDatabase();
-        userid = help.getUserID(username2_org);
-        int chatid2 = help.CreateChat(username2_org, "Chat2");
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        FrinmeDbChats c2 = new FrinmeDbChats();
+        c2.setChatname("Chat2");
+        c2.setFrinmeDbUsers(u2);
+        session.save(c2);
+        session.getTransaction().commit();
+        session.close();
         IAdUC in = new IAdUC();
-        in.setCID(chatid2);
-        in.setUID(userid);
+        in.setCID(c2.getId());
+        in.setUID(u2.getId());
         OAdUC out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.NOT_CHAT_OWNER, out.getET());
@@ -248,11 +274,9 @@ public class TestAddUserToChat extends JerseyTest {
     
     @Test
     public void testAddUserToChatUserIDChatID_selfAdd() {
-        helperDatabase help = new helperDatabase();
-        userid = help.getUserID(username_org);
         IAdUC in = new IAdUC();
-        in.setCID(chatid);
-        in.setUID(userid);
+        in.setCID(c.getId());
+        in.setUID(u1.getId());
         OAdUC out = callTarget(in);
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.CHAT_OWNER_NOT_ADDED, out.getET());

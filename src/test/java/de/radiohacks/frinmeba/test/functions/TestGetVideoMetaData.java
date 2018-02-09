@@ -49,20 +49,21 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.hibernate.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.radiohacks.frinmeba.model.hibernate.FrinmeDbUsers;
 import de.radiohacks.frinmeba.model.jaxb.OGViMMD;
 import de.radiohacks.frinmeba.model.jaxb.OSViM;
 import de.radiohacks.frinmeba.services.Constants;
+import de.radiohacks.frinmeba.services.HibernateUtil;
 import de.radiohacks.frinmeba.services.ServiceImpl;
 import de.radiohacks.frinmeba.test.TestConfig;
-import de.radiohacks.frinmeba.test.database.createDatabaseTables;
-import de.radiohacks.frinmeba.test.database.dropDatabaseTables;
 import de.radiohacks.frinmeba.test.database.helperDatabase;
 
 public class TestGetVideoMetaData extends JerseyTest {
-
+    
     /*
      * @GET
      * 
@@ -76,93 +77,80 @@ public class TestGetVideoMetaData extends JerseyTest {
      * 
      * @QueryParam(Constants.QPvideoid) int videoid);
      */
-
+    
     private static final Logger LOGGER = Logger
             .getLogger(TestGetVideoMetaData.class.getName());
-
+    
     // Username welche anzulegen ist
     private final static String username_org = "Test1";
-    private final static String username = Base64
-            .encodeBase64String(username_org.getBytes(Charset
-                    .forName(Constants.CHARACTERSET)));
+    private final static String username = Base64.encodeBase64String(
+            username_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Passwort zum User
     private final static String password_org = "Test1";
-    private final static String password = Base64
-            .encodeBase64String(password_org.getBytes(Charset
-                    .forName(Constants.CHARACTERSET)));
+    private final static String password = Base64.encodeBase64String(
+            password_org.getBytes(Charset.forName(Constants.CHARACTERSET)));
     // Email Adresse zum User
     private final static String email_org = "Test1@frinme.org";
-
+    
     private final static String functionurl = "video/getvideometadata";
-
+    
+    private static FrinmeDbUsers u1 = new FrinmeDbUsers();
+    
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
-
+    
     @Override
     protected DeploymentContext configureDeployment() {
         return ServletDeploymentContext.forServlet(
                 new ServletContainer(new ResourceConfig(ServiceImpl.class)))
                 .build();
     }
-
+    
     @BeforeClass
     public static void prepareDB() {
         LOGGER.debug("Start BeforeClass");
-        dropDatabaseTables drop = new dropDatabaseTables();
-        drop.dropTable();
-        createDatabaseTables create = new createDatabaseTables();
-        create.createTable();
         helperDatabase help = new helperDatabase();
-        help.CreateActiveUser(username_org, username, password_org, email_org,
-                help.InsertFixedImage());
+        help.emptyDatabase();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        u1.setActive(true);
+        u1.setB64username(username);
+        u1.setUsername(username_org);
+        u1.setPassword(password_org);
+        u1.setEmail(email_org);
+        session.save(u1);
+        session.getTransaction().commit();
+        session.close();
         LOGGER.debug("End BeforeClass");
     }
-
-    private void deleteVideo(int in) {
-        helperDatabase helper = new helperDatabase();
-        /*
-         * If the File was inserted and created by the the then use this
-         */
-        // helper.deleteAndDropImage(in);
-        /*
-         * Otherwise just delete the DB Entry and let the file delete be done
-         * outside.
-         */
-        helper.deleteFixedVideo(in);
-    }
-
+    
     @Test
     public void testGetVideoMetaDataUserPassword() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL + functionurl);
-        // .queryParam(Constants.QP_PASSWORD, password)
-        // .queryParam(Constants.QP_USERNAME, username);
         LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
         LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
     }
-
+    
     @Test
     public void testGetVideoMetaDataUserPasswordVideoID() {
-
         helperDatabase help = new helperDatabase();
         OSViM O1 = help.insertVideoContent(username, password);
         int videoid = O1.getVID();
-        // int videoid = insertVideo();
+        
         System.out.println("videoid ==> " + videoid);
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL + functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password)
-        // .queryParam(Constants.QP_USERNAME, username)
                 .queryParam(Constants.QP_VIDEOID, videoid);
         LOGGER.debug(target);
         System.out.println("target ==> " + target);
@@ -177,23 +165,28 @@ public class TestGetVideoMetaData extends JerseyTest {
         System.out.println("getVS == > " + out.getVS());
         LOGGER.debug("VS=" + out.getVS());
         assertThat(out.getVS(), is(not(nullValue())));
-        deleteVideo(videoid);
+        
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.createQuery(
+                "delete from FrinmeDbVideo where ID = '" + videoid + "'")
+                .executeUpdate();
+        session.getTransaction().commit();
+        session.close();
     }
-
+    
     @Test
     public void testGetVideoMetaDataUserPasswordWrongVideoID() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username, password));
-
+        
         target = c.target(TestConfig.URL + functionurl)
-        // .queryParam(Constants.QP_PASSWORD, password)
-        // .queryParam(Constants.QP_USERNAME, username)
                 .queryParam(Constants.QP_VIDEOID, 107365);
         LOGGER.debug(target);
         OGViMMD out = target.request().get(OGViMMD.class);
         LOGGER.debug("ET=" + out.getET());
         assertThat(out.getET(), is(Constants.NONE_EXISTING_CONTENT_MESSAGE));
     }
-
+    
 }
