@@ -165,9 +165,9 @@ public class TestSetShowTimeStamp extends JerseyTest {
         session.save(m1);
         m1.setOriginMsgId(m1.getId());
         session.saveOrUpdate(m1);
-        m2.setFrinmeDbUsers(u2);
+        m2.setFrinmeDbUsers(u1);
         m2.setMessageTyp(Constants.TYP_TEXT);
-        m2.setFrinmeDbUserToChats(u2c1);
+        m2.setFrinmeDbUserToChats(u2c2);
         m2.setFrinmeDbText(t1);
         m2.setOriginMsgId(m1.getId());
         session.save(m2);
