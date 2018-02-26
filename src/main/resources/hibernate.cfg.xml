@@ -2,21 +2,25 @@
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
                                          "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
- <session-factory>
-  <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-  <property name="hibernate.connection.password">frinme_db</property>
-  <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/frinme_db</property>
-  <property name="hibernate.connection.username">frinme_db</property>
-  <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
-  <mapping resource="FrinmeDbChats.hbm.xml"/>
-  <mapping resource="FrinmeDbContact.hbm.xml"/>
-  <mapping resource="FrinmeDbImage.hbm.xml"/>
-  <mapping resource="FrinmeDbLocation.hbm.xml"/>
-  <mapping resource="FrinmeDbMessages.hbm.xml"/>
-  <mapping resource="FrinmeDbText.hbm.xml"/>
-  <mapping resource="FrinmeDbUsers.hbm.xml"/>
-  <mapping resource="FrinmeDbUserToChats.hbm.xml"/>
-  <mapping resource="FrinmeDbVideo.hbm.xml"/>
-  <mapping resource="FrinmeDbFile.hbm.xml"/>
- </session-factory>
+  <session-factory>
+    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.password">frinme_db</property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/frinme_db</property>
+    <property name="hibernate.connection.username">frinme_db</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+    <property name="hibernate.c3p0.min_size">5</property>
+    <property name="hibernate.c3p0.max_size">20</property>
+    <property name="hibernate.c3p0.timeout">1800</property> <!-- seconds -->
+    <property name="hibernate.c3p0.max_statements">50</property>
+    <mapping resource="FrinmeDbChats.hbm.xml" />
+    <mapping resource="FrinmeDbContact.hbm.xml" />
+    <mapping resource="FrinmeDbImage.hbm.xml" />
+    <mapping resource="FrinmeDbLocation.hbm.xml" />
+    <mapping resource="FrinmeDbMessages.hbm.xml" />
+    <mapping resource="FrinmeDbText.hbm.xml" />
+    <mapping resource="FrinmeDbUsers.hbm.xml" />
+    <mapping resource="FrinmeDbUserToChats.hbm.xml" />
+    <mapping resource="FrinmeDbVideo.hbm.xml" />
+    <mapping resource="FrinmeDbFile.hbm.xml" />
+  </session-factory>
 </hibernate-configuration>

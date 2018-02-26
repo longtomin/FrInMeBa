@@ -227,6 +227,7 @@ public class User {
                 saveU.setB64username(in.getUN());
                 saveU.setPassword(in.getPW());
                 saveU.setUsername(base64Decode(in.getUN()));
+                saveU.setSignupDate(System.currentTimeMillis() / 1000L);
                 session.save(saveU);
                 out.setUID(saveU.getId());
                 out.setUN(saveU.getUsername());
@@ -328,12 +329,20 @@ public class User {
         try {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
+            // First get the Owning User for the Chat
             FrinmeDbUsers saveU = new FrinmeDbUsers();
             saveU.setId(ActiveUser.getId());
+            // Create new Chat with the Owning User
             FrinmeDbChats saveC = new FrinmeDbChats();
             saveC.setChatname(in.getCN());
             saveC.setFrinmeDbUsers(saveU);
             session.save(saveC);
+            // Add the Owning User to the People into the Chat
+            FrinmeDbUserToChats u2c = new FrinmeDbUserToChats();
+            u2c.setFrinmeDbChats(saveC);
+            u2c.setFrinmeDbUsers(saveU);
+            session.save(u2c);
+            // Get the Chatinformation for response
             out.setCID(saveC.getId());
             out.setCN(saveC.getChatname());
             session.getTransaction().commit();
@@ -885,12 +894,13 @@ public class User {
         try {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
-            Query q1 = session.createQuery(
-                    "from FrinmeDbText where ID = " + in.getTextID());
-            List<?> r1 = q1.list();
+            FrinmeDbText t = session.get(FrinmeDbText.class, in.getTextID());
+            // Query q1 = session.createQuery(
+            // "from FrinmeDbText where ID = " + in.getTextID());
+            // List<?> r1 = q1.list();
             
-            if (!r1.isEmpty() && r1.size() == 1) {
-                FrinmeDbText t = (FrinmeDbText) r1.get(0);
+            if (t != null) {
+                // FrinmeDbText t = (FrinmeDbText) r1.get(0);
                 out.setTM(t.getText());
             } else {
                 out.setET(Constants.NONE_EXISTING_MESSAGE);
@@ -909,12 +919,13 @@ public class User {
         try {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
-            Query q1 = session.createQuery(
-                    "from FrinmeDbImage where ID = " + in.getIID());
-            List<?> r1 = q1.list();
-            
-            if (!r1.isEmpty() && r1.size() == 1) {
-                FrinmeDbImage i = (FrinmeDbImage) r1.get(0);
+            FrinmeDbImage i = session.get(FrinmeDbImage.class, in.getIID());
+            // Query q1 = session.createQuery(
+            // "from FrinmeDbImage where ID = " + in.getIID());
+            // List<?> r1 = q1.list();
+            //
+            if (i != null) {
+                // FrinmeDbImage i = (FrinmeDbImage) r1.get(0);
                 out.setIM(i.getImage());
                 out.setIMD5(i.getMd5sum());
             } else {
@@ -935,12 +946,9 @@ public class User {
         try {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
-            Query q1 = session.createQuery(
-                    "from FrinmeDbVideo where ID = " + in.getVID());
-            List<?> r1 = q1.list();
+            FrinmeDbVideo v = session.get(FrinmeDbVideo.class, in.getVID());
             
-            if (!r1.isEmpty() && r1.size() == 1) {
-                FrinmeDbVideo v = (FrinmeDbVideo) r1.get(0);
+            if (v != null) {
                 out.setVM(v.getVideo());
                 out.setVMD5(v.getMd5sum());
             } else {
@@ -988,33 +996,44 @@ public class User {
                 }
             }
             // Now we check for unread Messages
-            Query qm = session.createQuery(
-                    "distinct(UserToChatID) FROM FrinmeDbMessages WHERE ReadTimestamp = 0 AND UsertoChatID IN (SELECT ID FROM UserToChats WHERE UserID = "
-                            + ActiveUser.getId() + ") group by UserToChatID");
-            
+            Query qu2c = session
+                    .createQuery("FROM FrinmeDbUserToChats where UserID = '"
+                            + ActiveUser.getId() + "'");
             @SuppressWarnings("unchecked")
-            List<FrinmeDbMessages> rm = qm.list();
-            if (!rm.isEmpty() && rm.size() > 0) {
-                for (int j = 0; j < rm.size(); j++) {
-                    FrinmeDbMessages urm = rm.get(j);
-                    Query qcount = session.createQuery(
-                            "FROM FrinmeDbMessages WHERE ReadTimestamp = 0 AND UsertoChatID = '"
-                                    + urm.getFrinmeDbUserToChats().getId()
-                                    + "'");
-                    List<?> rcount = qcount.list();
-                    FrinmeDbMessages singleMessage = (FrinmeDbMessages) rcount
-                            .get(0);
-                    CNM oNM = new CNM();
-                    oNM.setNOM(rcount.size());
-                    oNM.setCID(singleMessage.getFrinmeDbUserToChats()
-                            .getFrinmeDbChats().getId());
-                    oNM.setCN(singleMessage.getFrinmeDbUserToChats()
-                            .getFrinmeDbChats().getChatname());
-                    
-                    out.getCNM().add(oNM);
+            List<FrinmeDbUserToChats> ru2c = qu2c.list();
+            if (!ru2c.isEmpty() && ru2c.size() > 0) {
+                for (int k = 0; k < ru2c.size(); k++) {
+                    FrinmeDbUserToChats u2c = ru2c.get(k);
+                    Query qm = session.createQuery(
+                            "FROM FrinmeDbMessages WHERE ReadTimestamp = '0' AND UsertoChatID = '"
+                                    + u2c.getId() + "'");
+                    @SuppressWarnings("unchecked")
+                    List<FrinmeDbMessages> rm = qm.list();
+                    if (!rm.isEmpty() && rm.size() > 0) {
+                        for (int j = 0; j < rm.size(); j++) {
+                            FrinmeDbMessages urm = rm.get(j);
+                            // Query qcount = session.createQuery(
+                            // "FROM FrinmeDbMessages WHERE ReadTimestamp = 0
+                            // AND UsertoChatID = '"
+                            // + urm.getFrinmeDbUserToChats()
+                            // .getId()
+                            // + "'");
+                            // List<?> rcount = qcount.list();
+                            // FrinmeDbMessages singleMessage =
+                            // (FrinmeDbMessages) rcount
+                            // .get(0);
+                            CNM oNM = new CNM();
+                            oNM.setNOM(rm.size());
+                            oNM.setCID(urm.getFrinmeDbUserToChats()
+                                    .getFrinmeDbChats().getId());
+                            oNM.setCN(urm.getFrinmeDbUserToChats()
+                                    .getFrinmeDbChats().getChatname());
+                            
+                            out.getCNM().add(oNM);
+                        }
+                    }
                 }
             }
-            
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1189,39 +1208,37 @@ public class User {
         try {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
-            Query q1 = session.createQuery(
-                    "FROM FrinmeDbMessages WHERE ID = " + in.getMID());
-            List<?> r1 = q1.list();
             
-            if (!r1.isEmpty() && r1.size() == 1) {
-                FrinmeDbMessages m = (FrinmeDbMessages) r1.get(0);
-                if (m.getMessageTyp().equals(Constants.TYP_TEXT)) {
-                    int hashCode = m.getFrinmeDbText().getText().hashCode();
-                    
-                    if (hashCode == Integer.valueOf(in.getACK())) {
-                        out.setACK(Constants.ACKNOWLEDGE_TRUE);
-                        out.setMID(in.getMID());
-                        m.setReadTimestamp(m.getTempReadTimestamp());
-                        session.saveOrUpdate(m);
-                    }
+            FrinmeDbMessages m = session.get(FrinmeDbMessages.class,
+                    in.getMID());
+            
+            if (m.getMessageTyp().equals(Constants.TYP_TEXT)) {
+                String tmptxt = base64Decode(m.getFrinmeDbText().getText());
+                int hashCode = tmptxt.hashCode();
+                
+                if (hashCode == Integer.valueOf(in.getACK())) {
+                    out.setACK(Constants.ACKNOWLEDGE_TRUE);
+                    out.setMID(in.getMID());
+                    m.setReadTimestamp(m.getTempReadTimestamp());
+                    session.saveOrUpdate(m);
                 }
-                if (m.getMessageTyp().equals(Constants.TYP_IMAGE)) {
-                    if (in.getACK().equals(m.getFrinmeDbImage().getMd5sum())) {
-                        out.setACK(Constants.ACKNOWLEDGE_TRUE);
-                        out.setMID(in.getMID());
-                        m.setReadTimestamp(m.getTempReadTimestamp());
-                        session.saveOrUpdate(m);
-                    }
+            }
+            if (m.getMessageTyp().equals(Constants.TYP_IMAGE)) {
+                if (in.getACK().equals(m.getFrinmeDbImage().getMd5sum())) {
+                    out.setACK(Constants.ACKNOWLEDGE_TRUE);
+                    out.setMID(in.getMID());
+                    m.setReadTimestamp(m.getTempReadTimestamp());
+                    session.saveOrUpdate(m);
                 }
-                if (m.getMessageTyp().equals(Constants.TYP_VIDEO)) {
-                    if (in.getACK().equals(m.getFrinmeDbVideo().getMd5sum())) {
-                        out.setACK(Constants.ACKNOWLEDGE_TRUE);
-                        out.setMID(in.getMID());
-                        m.setReadTimestamp(m.getTempReadTimestamp());
-                        session.saveOrUpdate(m);
-                    }
-                    
+            }
+            if (m.getMessageTyp().equals(Constants.TYP_VIDEO)) {
+                if (in.getACK().equals(m.getFrinmeDbVideo().getMd5sum())) {
+                    out.setACK(Constants.ACKNOWLEDGE_TRUE);
+                    out.setMID(in.getMID());
+                    m.setReadTimestamp(m.getTempReadTimestamp());
+                    session.saveOrUpdate(m);
                 }
+                
             }
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
