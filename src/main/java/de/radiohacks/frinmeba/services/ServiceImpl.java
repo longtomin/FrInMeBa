@@ -325,18 +325,23 @@ public class ServiceImpl implements IServiceUtil {
         String Error = null;
         ILiUs in = new ILiUs();
         
-        for (int i = 0; i < search.size(); i++) {
-            String s = search.get(i);
-            if (actcheck.checkValueMust(s)) {
-                if (!actcheck.checkEmail(actuser.base64Decode(s))) {
-                    fail = true;
-                    Error = Constants.INVALID_EMAIL_ADRESS;
+        if (search.size() == 0 || search == null) {
+            fail = true;
+            Error = Constants.NO_CONTENT_GIVEN;
+        } else {
+            for (int i = 0; i < search.size(); i++) {
+                String s = search.get(i);
+                if (actcheck.checkValueMust(s)) {
+                    if (!actcheck.checkEmail(actuser.base64Decode(s))) {
+                        fail = true;
+                        Error = Constants.INVALID_EMAIL_ADRESS;
+                    } else {
+                        in.getS().add(actuser.base64Decode(s));
+                    }
                 } else {
-                    in.getS().add(s);
+                    fail = true;
+                    Error = Constants.ENCODING_ERROR;
                 }
-            } else {
-                fail = true;
-                Error = Constants.ENCODING_ERROR;
             }
         }
         

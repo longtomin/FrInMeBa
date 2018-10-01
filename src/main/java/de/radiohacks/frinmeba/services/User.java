@@ -263,35 +263,31 @@ public class User {
     public void listUser(ILiUs in, OLiUs out) {
         LOGGER.debug("Start listUser with In = " + in.toString());
         
-        String listchat = "from FrinmeDbUsers where Active = 1";
-        if (in.getS() != null && !in.getS().isEmpty()) {
-            listchat.concat(" and Username like '%" + in.getS() + "%'");
-        }
+        String listuser = "from FrinmeDbUsers user where Active = 1 and user.email IN (:emails)";
         
         try {
-            // Session session =
-            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
-            Query q1 = session.createQuery(listchat);
-            List<?> results = q1.list();
+            Query q1 = session.createQuery(listuser);
+            q1.setParameterList("emails", in.getS());
+            List<?> r1 = q1.list();
             
-            for (int i = 0; i < results.size(); i++) {
-                FrinmeDbUsers u = (FrinmeDbUsers) results.get(i);
-                if (ActiveUser.getId() != u.getId()) {
-                    U xmlu = new U();
-                    xmlu.setUN(u.getUsername());
-                    xmlu.setE(u.getEmail());
-                    xmlu.setUID(u.getId());
-                    xmlu.setLA(u.getAuthenticationTime());
-                    if (u.getFrinmeDbImage() != null) {
-                        xmlu.setICID(u.getFrinmeDbImage().getId());
+            if (!r1.isEmpty()) {
+                for (int i = 0; i < r1.size(); i++) {
+                    FrinmeDbUsers u = (FrinmeDbUsers) r1.get(i);
+                    if (ActiveUser.getId() != u.getId()) {
+                        U xmlu = new U();
+                        xmlu.setUN(u.getUsername());
+                        xmlu.setE(u.getEmail());
+                        xmlu.setUID(u.getId());
+                        xmlu.setLA(u.getAuthenticationTime());
+                        if (u.getFrinmeDbImage() != null) {
+                            xmlu.setICID(u.getFrinmeDbImage().getId());
+                        }
+                        out.getU().add(xmlu);
                     }
-                    out.getU().add(xmlu);
                 }
             }
             session.getTransaction().commit();
-            // session.close();
-            // HibernateUtil.getSessionFactory().close();
         } catch (Exception ex) {
             ex.printStackTrace();
             out.setET(Constants.DB_ERROR);

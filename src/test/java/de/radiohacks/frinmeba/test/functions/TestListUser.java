@@ -170,7 +170,7 @@ public class TestListUser extends JerseyTest {
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("U (size) =" + out.getU().size());
-        Assert.assertNotNull(out.getU());
+        Assert.assertEquals(Constants.INVALID_EMAIL_ADRESS, out.getET());
     }
     
     @Test
@@ -184,7 +184,7 @@ public class TestListUser extends JerseyTest {
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("U (size) =" + out.getU().size());
-        Assert.assertNotNull(out.getU());
+        Assert.assertEquals(Constants.NO_CONTENT_GIVEN, out.getET());
     }
     
     @Test
@@ -214,7 +214,22 @@ public class TestListUser extends JerseyTest {
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
         LOGGER.debug("U (size) =" + out.getU().size());
-        Assert.assertNotNull(out.getU());
+        Assert.assertEquals(1, out.getU().size());
     }
     
+    @Test
+    public void testListUserUserPasswordSearchOK2() {
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+        
+        // Invalid Email Address
+        target = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_SEARCH, email2)
+                .queryParam(Constants.QP_SEARCH, email3);
+        LOGGER.debug(target);
+        OLiUs out = target.request().get(OLiUs.class);
+        LOGGER.debug("U (size) =" + out.getU().size());
+        Assert.assertEquals(2, out.getU().size());
+    }
 }
