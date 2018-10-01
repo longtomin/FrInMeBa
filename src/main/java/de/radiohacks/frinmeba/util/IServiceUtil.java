@@ -108,9 +108,10 @@ public interface IServiceUtil {
     
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/listuser")
     public OLiUs listUsers(@Context HttpHeaders headers,
-            @QueryParam(Constants.QP_SEARCH) String search);
+            @QueryParam(Constants.QP_SEARCH) List<String> search);
     
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })

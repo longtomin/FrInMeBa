@@ -314,29 +314,38 @@ public class ServiceImpl implements IServiceUtil {
     }
     
     @Override
-    public OLiUs listUsers(HttpHeaders headers, String search) {
-        LOGGER.debug("Start ListUsers with Search = " + search);
+    public OLiUs listUsers(HttpHeaders headers, List<String> search) {
+        LOGGER.debug("Start ListUsers with Search = " + search.toString());
         
         User actuser = new User(headers.getHeaderString(Constants.USERNAME));
         Check actcheck = new Check();
         OLiUs out = new OLiUs();
         
-        if (actcheck.checkValueCan(search)) {
-            ILiUs in = new ILiUs();
-            if (search != null && !search.isEmpty()) {
-                in.setS(actuser.base64Decode(search));
+        boolean fail = false;
+        String Error = null;
+        ILiUs in = new ILiUs();
+        
+        for (int i = 0; i < search.size(); i++) {
+            String s = search.get(i);
+            if (actcheck.checkValueMust(s)) {
+                if (!actcheck.checkEmail(actuser.base64Decode(s))) {
+                    fail = true;
+                    Error = Constants.INVALID_EMAIL_ADRESS;
+                } else {
+                    in.getS().add(s);
+                }
             } else {
-                in.setS("");
-            }
-            actuser.listUser(in, out);
-            /* Search check failed */
-        } else {
-            if (actcheck.getLastError()
-                    .equalsIgnoreCase(Constants.ENCODING_ERROR)) {
-                out.setET(Constants.ENCODING_ERROR);
+                fail = true;
+                Error = Constants.ENCODING_ERROR;
             }
         }
-        LOGGER.debug("End ListUsers with Search = " + search);
+        
+        if (fail) {
+            out.setET(Error);
+        } else {
+            actuser.listUser(in, out);
+        }
+        LOGGER.debug("End ListUsers with Searchsize = " + in.getS().size());
         return out;
     }
     

@@ -8,9 +8,10 @@
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/frinme_db</property>
     <property name="hibernate.connection.username">frinme_db</property>
     <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+    <property name="hbm2ddl.auto">validate</property>
     <property name="hibernate.c3p0.min_size">5</property>
     <property name="hibernate.c3p0.max_size">20</property>
-    <property name="hibernate.c3p0.timeout">1800</property> <!-- seconds -->
+    <property name="hibernate.c3p0.timeout">1800</property>
     <property name="hibernate.c3p0.max_statements">50</property>
     <mapping resource="FrinmeDbChats.hbm.xml" />
     <mapping resource="FrinmeDbContact.hbm.xml" />

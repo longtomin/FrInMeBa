@@ -37,6 +37,8 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.internal.util.Base64;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import de.radiohacks.frinmeba.database.Check;
 import de.radiohacks.frinmeba.model.hibernate.FrinmeDbChats;
@@ -110,16 +112,21 @@ public class User {
     
     private FrinmeDbUsers ActiveUser;
     private String LastError = new String();
+    private Session session = null;
     
     private static final Logger LOGGER = Logger.getLogger(User.class);
     
     public User(String uname) {
         LOGGER.debug("Start User with Connection and Username = " + uname);
+        session = HibernateUtil.getSessionFactory().openSession();
         fillUserinfo(base64Decode(uname));
         LOGGER.debug("End User with Connection and Username = " + uname);
     }
     
     public User() {
+        LOGGER.debug("Start User with Connection");
+        session = HibernateUtil.getSessionFactory().openSession();
+        LOGGER.debug("End User with Connection");
     }
     
     public int getID() {
@@ -152,8 +159,8 @@ public class User {
             if (actcheck.checkValueMust(pw)) {
                 
                 try {
-                    Session session = HibernateUtil.getSessionFactory()
-                            .openSession();
+                    // Session session =
+                    // HibernateUtil.getSessionFactory().openSession();
                     session.beginTransaction();
                     Query q1 = session.createQuery(QueryUser);
                     List<?> results = q1.list();
@@ -176,7 +183,8 @@ public class User {
                         LastError = Constants.NONE_EXISTING_USER;
                     }
                     session.getTransaction().commit();
-                    session.close();
+                    // session.close();
+                    // HibernateUtil.getSessionFactory().close();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     LastError = Constants.DB_ERROR;
@@ -196,7 +204,8 @@ public class User {
         String getid = "from FrinmeDbUsers where Username = " + "'" + username
                 + "'";
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session.createQuery(getid);
             List<?> results = q1.list();
@@ -205,7 +214,8 @@ public class User {
                 this.ActiveUser = u;
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -217,7 +227,8 @@ public class User {
         String checkuser = "from FrinmeDbUsers where B64Username = " + "'"
                 + in.getUN() + "'";
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session.createQuery(checkuser);
             List<?> results = q1.list();
@@ -239,6 +250,9 @@ public class User {
                 FrinmeDbUsers existingUser = (FrinmeDbUsers) results.get(0);
                 out.setUID(existingUser.getId());
             }
+            session.getTransaction().commit();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception ex) {
             ex.printStackTrace();
             out.setET(Constants.DB_ERROR);
@@ -255,7 +269,8 @@ public class User {
         }
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session.createQuery(listchat);
             List<?> results = q1.list();
@@ -275,7 +290,8 @@ public class User {
                 }
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception ex) {
             ex.printStackTrace();
             out.setET(Constants.DB_ERROR);
@@ -286,7 +302,8 @@ public class User {
     public void listChat(OLiCh out) {
         LOGGER.debug("Start listChat");
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session
                     .createQuery("From FrinmeDbUserToChats where UserID = '"
@@ -316,7 +333,8 @@ public class User {
                 out.setET(Constants.NO_ACTIVE_CHATS);
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -327,7 +345,8 @@ public class User {
     public void createChat(ICrCh in, OCrCh out, String username) {
         LOGGER.debug("Start createChat with In = " + in.toString());
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             // First get the Owning User for the Chat
             FrinmeDbUsers saveU = new FrinmeDbUsers();
@@ -346,6 +365,8 @@ public class User {
             out.setCID(saveC.getId());
             out.setCN(saveC.getChatname());
             session.getTransaction().commit();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception ex) {
             ex.printStackTrace();
             out.setET(Constants.DB_ERROR);
@@ -363,8 +384,8 @@ public class User {
             String UserAlreadyInChat = "from FrinmeDbUserToChats where ChatID = '"
                     + in.getCID() + "' and UserID = '" + in.getUID() + "'";
             try {
-                Session session = HibernateUtil.getSessionFactory()
-                        .openSession();
+                // Session session =
+                // HibernateUtil.getSessionFactory().openSession();
                 session.beginTransaction();
                 
                 /* Find the User Object which should be added to the Chat */
@@ -400,7 +421,8 @@ public class User {
                     out.setET(Constants.NOT_CHAT_OWNER);
                 }
                 session.getTransaction().commit();
-                session.close();
+                // session.close();
+                // HibernateUtil.getSessionFactory().close();
             } catch (
             
             Exception ex) {
@@ -414,14 +436,16 @@ public class User {
     public void sendTextMessage(ISTeM in, OSTeM out) {
         LOGGER.debug("Start sendTextMessage with In = " + in.toString());
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             FrinmeDbText t = new FrinmeDbText();
             t.setText(in.getTM());
             session.save(t);
             out.setTID(t.getId());
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -432,7 +456,8 @@ public class User {
     public void sendImageMessage(ISImM in, OSImM out) {
         LOGGER.debug("Start sendImageMessage with In = " + in.toString());
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             FrinmeDbImage i = new FrinmeDbImage();
             i.setImage(in.getImM());
@@ -440,7 +465,8 @@ public class User {
             session.save(i);
             out.setImID(i.getId());
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -452,7 +478,8 @@ public class User {
         LOGGER.debug("Start sendVideoMessage with In = " + in.toString());
         try {
             
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             FrinmeDbVideo v = new FrinmeDbVideo();
             v.setVideo(in.getVM());
@@ -460,7 +487,8 @@ public class User {
             session.save(v);
             out.setVID(v.getId());
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -475,8 +503,8 @@ public class User {
         } else {
             try {
                 /* Check first if the Owning User is sending the Request */
-                Session session = HibernateUtil.getSessionFactory()
-                        .openSession();
+                // Session session =
+                // HibernateUtil.getSessionFactory().openSession();
                 session.beginTransaction();
                 FrinmeDbChats c = session.load(FrinmeDbChats.class,
                         in.getCID());
@@ -510,7 +538,8 @@ public class User {
                     out.setET(Constants.NOT_CHAT_OWNER);
                 }
                 session.getTransaction().commit();
-                session.close();
+                // session.close();
+                // HibernateUtil.getSessionFactory().close();
             } catch (Exception e) {
                 out.setET(Constants.DB_ERROR);
                 LOGGER.error(e);
@@ -531,7 +560,8 @@ public class User {
             // TODO Check if message is already inserted in the Chat,
             // idempotent?
             /* First we search all Users in the given Chat */
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             if (in.getMT().equalsIgnoreCase(Constants.TYP_TEXT)) {
                 /* First find the Text to insert */
@@ -802,7 +832,8 @@ public class User {
                 out.setET(Constants.TYPE_NOT_FOUND);
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (
         
         Exception e) {
@@ -816,7 +847,8 @@ public class User {
         LOGGER.debug("Start getMessagesFromChat with In = " + in.toString());
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session
                     .createQuery("From FrinmeDbUserToChats where UserID = '"
@@ -880,7 +912,8 @@ public class User {
                 }
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -892,21 +925,18 @@ public class User {
         LOGGER.debug("Start getTextMessages with In = " + in.toString());
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             FrinmeDbText t = session.get(FrinmeDbText.class, in.getTextID());
-            // Query q1 = session.createQuery(
-            // "from FrinmeDbText where ID = " + in.getTextID());
-            // List<?> r1 = q1.list();
-            
             if (t != null) {
-                // FrinmeDbText t = (FrinmeDbText) r1.get(0);
                 out.setTM(t.getText());
             } else {
                 out.setET(Constants.NONE_EXISTING_MESSAGE);
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -917,22 +947,19 @@ public class User {
     public void getImageMessages(IGImM in, OGImM out) {
         LOGGER.debug("Start getImageMessages with In = " + in.toString());
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             FrinmeDbImage i = session.get(FrinmeDbImage.class, in.getIID());
-            // Query q1 = session.createQuery(
-            // "from FrinmeDbImage where ID = " + in.getIID());
-            // List<?> r1 = q1.list();
-            //
             if (i != null) {
-                // FrinmeDbImage i = (FrinmeDbImage) r1.get(0);
                 out.setIM(i.getImage());
                 out.setIMD5(i.getMd5sum());
             } else {
                 out.setET(Constants.NONE_EXISTING_MESSAGE);
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -944,7 +971,8 @@ public class User {
         LOGGER.debug("Start getImageMessages with In = " + in.toString());
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             FrinmeDbVideo v = session.get(FrinmeDbVideo.class, in.getVID());
             
@@ -955,7 +983,8 @@ public class User {
                 out.setET(Constants.NONE_EXISTING_MESSAGE);
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -967,7 +996,8 @@ public class User {
         LOGGER.debug("Start checkNew");
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             // First we check for unreaded chats
             Query qi = session
@@ -1012,16 +1042,6 @@ public class User {
                     if (!rm.isEmpty() && rm.size() > 0) {
                         for (int j = 0; j < rm.size(); j++) {
                             FrinmeDbMessages urm = rm.get(j);
-                            // Query qcount = session.createQuery(
-                            // "FROM FrinmeDbMessages WHERE ReadTimestamp = 0
-                            // AND UsertoChatID = '"
-                            // + urm.getFrinmeDbUserToChats()
-                            // .getId()
-                            // + "'");
-                            // List<?> rcount = qcount.list();
-                            // FrinmeDbMessages singleMessage =
-                            // (FrinmeDbMessages) rcount
-                            // .get(0);
                             CNM oNM = new CNM();
                             oNM.setNOM(rm.size());
                             oNM.setCID(urm.getFrinmeDbUserToChats()
@@ -1034,6 +1054,9 @@ public class User {
                     }
                 }
             }
+            session.getTransaction().commit();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1046,6 +1069,7 @@ public class User {
         
         long currentTime = System.currentTimeMillis() / 1000L;
         
+        // TODO Change to query with given List in Hibernate
         String showUpdate = "UPDATE FrinmeDbMessages SET ShowTimestamp = '"
                 + currentTime + "' where ID = '";
         
@@ -1058,11 +1082,12 @@ public class User {
         }
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             session.createQuery(showUpdate).executeUpdate();
             session.getTransaction().commit();
-            session.close();
+            // session.close();
             
             for (int j = 0; j < in.getMID().size(); j++) {
                 ShT s = new ShT();
@@ -1070,6 +1095,9 @@ public class User {
                 s.setT(currentTime);
                 out.getShT().add(s);
             }
+            session.getTransaction().commit();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1080,15 +1108,17 @@ public class User {
     public void deleteMessageFromChat(IDMFC in, ODMFC out) {
         LOGGER.debug("Start deleteMessageFromChat with In = " + in.toString());
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
+            Transaction tx = session.beginTransaction();
             FrinmeDbMessages m = session.get(FrinmeDbMessages.class,
                     in.getMID());
             
+            session.createQuery("delete from FrinmeDbMessages where ID = :id")
+                    .setParameter("id", m.getId()).executeUpdate();
+            
             if (m != null && m.getId().equals(in.getMID())) {
-                
                 /* We have found the Message */
-                
                 if (m.getMessageTyp().equalsIgnoreCase(Constants.TYP_TEXT)) {
                     /* Not used anymore = delete content */
                     deleteContent(Constants.TYP_TEXT,
@@ -1120,10 +1150,9 @@ public class User {
                             m.getFrinmeDbContact().getId());
                 }
                 out.setMID(in.getMID());
-                
-                session.delete(m);
-                session.getTransaction().commit();
-                session.close();
+                if (tx.getStatus().equals(TransactionStatus.ACTIVE)) {
+                    tx.commit();
+                }
             }
         } catch (
         
@@ -1137,63 +1166,119 @@ public class User {
     private void deleteContent(String msgType, int id) {
         LOGGER.debug("Start deleteContent with MSGType = " + msgType + " ID = "
                 + String.valueOf(id));
-        // String sql = null;
+        
+        long i = -1;
+        
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             if (msgType.equalsIgnoreCase(Constants.TYP_TEXT)) {
-                FrinmeDbText t = session.get(FrinmeDbText.class, id);
-                if (t != null && t.getId().equals(id)) {
-                    session.delete(t);
+                // Check if ID is not more used in the Mesages Table
+                i = ((Long) session.createQuery(
+                        "select count(*) from FrinmeDbMessages where TextMsgID = "
+                                + id)
+                        .iterate().next()).intValue();
+                if (i == 0) {
+                    FrinmeDbText txt = session.get(FrinmeDbText.class, id);
+                    if (txt != null && txt.getId().equals(id)) {
+                        session.createQuery(
+                                "delete from FrinmeDbText where ID = :id")
+                                .setParameter("id", id).executeUpdate();
+                    }
                 }
             } else if (msgType.equalsIgnoreCase(Constants.TYP_IMAGE)) {
-                FrinmeDbImage i = session.get(FrinmeDbImage.class, id);
-                if (i != null && i.getId().equals(id)) {
-                    File file = new File(
-                            (new Constants()).getUploadFolderImage()
-                                    + File.separatorChar + i.getImage());
-                    if (file.exists()) {
-                        file.delete();
+                i = ((Long) session.createQuery(
+                        "select count(*) from FrinmeDbMessages where ImageMsgID = "
+                                + id)
+                        .iterate().next()).intValue();
+                if (i == 0) {
+                    FrinmeDbImage img = session.get(FrinmeDbImage.class, id);
+                    if (img != null && img.getId().equals(id)) {
+                        File file = new File(
+                                (new Constants()).getUploadFolderImage()
+                                        + File.separatorChar + img.getImage());
+                        if (file.exists()) {
+                            file.delete();
+                        }
+                        session.createQuery(
+                                "delete from FrinmeDbImage where ID = :id")
+                                .setParameter("id", id).executeUpdate();
                     }
-                    session.delete(i);
                 }
             } else if (msgType.equalsIgnoreCase(Constants.TYP_VIDEO)) {
-                FrinmeDbVideo v = session.get(FrinmeDbVideo.class, id);
-                if (v != null && v.getId().equals(id)) {
-                    File file = new File(
-                            (new Constants()).getUploadFolderVideo()
-                                    + File.separatorChar + v.getVideo());
-                    if (file.exists()) {
-                        file.delete();
+                i = ((Long) session.createQuery(
+                        "select count(*) from FrinmeDbMessages where VideoMsgID = "
+                                + id)
+                        .iterate().next()).intValue();
+                if (i == 0) {
+                    FrinmeDbVideo v = session.get(FrinmeDbVideo.class, id);
+                    if (v != null && v.getId().equals(id)) {
+                        File file = new File(
+                                (new Constants()).getUploadFolderVideo()
+                                        + File.separatorChar + v.getVideo());
+                        if (file.exists()) {
+                            file.delete();
+                        }
+                        session.createQuery(
+                                "delete from FrinmeDbVideo where ID = :id")
+                                .setParameter("id", id).executeUpdate();
                     }
-                    session.delete(v);
                 }
             } else if (msgType.equalsIgnoreCase(Constants.TYP_LOCATION)) {
-                FrinmeDbLocation l = session.get(FrinmeDbLocation.class, id);
-                if (l != null && l.getId().equals(id)) {
-                    session.delete(l);
-                }
-            } else if (msgType.equalsIgnoreCase(Constants.TYP_FILE)) {
-                FrinmeDbFile f = session.get(FrinmeDbFile.class, id);
-                if (f != null && f.getId().equals(id)) {
-                    File file = new File(
-                            (new Constants()).getUploadFolderFiles()
-                                    + File.separatorChar + f.getFile());
-                    if (file.exists()) {
-                        file.delete();
+                i = ((Long) session.createQuery(
+                        "select count(*) from FrinmeDbMessages where LocationMsgID = "
+                                + id)
+                        .iterate().next()).intValue();
+                if (i == 0) {
+                    
+                    FrinmeDbLocation l = session.get(FrinmeDbLocation.class,
+                            id);
+                    if (l != null && l.getId().equals(id)) {
+                        session.createQuery(
+                                "delete from FrinmeDbLocation where ID = :id")
+                                .setParameter("id", id).executeUpdate();
                     }
                 }
-                session.delete(f);
+            } else if (msgType.equalsIgnoreCase(Constants.TYP_FILE)) {
+                i = ((Long) session.createQuery(
+                        "select count(*) from FrinmeDbMessages where FileMsgID = "
+                                + id)
+                        .iterate().next()).intValue();
+                if (i == 0) {
+                    
+                    FrinmeDbFile f = session.get(FrinmeDbFile.class, id);
+                    if (f != null && f.getId().equals(id)) {
+                        File file = new File(
+                                (new Constants()).getUploadFolderFiles()
+                                        + File.separatorChar + f.getFile());
+                        if (file.exists()) {
+                            file.delete();
+                        }
+                    }
+                    session.createQuery(
+                            "delete from FrinmeDbFile where ID = :id")
+                            .setParameter("id", id).executeUpdate();
+                }
             } else if (msgType.equalsIgnoreCase(Constants.TYP_CONTACT)) {
-                FrinmeDbContact ct = session.get(FrinmeDbContact.class, id);
-                if (ct != null && ct.getId().equals(id)) {
-                    session.delete(ct);
+                i = ((Long) session.createQuery(
+                        "select count(*) from FrinmeDbMessages where ContactMsgID = "
+                                + id)
+                        .iterate().next()).intValue();
+                if (i == 0) {
+                    FrinmeDbContact ct = session.get(FrinmeDbContact.class, id);
+                    if (ct != null && ct.getId().equals(id)) {
+                        session.createQuery(
+                                "delete from FrinmeDbContact where ID = :id")
+                                .setParameter("id", id).executeUpdate();
+                    }
                 }
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
-            
+            LOGGER.error(e);
         }
         LOGGER.debug("End deleteContent with MSGType = " + msgType + " ID = "
                 + String.valueOf(id));
@@ -1206,14 +1291,15 @@ public class User {
         out.setACK(Constants.ACKNOWLEDGE_FALSE);
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             
             FrinmeDbMessages m = session.get(FrinmeDbMessages.class,
                     in.getMID());
             
             if (m.getMessageTyp().equals(Constants.TYP_TEXT)) {
-                String tmptxt = base64Decode(m.getFrinmeDbText().getText());
+                String tmptxt = m.getFrinmeDbText().getText();
                 int hashCode = tmptxt.hashCode();
                 
                 if (hashCode == Integer.valueOf(in.getACK())) {
@@ -1240,6 +1326,9 @@ public class User {
                 }
                 
             }
+            session.getTransaction().commit();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1255,7 +1344,8 @@ public class User {
         out.setACK(Constants.ACKNOWLEDGE_FALSE);
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session.createQuery(
                     "FROM FrinmeDbUserToChats where ChatID = " + in.getCID()
@@ -1274,7 +1364,8 @@ public class User {
                 }
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1289,7 +1380,8 @@ public class User {
             String messageIDQuery = "FROM FrinmeDbMessages msg WHERE msg.id IN (:ids)";
             
             boolean abort = false;
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session.createQuery(messageIDQuery);
             q1.setParameterList("ids", in.getMID());
@@ -1339,6 +1431,9 @@ public class User {
             if (abort) {
                 out.getMIB().clear();
             }
+            session.getTransaction().commit();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1350,7 +1445,8 @@ public class User {
         LOGGER.debug("Start deleteChat with In = " + in.toString());
         
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session
                     .createQuery("FROM FrinmeDbUserToChats WHERE ChatID = "
@@ -1382,7 +1478,8 @@ public class User {
                     + in.getCID() + "'").executeUpdate();
             out.setR(Constants.CHAT_DELETED);
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1396,7 +1493,8 @@ public class User {
         try {
             String userIDQuery = "FROM FrinmeDbUsers WHERE ID IN (:ids)";
             
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q1 = session.createQuery(userIDQuery);
             q1.setParameterList("ids", in.getUID());
@@ -1417,7 +1515,8 @@ public class User {
                 }
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1431,12 +1530,14 @@ public class User {
             FrinmeDbImage i = new FrinmeDbImage();
             i.setImage(in.getIcM());
             i.setMd5sum(in.getIcMD5());
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             session.save(i);
             out.setIcID(i.getId());
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1447,7 +1548,8 @@ public class User {
     public void insertChatIcon(IICIc in, OICIc out) {
         LOGGER.debug("Start insertChatIcon with In = " + in.toString());
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             
             FrinmeDbChats c = session.get(FrinmeDbChats.class, in.getCID());
@@ -1469,6 +1571,9 @@ public class User {
                     out.setET(Constants.NOT_CHAT_OWNER);
                 }
             }
+            session.getTransaction().commit();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);
@@ -1479,7 +1584,8 @@ public class User {
     public void insertUserIcon(IIUIc in, OIUIc out) {
         LOGGER.debug("Start insertUserIcon with In = " + in.toString());
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            // Session session =
+            // HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query q2 = session.createQuery(
                     "FROM FrinmeDbImage where ID = '" + in.getIcID() + "'");
@@ -1492,7 +1598,8 @@ public class User {
                 out.setR(Constants.ICON_ADDED);
             }
             session.getTransaction().commit();
-            session.close();
+            // session.close();
+            // HibernateUtil.getSessionFactory().close();
         } catch (Exception e) {
             out.setET(Constants.DB_ERROR);
             LOGGER.error(e);

@@ -126,7 +126,7 @@ public class TestDownloadImage extends JerseyTest {
         u.setEmail(email_org);
         session.save(u);
         session.getTransaction().commit();
-        session.close();
+        // session.close();
         LOGGER.debug("End BeforeClass");
     }
     

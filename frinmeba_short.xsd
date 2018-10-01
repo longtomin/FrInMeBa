@@ -35,50 +35,78 @@
 
 	<!-- below the XSD Schema for elements in lists are describe until the restfunction 
 		starts -->
+	<!-- Owning User -->
 	<xs:element name="OU">
 		<xs:complexType>
 			<xs:sequence>
+				<!-- Owning User Name -->
 				<xs:element type="xs:string" name="OUN" />
+				<!-- Owning User ID -->
 				<xs:element type="xs:int" name="OUID" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- User -->
 	<xs:element name="U">
 		<xs:complexType>
 			<xs:sequence>
+				<!-- Username -->
 				<xs:element type="xs:string" name="UN" />
+				<!-- User ID -->
 				<xs:element type="xs:int" name="UID" />
+				<!-- Email Address -->
 				<xs:element type="xs:string" name="E" />
+				<!-- Last Authentification -->
 				<xs:element type="xs:long" name="LA" />
+				<!-- User Icon ID -->
 				<xs:element type="xs:int" name="ICID" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- Chat -->
 	<xs:element name="C">
 		<xs:complexType>
 			<xs:sequence>
+			<!-- Chatname -->
 				<xs:element type="xs:string" name="CN" />
+				<!-- Chat ID -->
 				<xs:element type="xs:int" name="CID" />
+				<!-- Chat Icon ID -->
 				<xs:element type="xs:int" name="ICID" />
+				<!-- Owning User -->
 				<xs:element ref="OU" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- Message -->
 	<xs:element name="M">
 		<xs:complexType>
 			<xs:sequence>
+			<!-- Message ID -->
 				<xs:element type="xs:int" name="MID" />
+				<!-- Message Type -->
 				<xs:element type="xs:string" name="MT" />
+				<!-- Send Timestamp -->
 				<xs:element type="xs:long" name="SdT" />
+				<!-- Read Timestamp -->
 				<xs:element type="xs:long" name="RdT" />
+				<!-- Show Timestamp -->
 				<xs:element type="xs:long" name="ShT" />
+				<!-- Owning User -->
 				<xs:element ref="OU" />
+				<!-- Text Message ID -->
 				<xs:element type="xs:int" name="TMID" />
+				<!-- Image Message ID -->
 				<xs:element type="xs:int" name="IMID" />
+				<!-- Contact Message ID -->
 				<xs:element type="xs:int" name="CMID" />
+				<!-- Location Message ID -->
 				<xs:element type="xs:int" name="LMID" />
+				<!-- File Message ID -->
 				<xs:element type="xs:int" name="FMID" />
+				<!-- Video Message ID -->
 				<xs:element type="xs:int" name="VMID" />
+				<!-- Origin Message ID -->
 				<xs:element type="xs:int" name="OMID" />
 			</xs:sequence>
 		</xs:complexType>
@@ -86,38 +114,54 @@
 	<!--<xs:element name="CNC"> <xs:complexType> <xs:sequence> <xs:element type="xs:string" 
 		name="CN" /> <xs:element type="xs:int" name="CID" /> <xs:element ref="OU" 
 		/> </xs:sequence> </xs:complexType> </xs:element> -->
+		<!-- Chatnew Messages -->
 	<xs:element name="CNM">
 		<xs:complexType>
 			<xs:sequence>
+			<!-- Chatname -->
 				<xs:element type="xs:string" name="CN" />
+				<!-- Chat ID -->
 				<xs:element type="xs:int" name="CID" />
+				<!-- Number of Messages -->
 				<xs:element type="xs:int" name="NOM" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- Message Information -->
 	<xs:element name="MI">
 		<xs:complexType>
 			<xs:sequence>
+			<!-- User ID -->
 				<xs:element type="xs:int" name="UID" />
+				<!-- Username -->
 				<xs:element type="xs:string" name="UN" />
+				<!-- Read Timestamp -->
 				<xs:element type="xs:long" name="RD" />
+				<!-- Show Timestamp -->
 				<xs:element type="xs:long" name="SH" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- Message Information Block -->
 	<xs:element name="MIB">
 		<xs:complexType>
 			<xs:sequence>
+			<!-- Message ID -->
 				<xs:element type="xs:int" name="MID" />
+				<!-- Send Timestampe -->
 				<xs:element type="xs:long" name="SD" />
+				<!-- Message information -->
 				<xs:element ref="MI" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<!-- Show Timestamp -->
 	<xs:element name="ShT">
 		<xs:complexType>
 			<xs:sequence>
+			<!-- Message ID -->
 				<xs:element type="xs:int" name="MID" />
+				<!-- Timestamp -->
 				<xs:element type="xs:long" name="T" />
 			</xs:sequence>
 		</xs:complexType>
@@ -125,27 +169,37 @@
 
 	<!-- below the XSD Schema for each restfunction starts -->
 	<!-- Signup Information Input -->
+	<!-- In Signup -->
 	<xs:element name="ISiUp">
 		<!-- In Signup User -->
 		<xs:complexType>
 			<xs:sequence>
+			<!-- Username -->
 				<xs:element type="xs:string" name="UN" />
+				<!-- Password -->
 				<xs:element type="xs:string" name="PW" />
+				<!-- Email Address -->
 				<xs:element type="xs:string" name="E" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<!-- Returned Signup Information -->
+	<!-- Out Signup -->
 	<xs:element name="OSiUp">
 		<!-- Out Signup User -->
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
+				<!-- Username -->
 					<xs:element type="xs:string" name="UN" />
+					<!-- User ID -->
 					<xs:element type="xs:int" name="UID" />
+					<!-- Signup -->
 					<xs:element type="xs:string" name="SU" />
+					<!-- Reason -->
 					<xs:element type="xs:string" name="R" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -167,6 +221,7 @@
 					<xs:element type="xs:string" name="CN" />
 					<xs:element type="xs:int" name="CID" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -187,6 +242,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="R" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -208,6 +264,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="R" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -228,6 +285,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="R" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -237,7 +295,7 @@
 		<!-- In List User -->
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element type="xs:string" name="S" />
+			<xs:element type="xs:string" name="S" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -248,6 +306,7 @@
 				<xs:sequence>
 					<xs:element ref="U" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -259,6 +318,7 @@
 				<xs:sequence>
 					<xs:element ref="C" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -281,6 +341,7 @@
 					<xs:element type="xs:int" name="MID" />
 					<xs:element type="xs:long" name="SdT" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -301,6 +362,7 @@
 				<xs:sequence>
 					<xs:element ref="ShT" minOccurs="1" maxOccurs="unbounded" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -322,6 +384,7 @@
 					<xs:element type="xs:int" name="MID" />
 					<xs:element type="xs:string" name="ACK" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -342,6 +405,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="ACK" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -360,6 +424,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="MIB" minOccurs="0" maxOccurs="unbounded" />
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -379,6 +444,7 @@
 				<xs:sequence>
 					<xs:element type="xs:int" name="MID" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -399,6 +465,7 @@
 				<xs:sequence>
 					<xs:element type="xs:int" name="LID" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -418,6 +485,7 @@
 				<xs:sequence>
 					<xs:element type="xs:int" name="TID" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -439,6 +507,7 @@
 					<xs:element type="xs:int" name="ImID" />
 					<xs:element type="xs:string" name="ImF" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -460,6 +529,7 @@
 					<xs:element type="xs:int" name="IcID" />
 					<xs:element type="xs:string" name="IcF" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -481,6 +551,7 @@
 					<xs:element type="xs:int" name="VID" />
 					<xs:element type="xs:string" name="VF" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -500,6 +571,7 @@
 				<xs:sequence>
 					<xs:element type="xs:int" name="ContactID" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -521,6 +593,7 @@
 					<xs:element type="xs:int" name="FID" />
 					<xs:element type="xs:string" name="FF" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -541,6 +614,7 @@
 				<xs:sequence>
 					<xs:element ref="M" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -560,6 +634,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="TM" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -580,6 +655,7 @@
 					<xs:element type="xs:string" name="Lat" />
 					<xs:element type="xs:string" name="Lon" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -600,6 +676,7 @@
 					<xs:element type="xs:string" name="IM" />
 					<xs:element type="xs:string" name="IMD5" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -620,6 +697,7 @@
 					<xs:element type="xs:string" name="VM" />
 					<xs:element type="xs:string" name="VMD5" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -639,6 +717,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="CM" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -659,6 +738,7 @@
 					<xs:element type="xs:string" name="FM" />
 					<xs:element type="xs:string" name="FMD5" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -670,6 +750,7 @@
 					<xs:element ref="C" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element ref="CNM" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -691,6 +772,7 @@
 					<xs:element type="xs:long" name="FS" />
 					<xs:element type="xs:string" name="FMD5" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -712,6 +794,7 @@
 					<xs:element type="xs:long" name="IS" />
 					<xs:element type="xs:string" name="IMD5" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -733,6 +816,7 @@
 					<xs:element type="xs:long" name="VS" />
 					<xs:element type="xs:string" name="VMD5" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -752,6 +836,7 @@
 				<xs:sequence>
 					<xs:element ref="U" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -771,6 +856,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="R" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>
@@ -791,6 +877,7 @@
 				<xs:sequence>
 					<xs:element type="xs:string" name="R" />
 				</xs:sequence>
+				<!-- Errortext -->
 				<xs:element type="xs:string" name="ET" />
 			</xs:choice>
 		</xs:complexType>

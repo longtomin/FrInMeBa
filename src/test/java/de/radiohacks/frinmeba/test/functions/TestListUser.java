@@ -62,14 +62,10 @@ public class TestListUser extends JerseyTest {
     /*
      * @GET
      * 
-     * @Produces(MediaType.APPLICATION_XML)
+     * @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
      * 
-     * @Path("/listuser") public OLiUs
-     * ListUsers(@QueryParam(Constants.QPusername) String User,
-     * 
-     * @QueryParam(Constants.QPpassword) String Password,
-     * 
-     * @QueryParam(Constants.QPsearch) String search);
+     * @Path("/listuser") public OLiUs listUsers(@Context HttpHeaders headers,
+     * ILiUs in);
      */
     
     private static final Logger LOGGER = Logger
@@ -162,11 +158,12 @@ public class TestListUser extends JerseyTest {
     }
     
     @Test
-    public void testListUserUserPasswordSearch() {
+    public void testListUserUserPasswordSearchInvalidEmail() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
         
+        // Invalid Email Address
         target = c.target(TestConfig.URL).path(functionurl).queryParam(
                 Constants.QP_SEARCH, Base64.encodeBase64String("Test"
                         .getBytes(Charset.forName(Constants.CHARACTERSET))));
@@ -177,11 +174,12 @@ public class TestListUser extends JerseyTest {
     }
     
     @Test
-    public void testListUserUserPassword() {
+    public void testListUserUserPasswordEmpty() {
         WebTarget target;
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
         
+        // Empty list returned, no search given
         target = c.target(TestConfig.URL + functionurl);
         LOGGER.debug(target);
         OLiUs out = target.request().get(OLiUs.class);
@@ -195,6 +193,7 @@ public class TestListUser extends JerseyTest {
         Client c = ClientBuilder.newClient();
         c.register(HttpAuthenticationFeature.basic(username1, password1));
         
+        // Encoding Error not base64 encoded
         target = c.target(TestConfig.URL + functionurl)
                 .queryParam(Constants.QP_SEARCH, "$%&1233");
         LOGGER.debug(target);
@@ -202,4 +201,20 @@ public class TestListUser extends JerseyTest {
         LOGGER.debug("ET=" + out.getET());
         Assert.assertEquals(Constants.ENCODING_ERROR, out.getET());
     }
+    
+    @Test
+    public void testListUserUserPasswordSearchOK() {
+        WebTarget target;
+        Client c = ClientBuilder.newClient();
+        c.register(HttpAuthenticationFeature.basic(username1, password1));
+        
+        // Invalid Email Address
+        target = c.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_SEARCH, email2);
+        LOGGER.debug(target);
+        OLiUs out = target.request().get(OLiUs.class);
+        LOGGER.debug("U (size) =" + out.getU().size());
+        Assert.assertNotNull(out.getU());
+    }
+    
 }

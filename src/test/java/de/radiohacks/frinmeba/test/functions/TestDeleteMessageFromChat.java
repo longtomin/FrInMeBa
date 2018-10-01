@@ -209,7 +209,7 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         u2c1b.setFrinmeDbUsers(u2);
         session.save(u2c1b);
         u2c2.setFrinmeDbChats(c2);
-        u2c2.setFrinmeDbUsers(u1);
+        u2c2.setFrinmeDbUsers(u3);
         session.save(u2c2);
         
         mt1.setFrinmeDbUsers(u1);
@@ -239,7 +239,6 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         mi1.setFrinmeDbUserToChats(u2c1a);
         mi1.setMessageTyp(Constants.TYP_IMAGE);
         mi1.setFrinmeDbImage(i);
-        
         session.save(mi1);
         mi1.setOriginMsgId(mi1.getId());
         session.saveOrUpdate(mi1);
@@ -341,6 +340,19 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         LOGGER.debug(out2.getMID());
         Assert.assertNotNull(out2.getMID());
         Assert.assertNull(out2.getET());
+        
+        WebTarget target3;
+        Client c3 = ClientBuilder.newClient();
+        c3.register(HttpAuthenticationFeature.basic(username3, password3));
+        
+        target3 = c3.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_MESSAGEID, mt3.getId());
+        LOGGER.debug(target3);
+        
+        ODMFC out3 = target3.request().delete(ODMFC.class);
+        LOGGER.debug(out3.getMID());
+        Assert.assertNotNull(out3.getMID());
+        Assert.assertNull(out3.getET());
     }
     
     @Test
@@ -385,6 +397,21 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         LOGGER.debug(out2.getMID());
         Assert.assertNotNull(out2.getMID());
         Assert.assertNull(out2.getET());
+        
+        WebTarget target3;
+        Client c3 = ClientBuilder.newClient();
+        c3.register(HttpAuthenticationFeature.basic(username3, password3));
+        
+        target3 = c3.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_MESSAGEID, mi3.getId());
+        LOGGER.debug(target3);
+        ODMFC out3 = target3
+                .register(HttpAuthenticationFeature.basicBuilder()
+                        .credentials(username3, password3))
+                .request().delete(ODMFC.class);
+        LOGGER.debug(out3.getMID());
+        Assert.assertNotNull(out3.getMID());
+        Assert.assertNull(out3.getET());
     }
     
     @Test
@@ -429,5 +456,19 @@ public class TestDeleteMessageFromChat extends JerseyTest {
         LOGGER.debug(out2.getMID());
         Assert.assertNotNull(out2.getMID());
         Assert.assertNull(out2.getET());
+        
+        WebTarget target3;
+        Client c3 = ClientBuilder.newClient();
+        c3.register(HttpAuthenticationFeature.basic(username3, password3));
+        
+        target3 = c3.target(TestConfig.URL).path(functionurl)
+                .queryParam(Constants.QP_MESSAGEID, mv3.getId());
+        LOGGER.debug(target3);
+        
+        ODMFC out3 = target3.request().delete(ODMFC.class);
+        LOGGER.debug(out3.getMID());
+        Assert.assertNotNull(out3.getMID());
+        Assert.assertNull(out3.getET());
+        
     }
 }
